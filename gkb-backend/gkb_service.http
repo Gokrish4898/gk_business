@@ -1,0 +1,6 @@
+@gkb_service_HostAddress = http://localhost:5239
+
+GET {{gkb_service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
