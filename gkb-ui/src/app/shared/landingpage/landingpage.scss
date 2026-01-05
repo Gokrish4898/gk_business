@@ -1,0 +1,74 @@
+/* 1. Main Container */
+.landing_page_head {
+    /* Changed height to min-height so it grows if content stacks on mobile */
+    min-height: 100vh; 
+    width: 100%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #6462e9 0%, #b762fc 100%);
+    padding: 20px; /* Add padding so content doesn't touch edges on mobile */
+}
+
+/* 2. The White Card */
+.landing_page_body {
+    width: 100%;
+    max-width: 1000px; /* Stop it from getting too wide on huge screens */
+    
+    /* Removed fixed height so it grows with content */
+    height: auto; 
+    
+    padding: 2rem; 
+    border-radius: 30px;
+    background: white;
+    
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. The Bubbles */
+.bubble_card {
+    /* Responsive Sizing Logic */
+    width: 100%;           /* Fill the column width */
+    max-width: 250px;      /* But never get bigger than 250px */
+    aspect-ratio: 1 / 1;   /* MAGIC: Keeps it a perfect circle automatically */
+    
+    /* Centering Content inside Bubble */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: rgb(212, 212, 212);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Prevent text overflow */
+    overflow: hidden;
+    padding: 10px;
+}
+
+.bubble_card:hover {
+    transform: translateY(-5px); /* Move UP not sideways */
+    background-color: #b762fc;
+    box-shadow: 0 5px 15px rgba(183, 98, 252, 0.4); /* Glow effect */
+}
+
+.bubble_text {
+    font-size: 1.25rem;
+    color: azure; /* Consider darker text if background is light grey, or white if hovered */
+    font-weight: bold;
+    text-align: center;
+    word-wrap: break-word; /* Prevents long words from breaking layout */
+}
+
+/* Mobile Tweak: Make bubbles smaller on very small phones */
+@media (max-width: 576px) {
+    .bubble_card {
+        max-width: 200px; /* Smaller bubbles on phone */
+    }
+    .landing_page_body {
+        padding: 1rem; /* Less padding on phone */
+    }
+}

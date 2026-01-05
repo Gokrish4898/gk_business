@@ -1,0 +1,194 @@
+.carousel-style{
+    border-radius: 12px;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.692); /* Soft glow */
+}
+
+/* 1. Wrapper needs a fixed height or the carousel collapses */
+.picsum-img-wrapper {
+  position: relative;
+  height: 400px; /* Adjust this for mobile if needed */
+  background-color: #f1f1f1; /* Grey placeholder color */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 2. Image must cover the area */
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Prevents the image from looking squished */
+  display: block;
+}
+
+/* 3. Optional: Make caption pop */
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.4); /* Dark backdrop for text readability */
+  border-radius: 8px;
+  padding: 10px;
+  bottom: 20px;
+}
+
+.top_head{
+  margin-left : 0px !important;
+  margin-right : 0px !important;
+  margin-top: 10px;
+  background-color: var(--bg-color);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  display: flex;
+  text-align-last: center;
+
+}
+.top_head_noback {
+  /* ❌ DELETE THIS: display: grid; */
+  /* ❌ DELETE THIS: text-align-last: center; */
+  /* ❌ DELETE THIS: width: fit-content; (If you have it) */
+
+  margin-top: 20px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  
+  /* These are fine */
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+.filter_box{
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  margin-right: 10px;
+}
+.product_box{
+  border-radius: 5px;
+  background-color: var(--bg-color);
+}
+
+.caption_text{
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.5px; /* Tighter letters look more modern */
+  line-height: 1.2;
+  color: var(--color-primary);
+}
+.filter_text{
+color: var(--text-main);
+    font-family: "Lato", sans-serif; /* Tighter letters look more modern */
+  line-height: 1.2;
+  color: var(--color-primary);
+  padding-left: 5px;
+  padding-bottom: 5px;
+
+}
+
+.top_head:hover{
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.692); /* Soft glow */
+}
+
+/* Mobile Tweak */
+@media (max-width: 768px) {
+  .picsum-img-wrapper {
+    height: 250px;
+  }
+}
+
+/* Section Padding */
+.category-section {
+  background-color: #FAFAF5; /* Your Flour White */
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  color: #1A1A1D;
+}
+
+/* The Circle Wrapper */
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: white;
+  border-radius: 50%; /* Makes it a circle */
+  
+  display: flex;
+  align-items: center; /* Center icon vertically */
+  justify-content: center; /* Center icon horizontally */
+  
+  margin: 0 auto; /* Center the circle in the column */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  border: 2px solid transparent; /* Invisible border for layout stability */
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* The Icon inside */
+.icon-wrapper i {
+  font-size: 2rem;
+  color: #D4A373; /* Your Gold Color */
+}
+
+/* Hover Effect */
+.circle-icon-card:hover .icon-wrapper {
+  background-color: #D4A373; /* Fill with gold */
+  transform: translateY(-5px); /* Float up */
+  box-shadow: 0 8px 20px rgba(212, 163, 115, 0.4);
+}
+
+.circle-icon-card:hover .icon-wrapper i {
+  color: white; /* Turn icon white */
+}
+
+.category-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4A4E69;
+}
+
+/* Mobile Responsiveness */
+/* On phones, the circles might be too big for 4 in a row. */
+@media (max-width: 576px) {
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+  .icon-wrapper i {
+    font-size: 1.5rem;
+  }
+  .category-name {
+    font-size: 0.75rem;
+  }
+  .filter_text{
+  font-size: small;
+  }
+  .filter_ul{
+        padding-left: 1rem;
+  }
+}
+
+.filter_ul{
+  list-style-type: none;
+  padding: left 1rem !important;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.5px; /* Tighter letters look more modern */
+  line-height: 1.2;
+  color: var(--color-primary);
+  align-content: center;
+}
+
+.counter_nums {
+  /* 1. Typography */
+  font-family: 'Playfair Display', serif; /* Ensure this font is imported in styles.css! */
+  font-weight: 700;
+  
+  /* 2. Size & Color */
+  font-size: 3rem;       /* Much bigger than 'large' to make it pop */
+  color: #D4A373;        /* Your Brand Gold (instead of Red) */
+  /* color: var(--accent-gold); <--- Use this if you set up variables */
+  
+  /* 3. Spacing */
+  margin-bottom: 0.5rem;
+  line-height: 1;        /* Keeps the number tight, not too much gap above/below */
+}
+
+.sub-header{
+  margin-left: 5px;
+  margin-top: 5px;
+
+}

@@ -1,1 +1,176 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+/* =========================================
+   1. LOAD FONTS (Google Fonts)
+   ========================================= */
+/* Option 1: Playfair Display + Lato */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap');
+
+/* Option 2: Montserrat + Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@600;800&display=swap');
+
+/* Option 3: Quicksand + Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Quicksand:wght@500;700&display=swap');
+
+/* =========================================
+   2. COLOR PALETTE (CSS Variables)
+   ========================================= */
+:root {
+  /* BRAND COLORS */
+  --color-primary: #2C3e50;    /* Dark Blue-Grey (Camera Body / Professional) */
+  --color-accent: #E67E22;     /* Baked Crust Orange (Warmth) */
+  --color-highlight: #F1C40F;  /* Dough Yellow (Pop of color) */
+  
+  /* NEUTRALS */
+  --bg-color: #f5f3f3;         /* "Flour White" - slightly warm off-white, not harsh */
+  --text-main: #333333;        /* Soft Black for easy reading */
+  --text-muted: #7F8C8D; 
+  // --body-color-box: #a7a7a7;     /* Grey for captions */
+  --bgg-color: linear-gradient(135deg, #6462e9 0%, #b762fc 100%);
+}
+
+/* =========================================
+   3. TYPOGRAPHY RULES
+   ========================================= */
+
+/* --- HEADERS (H1, H2, H3) --- */
+h1, h2, h3, .brand-font {
+  /* Choice 1 Font */
+  font-family: 'Playfair Display', serif;
+  
+  /* Choice 2 Font */
+  /* font-family: 'Montserrat', sans-serif; */
+  
+  /* Choice 3 Font */
+  /* font-family: 'Quicksand', sans-serif; */
+
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: -0.5px; /* Tighter letters look more modern */
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 3.5rem; /* Big impact */
+  margin-bottom: 1rem;
+}
+
+/* --- SUB-HEADERS (H4, H5, Intro Text) --- */
+h4, h5, .sub-header {
+  font-family: inherit; /* Uses Body font, not Header font */
+  color: var(--color-accent);
+  text-transform: uppercase; /* Makes it look like a label */
+  letter-spacing: 2px;       /* Spaced out for elegance */
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* --- CAPTIONS & SMALL TEXT --- */
+small, .caption, figcaption {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic; /* Adds that "Picture Caption" feel */
+  display: block;
+  margin-top: 5px;
+}
+
+/* =========================================
+   4. UTILITY CLASSES (Use these in HTML)
+   ========================================= */
+.text-highlight {
+  color: var(--color-accent);
+}
+
+.text-gradient {
+  background: -webkit-linear-gradient(45deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+:root {
+  /* --- PRIMARY COLORS --- */
+  --primary-dark:   #1A1A1D;  /* Lens Black */
+  --primary-light:  #FAFAF5;  /* Flour White */
+  
+  /* --- ACCENT COLORS --- */
+  --accent-gold:    #D4A373;  /* Golden Crust (Buttons) */
+  --accent-green:   #CCD5AE;  /* Sage Focus (Success/Badges) */
+  
+  /* --- TEXT COLORS --- */
+  --text-main:      #1A1A1D;  /* High contrast for reading */
+  --text-muted:     #4A4E69;  /* Shutter Grey for captions */
+  
+  /* --- UI ELEMENTS --- */
+  --card-shadow:    0 8px 30px rgba(0,0,0,0.08);
+  --radius-main:    12px;     /* Soft, friendly corners */
+}
+
+/* APPLICATION */
+body {
+  background: linear-gradient(135deg, #6462e9 0%, #b762fc 100%) !important;
+  color: var(--text-main);
+  font-family: 'Lato', sans-serif; /* Keep the Editorial font! */
+}
+
+.box{
+  background-color: var(--bg-color);
+  margin-top: 1rem;
+
+}
+
+/* The Navbar - Sleek & Dark */
+.navbar {
+  background-color: var(--primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+  color: var(--accent-gold) !important; /* The Logo pops in Gold */
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Primary Buttons (Login, Order) */
+.btn-primary {
+  background-color: var(--accent-gold);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: var(--radius-main);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #bfa88f; /* Slightly darker gold */
+  transform: translateY(-2px); /* Lifts up */
+}
+
+/* Secondary/Outline Buttons */
+.btn-outline-dark {
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
+}
+
+/* Login Card & Containers */
+.card, .login-card {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: var(--radius-main);
+  box-shadow: var(--card-shadow);
+}
+
+.thick-separator {
+  height: 3px;
+  background-color: #D4A373; /* Your Gold Color */
+  border: none;
+  margin-top: -7px !important;
+  opacity: 1; /* Vital for Bootstrap */
+  margin: 20px 0; /* Adds space above/below */
+  border-radius: 4px; /* Optional: Makes the ends rounded */
+}

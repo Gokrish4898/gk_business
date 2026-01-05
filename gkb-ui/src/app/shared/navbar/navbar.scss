@@ -1,0 +1,15 @@
+/* OPTIONAL: If 'sticky-top' doesn't feel right, use 'fixed-top' */
+/* If you decide to use class="navbar fixed-top ..." instead: */
+
+/* body {
+  padding-top: 70px; 
+} */
+/* ^ Only uncomment this if you use 'fixed-top', otherwise your content hides behind the navbar! */
+
+
+/* Visual Polish for Active Links */
+.navbar-dark .navbar-nav .nav-link.active {
+  color: var(--accent-gold) !important; /* Your gold color */
+  font-weight: bold;
+  border-bottom: 2px solid var(--accent-gold);
+}

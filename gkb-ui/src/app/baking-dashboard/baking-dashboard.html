@@ -1,0 +1,134 @@
+<div class="container" style="padding-top: 10px;">
+  <div class="carousel-container carousel-style" *ngIf="slides && slides.length > 0">
+
+    <ngb-carousel [interval]="3000" [pauseOnHover]="true" [showNavigationArrows]="true">
+
+      <ng-template ngbSlide *ngFor="let slide of slides; let i = index" [id]="'slide-' + i">
+
+        <div class="picsum-img-wrapper">
+          <img [src]="slide.url" [alt]="slide.title" class="slide-image" />
+        </div>
+
+        <div class="carousel-caption">
+          <h3>{{ slide.title }}</h3>
+          <p>{{ slide.description }}</p>
+        </div>
+
+      </ng-template>
+
+    </ngb-carousel>
+
+  </div>
+
+  <div class="row top_head">
+    <div class="col-12 col-md-12 col-sm-4">
+      <div class="category-section py-5">
+        <!-- <div class="container"> -->
+        <!-- <h3 class="text-center mb-4 section-title">Explore Categories</h3> -->
+
+        <ngb-carousel *ngIf="categoryChunks.length > 0" [interval]="3000" [showNavigationArrows]="false"
+          [showNavigationIndicators]="true">
+
+          <ng-template ngbSlide *ngFor="let chunk of categoryChunks; let i = index">
+
+            <div class="row justify-content-center">
+
+              <div class="col-3 text-center" *ngFor="let item of chunk">
+
+                <div class="circle-icon-card" style="padding-top: 10px;">
+                  <div class="icon-wrapper">
+                    <img
+                      src='https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
+                      class="slide-image" style="border-radius: 50%;" />
+                  </div>
+                  <p class="mt-2 category-name">{{ item.name }}</p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </ng-template>
+
+        </ngb-carousel>
+
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="row top_head"> 
+    <div class="col-4 col-md-4 col-sm-2">
+      <span class="counter_nums">{{total_counter}}</span>
+      <div class="row justify-content-center">
+        <span>Orders</span>
+      </div>
+    </div>
+    <div class="col-4 col-md-4 col-sm-2">
+      <span class="counter_nums">{{Reviews_counter}}</span>
+      <div class="row justify-content-center">
+        <span>Reviews</span>
+      </div>
+    </div>
+    <div class="col-4 col-md-4 col-sm-2">
+      <span class="counter_nums">{{customer_counter}}</span>
+      <div class="row justify-content-center ">
+        <span>Customers</span>
+      </div>
+    </div>
+  </div>
+
+
+<div class="row top_head_noback">
+  
+  <div class="col-4 col-md-3 filter_box bg-light">
+     <div class="row sub-header" >
+      Filter
+     </div>
+     <hr class="thick-separator">
+     <div>
+      <ul class="filter_ul" >
+        <li><input  type="checkbox"><span class="filter_text">Hot selling</span></li>
+        <li><input  type="checkbox"><span class="filter_text">Most Ordered</span></li>
+        <li><input  type="checkbox"><span class="filter_text">Low To High</span></li>
+        <li><input  type="checkbox"><span class="filter_text">High to Low</span></li>
+      </ul>
+     </div>
+  </div> 
+
+  <div class="col product_box bg-white">
+    <div class="row sub-header" >
+      Product
+     </div>
+     <hr class="thick-separator">
+
+     <div class="row">
+      <div class="col-3 col-md-4 col-2">
+        <div>
+          fdmsnd,mfn
+        </div>
+      </div>
+       <div class="col-3 col-md-4 col-2">
+        <div>
+          fdmsnd,mfn
+        </div>
+      </div>
+       <div class="col-3 col-md-4 col-2">
+        <div>
+          fdmsnd,mfn
+        </div>
+      </div>
+       <div class="col-3 col-md-4 col-2">
+        <div>
+          fdmsnd,mfn
+        </div>
+      </div>
+     </div>
+  </div> 
+
+</div>
+</div>
+
+<div class="container" style="padding-top: 10px ;">
+
+</div>

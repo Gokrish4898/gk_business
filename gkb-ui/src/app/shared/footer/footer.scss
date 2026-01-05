@@ -1,0 +1,71 @@
+/* 1. Main Footer Container */
+.footer-section {
+  background-color: #1A1A1D; /* Match your Navbar Dark Color */
+  color: #fff;
+  padding-top: 60px;
+  padding-bottom: 20px;
+  margin-top: auto; /* Pushes footer to bottom if page is short */
+}
+
+/* 2. Headings & Brand */
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  color: #D4A373; /* Gold Accent */
+  font-weight: 700;
+}
+
+.footer-heading {
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+/* 3. Links Styling */
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: #b0b0b0; /* Soft Grey */
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #D4A373; /* Gold on Hover */
+  padding-left: 5px; /* Subtle movement effect */
+}
+
+/* 4. Social Icons */
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 50%; /* Circle shape */
+  margin-right: 10px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.social-icons a:hover {
+  background: #D4A373; /* Gold Background on hover */
+  transform: translateY(-3px);
+}
+
+/* 5. Divider & Copyright */
+.footer-divider {
+  border-color: rgba(255,255,255,0.1);
+  margin: 30px 0;
+}
+
+.copyright-text {
+  color: #fafdff;
+  font-size: 0.85rem;
+}
