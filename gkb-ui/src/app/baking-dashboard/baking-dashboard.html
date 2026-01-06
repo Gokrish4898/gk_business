@@ -1,7 +1,7 @@
 <div class="container" style="padding-top: 10px;">
   <div class="carousel-container carousel-style" *ngIf="slides && slides.length > 0">
 
-    <ngb-carousel [interval]="3000" [pauseOnHover]="true" [showNavigationArrows]="true">
+    <ngb-carousel [interval]="3000" [pauseOnHover]="true" [showNavigationArrows]="true" >
 
       <ng-template ngbSlide *ngFor="let slide of slides; let i = index" [id]="'slide-' + i">
 
@@ -57,20 +57,20 @@
     </div>
   </div>
 
-  <div class="row top_head"> 
-    <div class="col-4 col-md-4 col-sm-2">
+  <div class="grid_body top_head"> 
+    <div>
       <span class="counter_nums">{{total_counter}}</span>
       <div class="row justify-content-center">
         <span>Orders</span>
       </div>
     </div>
-    <div class="col-4 col-md-4 col-sm-2">
+    <div >
       <span class="counter_nums">{{Reviews_counter}}</span>
       <div class="row justify-content-center">
         <span>Reviews</span>
       </div>
     </div>
-    <div class="col-4 col-md-4 col-sm-2">
+    <div>
       <span class="counter_nums">{{customer_counter}}</span>
       <div class="row justify-content-center ">
         <span>Customers</span>
@@ -102,23 +102,23 @@
      </div>
      <hr class="thick-separator">
 
-     <div class="row">
-      <div class="col-3 col-md-4 col-2">
+     <div class="grid_body">
+      <div class="grid_content">
         <div>
           fdmsnd,mfn
         </div>
       </div>
-       <div class="col-3 col-md-4 col-2">
+       <div class="grid_content">
         <div>
           fdmsnd,mfn
         </div>
       </div>
-       <div class="col-3 col-md-4 col-2">
+       <div class="grid_content">
         <div>
           fdmsnd,mfn
         </div>
       </div>
-       <div class="col-3 col-md-4 col-2">
+       <div class="grid_content">
         <div>
           fdmsnd,mfn
         </div>

@@ -93,6 +93,8 @@ color: var(--text-main);
 /* Section Padding */
 .category-section {
   background-color: #FAFAF5; /* Your Flour White */
+  padding-top: none !important;
+    padding-bottom: none !important;
 }
 
 .section-title {
@@ -191,4 +193,18 @@ color: var(--text-main);
   margin-left: 5px;
   margin-top: 5px;
 
+}
+
+.grid_body {
+  display: grid;
+  gap: 20px;
+  
+  /* "Fit as many 150px columns as possible. If not, wrap them." */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.grid_content {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
