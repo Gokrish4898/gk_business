@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
+import {MatPaginatorModule} from '@angular/material/paginator';
 import '@angular/localize/init';
 
 @Component({
   selector: 'app-baking-dashboard',
   imports: [CommonModule, 
-    NgbCarouselModule],
+    NgbCarouselModule,MatPaginatorModule],
   standalone:true,
   templateUrl: './baking-dashboard.html',
   styleUrl: './baking-dashboard.scss',
@@ -26,15 +27,70 @@ slides = [
   ];
 
   categories = [
-    { name: 'Weddings', icon: 'bi-camera-reels' },
-    { name: 'Birthdays', icon: 'bi-balloon-heart' },
+    { name: 'All Items', icon: 'bi-camera-reels' },
+    { name: 'Brownie', icon: 'bi-balloon-heart' },
     { name: 'Cakes', icon: 'bi-cake2' },
     { name: 'Breads', icon: 'bi-basket' },
-    { name: 'Donuts', icon: 'bi-circle' },
-    { name: 'Cookies', icon: 'bi-cookie' },
-    { name: 'Portraits', icon: 'bi-person-bounding-box' },
-    { name: 'Events', icon: 'bi-calendar-event' }
+    { name: 'Apple Pie', icon: 'bi-basket' },
+
   ];
+
+  product =[
+    { title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:0,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:0,
+      rceipelst:{},
+      totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},totalrating: '20'
+    },
+{ title:'brownie', 
+      image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      rating:'4',
+      wishlist:1,
+      rceipelst:{},totalrating: '20'
+    },
+  ]
 
   categoryChunks: any[] = [];
 

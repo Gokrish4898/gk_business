@@ -1,0 +1,126 @@
+.tracker-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Keep it neat */
+  margin: 0 auto;   /* Center it */
+  padding: 20px;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1; /* Distribute space equally */
+}
+
+/* 1. The Circle (Default Grey) */
+.step-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e9ecef; /* Light Grey */
+  color: #adb5bd;            /* Dark Grey Text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  z-index: 2; /* Sit on top of the line */
+  transition: all 0.4s ease;
+  border: 2px solid #e9ecef;
+}
+
+/* 2. The Label */
+.step-label {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-align: center;
+  font-family: 'Lato', sans-serif;
+}
+
+/* 3. The Connecting Line (Grey Background) */
+.step-line {
+  position: absolute;
+  top: 25px; /* Center of the 50px circle */
+  left: 50%; /* Start from center of this circle */
+  width: 100%; /* Stretch to the next circle */
+  height: 4px;
+  background-color: #e9ecef;
+  z-index: 1; /* Sit behind the circle */
+}
+
+/* --- ACTIVE STATE (GOLD) --- */
+
+.step.active .step-circle {
+  background-color: #D4A373; /* Your Gold */
+  color: white;
+  border-color: #D4A373;
+  box-shadow: 0 0 10px rgba(212, 163, 115, 0.4);
+}
+
+.step.active .step-label {
+  color: #1A1A1D; /* Dark Black */
+}
+
+/* The Magic: Make the line Gold if this step is active */
+/* Note: This logic assumes if step 2 is active, the line FROM step 1 is gold. 
+   We handle this by targeting the PREVIOUS sibling's line effectively or simple CSS hierarchy. 
+   For simplicity, we color the line inside the active step. */
+.step.active .step-line {
+  background-color: #D4A373; 
+}
+
+
+/* Define the Pulse Animation */
+@keyframes gold-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(212, 163, 115, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 163, 115, 0);
+  }
+}
+
+/* Apply it to the active circle */
+.step.active .step-circle {
+  animation: gold-pulse 2s infinite; /* Runs forever */
+}
+
+.step-line {
+  /* Keep your existing positioning */
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  height: 4px;
+  background-color: #e9ecef;
+  z-index: 1;
+
+  /* 👇 CHANGE: Start width at 0 for animation */
+  width: 0; 
+  transition: width 0.5s ease-in-out; /* Smooth growth */
+}
+
+/* When the step is active (or completed), stretch it to 100% */
+/* You might need to add a '.completed' class to your HTML logic for previous steps */
+.step.active .step-line, 
+.step.completed .step-line {
+  width: 100%; /* Fills the space to the next circle */
+  background-color: #D4A373; 
+}
+@keyframes icon-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.step.active i {
+  animation: icon-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

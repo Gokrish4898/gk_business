@@ -6,6 +6,7 @@
 /* 1. Wrapper needs a fixed height or the carousel collapses */
 .picsum-img-wrapper {
   position: relative;
+  display: flex;
   height: 400px; /* Adjust this for mobile if needed */
   background-color: #f1f1f1; /* Grey placeholder color */
   border-radius: 12px;
@@ -16,6 +17,7 @@
 .slide-image {
   width: 100%;
   height: 100%;
+  border-radius: 8px;
   object-fit: cover; /* Prevents the image from looking squished */
   display: block;
 }
@@ -53,14 +55,11 @@
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
-.filter_box{
-  border-radius: 5px;
-  background-color: var(--bg-color);
-  margin-right: 10px;
-}
+
 .product_box{
   border-radius: 5px;
   background-color: var(--bg-color);
+
 }
 
 .caption_text{
@@ -69,26 +68,72 @@
   line-height: 1.2;
   color: var(--color-primary);
 }
-.filter_text{
-color: var(--text-main);
-    font-family: "Lato", sans-serif; /* Tighter letters look more modern */
-  line-height: 1.2;
-  color: var(--color-primary);
-  padding-left: 5px;
-  padding-bottom: 5px;
 
+/* 1. Filter Box Container */
+.filter_box {
+  border-radius: 12px;
+  background-color: #FAFAF5; /* Use a light color, or var(--bg-color) */
+  padding: 20px;             /* Add padding INSIDE the box */
+  height: fit-content;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Optional: Nice subtle shadow */
+  
+  /* ⚠️ CSS GRID WARNING: 
+     Do NOT put 'margin-right' on a Bootstrap 'col-' class. 
+     It breaks the grid math. Use 'padding' or grid gaps instead.
+  */
 }
 
+/* 2. The Header "Filter" */
+.sub-header {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #1A1A1D; /* Dark Text */
+  margin-bottom: 10px;
+  padding-left: 10px; /* Aligns with the list */
+}
+
+/* 3. The List (UL) */
+.filter_ul {
+  list-style-type: none;     /* Removes bullet points */
+  padding-left: 0 !important; /* Resets default padding */
+  margin-top: 15px;
+}
+
+/* 4. The List Items (LI) - The Magic Part ✨ */
+.filter_ul li {
+  display: flex;             /* 1. Turns on Flexbox */
+  align-items: center;       /* 2. Vertically centers Checkbox + Text */
+  margin-bottom: 12px;       /* 3. Spacing between options */
+  cursor: pointer;           /* Shows hand icon on hover */
+}
+
+/* 5. The Checkbox Itself */
+.filter_ul input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #D4A373;     /* Makes the checkbox GOLD when clicked! */
+  cursor: pointer;
+}
+
+/* 6. The Text Next to It */
+.filter_text {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: #4A4E69;            /* Soft dark grey */
+  margin-left: 10px;         /* Space between checkbox and text */
+  line-height: 1;            /* Fixes vertical alignment */
+}
 .top_head:hover{
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.692); /* Soft glow */
 }
 
-/* Mobile Tweak */
-@media (max-width: 768px) {
-  .picsum-img-wrapper {
-    height: 250px;
-  }
-}
+// /* Mobile Tweak */
+// @media (max-width: 768px) {
+//   .picsum-img-wrapper {
+//     height: 250px;
+//   }
+// }
 
 /* Section Padding */
 .category-section {
@@ -143,36 +188,27 @@ color: var(--text-main);
   color: #4A4E69;
 }
 
-/* Mobile Responsiveness */
-/* On phones, the circles might be too big for 4 in a row. */
-@media (max-width: 576px) {
-  .icon-wrapper {
-    width: 60px;
-    height: 60px;
-  }
-  .icon-wrapper i {
-    font-size: 1.5rem;
-  }
-  .category-name {
-    font-size: 0.75rem;
-  }
-  .filter_text{
-  font-size: small;
-  }
-  .filter_ul{
-        padding-left: 1rem;
-  }
-}
+// /* Mobile Responsiveness */
+// /* On phones, the circles might be too big for 4 in a row. */
+// @media (max-width: 576px) {
+//   .icon-wrapper {
+//     width: 60px;
+//     height: 60px;
+//   }
+//   .icon-wrapper i {
+//     font-size: 1.5rem;
+//   }
+//   .category-name {
+//     font-size: 0.75rem;
+//   }
+//   .filter_text{
+//   font-size: small;
+//   }
+//   .filter_ul{
+//         padding-left: 1rem;
+//   }
+// }
 
-.filter_ul{
-  list-style-type: none;
-  padding: left 1rem !important;
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -0.5px; /* Tighter letters look more modern */
-  line-height: 1.2;
-  color: var(--color-primary);
-  align-content: center;
-}
 
 .counter_nums {
   /* 1. Typography */
@@ -198,13 +234,121 @@ color: var(--text-main);
 .grid_body {
   display: grid;
   gap: 20px;
-  
-  /* "Fit as many 150px columns as possible. If not, wrap them." */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  /* Change 500px to 250px so more items fit in one row */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-bottom: 2rem;
+}
+/* 1. Main Card Styling */
+.product-card {
+  background-color: #f8f9fa; /* Light Grey Background */
+  border-radius: 12px;       /* Rounded Corners */
+  padding: 15px;             /* Space inside the card */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;              /* Ensures all cards in a row match height */
+  display: flex;
+  flex-direction: column;    /* Stacks items top-to-bottom */
 }
 
-.grid_content {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
+/* Hover Effect (Optional) */
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  background-color: #fff;    /* Light up to white on hover */
 }
+
+/* 2. Image Centering */
+.img-wrapper {
+  text-align: center;        /* Centers the image horizontally */
+  margin-bottom: 15px;       /* Space between image and title */
+}
+
+.card-image {
+  width: 100px;              /* Fixed width */
+  height: 100px;             /* Fixed height */
+  object-fit: cover;         /* Prevents stretching */
+  border-radius: 8px;
+  display: inline-block;     /* Helps with centering */
+}
+
+/* 3. Title Styling (Text Wrapping) */
+.product-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;       /* Push the footer down */
+  
+  /* Text Wrapping Logic */
+  line-height: 1.4;
+  display: -webkit-box;      /* Logic to limit lines if you want */
+  -webkit-line-clamp: 2;     /* Optional: Limit to 2 lines max? Remove to show all */
+  -webkit-box-orient: vertical;
+  overflow: hidden;          
+  /* Note: If you want to show ALL text no matter how long, remove the 3 lines above */
+}
+
+/* 4. Footer Row (Left vs Right) */
+.card-footer-row {
+  margin-top: auto;          /* Pushes this row to the very bottom */
+  display: flex;
+  justify-content: space-between; /* Pushes items to edges */
+  align-items: center;       /* Aligns them vertically */
+  border-top: 1px solid #e9ecef; /* Subtle divider line */
+  padding-top: 10px;
+}
+
+/* Star & Text */
+.rating-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;                  /* Space between Star and Text */
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Heart Icon */
+.wishlist-icon {
+  color: #dc3545; /* Red Heart */
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+}
+
+.wishlist-icon:active {
+  transform: scale(1.3); /* Pulse effect on click */
+}
+
+.footer-card {
+  /* 1. Layout: Use Flexbox to separate items */
+  // display: flex;
+  // justify-content: end; /* Pushes Start to Left, Heart to Right */
+  // align-items: center;            /* Aligns them vertically */
+  
+  /* 2. Position: Push to bottom of card */
+  margin-top: auto;               /* Crucial! Pushes this div to the bottom if title is short */
+  // width: 100%;                    /* Ensure it takes full width */
+  padding-top: 10px;              /* Space nicely from the title */
+  border-top: 1px solid #eee;     /* Optional: Subtle divider line */
+
+  /* 3. Text Styles */
+  font-family: 'Lato', sans-serif;
+  color: #4A4E69;
+  margin-bottom: 10px;
+}
+
+.mat-mdc-paginator{
+  background-color: unset !important;
+}
+.category-section {
+  background-color: unset !important;
+  padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+.py-5{
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+.carousel-indicators {
+  margin-bottom:0px !important;
+  background-color: #D4A373 !important;
+}
+
