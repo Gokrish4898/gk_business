@@ -1,18 +1,32 @@
 <div class="landing_page_head">
-    <div class="landing_page_body container"> <div class="row justify-content-center">
-            
-            <div class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center mb-4" 
-                 *ngFor="let item of category">
-                
-                <div class="bubble_card" (click)="navigate_dashboard(item.name)">
-                    <span class="h4 text-highlight bubble_text">
-                        {{item.name}}
-                    </span>
-                </div>
+  <div class="landing_page_body container">
+    
+    <div class="text-center mb-5">
+      <h2 class="section-title">What are you craving?</h2>
+      <p class="section-subtitle">Select a category to start your order</p>
+    </div>
 
+    <div class="row justify-content-center gap-4">
+      
+      @for (item of category; track item.name) {
+        <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
+          
+          <div class="category-card" (click)="navigate_dashboard(item.name)">
+            
+            <div class="card-bg" [style.background-image]="'url(' + (item.image || '/assets/default-bakery.jpg') + ')'"></div>
+            
+            <div class="card-overlay"></div>
+
+            <div class="card-content">
+              <span class="h3 category-name">{{ item.name }}</span>
+              <span class="explore-btn">Explore <i class="bi bi-arrow-right"></i></span>
             </div>
 
+          </div>
+
         </div>
+      }
 
     </div>
+  </div>
 </div>

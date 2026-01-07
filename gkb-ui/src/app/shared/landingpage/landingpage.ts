@@ -10,14 +10,13 @@ import { Component, inject } from '@angular/core';
   styleUrl: './landingpage.scss',
 })
 export class Landingpage {
-  category:any =[];
+ category = [
+  { name: 'Bakery',    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600' },
+];
   private router =  inject(Router);
 
   ngOnInit(): void {
-    this.category = [
-      {name:"Bakery"},
-      {name:"Photograpy"}
-    ]
+    
   }
 
   navigate_dashboard(mode:string){

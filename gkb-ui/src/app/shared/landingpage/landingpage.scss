@@ -1,74 +1,105 @@
-/* 1. Main Container */
+/* --- LAYOUT & SPACING --- */
 .landing_page_head {
-    /* Changed height to min-height so it grows if content stacks on mobile */
-    min-height: 100vh; 
-    width: 100%;
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: linear-gradient(135deg, #6462e9 0%, #b762fc 100%);
-    padding: 20px; /* Add padding so content doesn't touch edges on mobile */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: var(--bgg-color); /* Or a light pattern background */
+  padding: 40px 0;
 }
 
-/* 2. The White Card */
-.landing_page_body {
-    width: 100%;
-    max-width: 1000px; /* Stop it from getting too wide on huge screens */
-    
-    /* Removed fixed height so it grows with content */
-    height: auto; 
-    
-    padding: 2rem; 
-    border-radius: 30px;
-    background: white;
-    
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.section-title {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: 5px;
 }
 
-/* 3. The Bubbles */
-.bubble_card {
-    /* Responsive Sizing Logic */
-    width: 100%;           /* Fill the column width */
-    max-width: 250px;      /* But never get bigger than 250px */
-    aspect-ratio: 1 / 1;   /* MAGIC: Keeps it a perfect circle automatically */
-    
-    /* Centering Content inside Bubble */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    background: rgb(212, 212, 212);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    /* Prevent text overflow */
-    overflow: hidden;
-    padding: 10px;
+.section-subtitle {
+  color: #ffffff;
+  font-style: italic;
 }
 
-.bubble_card:hover {
-    transform: translateY(-5px); /* Move UP not sideways */
-    background-color: #b762fc;
-    box-shadow: 0 5px 15px rgba(183, 98, 252, 0.4); /* Glow effect */
+/* --- THE CARD --- */
+.category-card {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 350px; /* Tall aesthetic card */
+  border-radius: 20px;
+  overflow: hidden; /* Keeps image inside rounded corners */
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.bubble_text {
-    font-size: 1.25rem;
-    color: azure; /* Consider darker text if background is light grey, or white if hovered */
-    font-weight: bold;
-    text-align: center;
-    word-wrap: break-word; /* Prevents long words from breaking layout */
+/* Hover State: Lift up */
+.category-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 30px rgba(217, 216, 218, 0.6); /* Gold shadow glow */
 }
 
-/* Mobile Tweak: Make bubbles smaller on very small phones */
-@media (max-width: 576px) {
-    .bubble_card {
-        max-width: 200px; /* Smaller bubbles on phone */
-    }
-    .landing_page_body {
-        padding: 1rem; /* Less padding on phone */
-    }
+/* --- BACKGROUND IMAGE ZOOM --- */
+.card-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+
+/* Hover State: Zoom Image */
+.category-card:hover .card-bg {
+  transform: scale(1.1);
+}
+
+/* --- OVERLAY (To make text readable) --- */
+.card-overla     {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  z-index: 2;
+}
+
+/* --- CONTENT --- */
+.card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 25px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.category-name {
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.explore-btn {
+  font-size: 0.9rem;
+  color: #D4A373; /* Gold Text */
+  font-weight: 600;
+  opacity: 0;     /* Hidden by default */
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+/* Hover State: Show "Explore" button */
+.category-card:hover .explore-btn {
+  opacity: 1;
+  transform: translateY(0);
 }

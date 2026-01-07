@@ -2,7 +2,7 @@
   <div class="row top_head_noback">
     <div class="col product_box bg-white">
       <div class="row sub-header">
-        Ordered Products
+        Orders
       </div>
       <hr class="thick-separator">
 
@@ -16,47 +16,56 @@
                   src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
                   alt="Product Image" class="card-image">
               </div>
-                <div class="order_activity">
-                  <app-ordertacking></app-ordertacking>
-                </div>
-                <div class="Order_payout">  
-                 <h4 class="sub-header" style="padding-left: 0px;  font-weight: 400;
-  font-size: 1rem;">Payment</h4>
-    
-                  <hr class="thick-separator" style="width: 90px;">
-                  <div class="payout_details">
-                    <span>190</span>
-                    <span><i class="bi bi-cash-coin"></i></span>
-                </div>
-            </div>
-
-            <h3 class="product-title" matTooltip="Info about the action" #tooltip="matTooltip" positionOptions="right"
-              matTooltipPosition="above" matTooltipHideDelay="1000">
-              GHFGH
-            </h3>
-
-            <div class="card-footer-row">
-
-              <div class="rating-box">
-                <i class="bi bi-star-fill text-warning"></i>
-                <span class="rating-text">FGHFGH</span>
+              <div class="order_activity">
+                <app-ordertacking></app-ordertacking>
               </div>
+              <div class="Order_payout">
+                <div class="payment-status-container">
 
-              <div class="wishlist-icon">
-                <i class="bi bi-heart"></i>
+                  @if (paymentStatus === 'PENDING') {
+                  <div class="spinner-box">
+                    <div class="circle-border">
+                      <div class="circle-core"></div>
+                    </div>
+                  </div>
+                  <p class="status-text">Processing Payment...</p>
+                  }
 
+                  @if (paymentStatus === 'COMPLETED') {
+                  <div class="success-checkmark">
+                    <div class="check-icon">
+                      <span class="icon-line line-tip"></span>
+                      <span class="icon-line line-long"></span>
+                      <div class="icon-circle"></div>
+                      <div class="icon-fix"></div>
+                    </div>
+                  </div>
+                  <p class="status-text text-success">Payment Received!</p>
+                  }
+
+                </div>
               </div>
-
-            </div>
 
           </div>
+<div class="row">
+ <h3 class="product-title" matTooltip="Info about the action" #tooltip="matTooltip" positionOptions="right"
+                matTooltipPosition="above" matTooltipHideDelay="1000">
+                GHFsaddddddddddddddddGH
+              </h3>
+</div>
+              <div class="card-footer-row" style="float: left;">
+                <div class="downlaod-box">
+                  <button class="btn btn-secondary">Download <i class="fa fa-download" aria-hidden="true"></i></button>
+                </div>
+              </div>
+
+            </div>
+
+
+
 
         </div>
 
-
-
       </div>
-
     </div>
   </div>
-</div>

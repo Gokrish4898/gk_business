@@ -9,6 +9,8 @@ import { Ordertacking } from "../ordertacking/ordertacking";
   styleUrl: './userorders.scss',
 })
 export class Userorders {
+  paymentStatus:any="PENDING";
+  // paymentStatus:any="COMPLETED";
   orderData = [
   {
     status: 'Order Confirmed',
