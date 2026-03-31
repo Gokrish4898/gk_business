@@ -1,0 +1,15 @@
+<div class="tracker-container">
+  <div class="step" 
+       *ngFor="let step of steps; let i = index" 
+       [class.active]="isCompleted(i)">
+    
+    <div class="step-circle">
+      <i class="bi" [ngClass]="step.icon"></i>
+    </div>
+
+    <p class="step-label">{{ step.label }}</p>
+
+    <div class="step-line" *ngIf="i < steps.length - 1"></div>
+
+  </div>
+</div>
