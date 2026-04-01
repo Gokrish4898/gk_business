@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import '@angular/localize/init';
+// import '@angular/localize/init';
 
 @Component({
   selector: 'app-baking-dashboard',

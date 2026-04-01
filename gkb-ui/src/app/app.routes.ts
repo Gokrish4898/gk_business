@@ -8,14 +8,14 @@ import { ProductDetails } from './product-details/product-details';
 
 export const routes: Routes = [
 
-    {path:'',component:Login},
-    {path:'login',component:Login},
-    {path:'#',component:Login},
+    {path:'',component:Landingpage},
+    {path:'login',component:Landingpage},
+    {path:'#',component:Landingpage},
     {path:'landingpage',component:Landingpage},
     {path:'bdashboard',component:BakingDashboard},
     {path:'yourorders',component:Userorders},
     {path:'order',component:Ordertacking},
     {path:'productdetails/:id',component:ProductDetails},
-    {path:'**',component:Login}
+    {path:'**',component:Landingpage}
 
 ];

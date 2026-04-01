@@ -1,180 +1,94 @@
-<div class="container" style="padding-top: 10px;">
-  <div class="carousel-container carousel-style" *ngIf="slides && slides.length > 0">
-
+<div class="container pt-3 pb-5">
+  
+  <div class="carousel-container mb-4" *ngIf="slides && slides.length > 0">
     <ngb-carousel [interval]="3000" [pauseOnHover]="true" [showNavigationArrows]="true">
-
       <ng-template ngbSlide *ngFor="let slide of slides; let i = index" [id]="'slide-' + i">
-
         <div class="picsum-img-wrapper">
-          <img [src]="slide.url" [alt]="slide.title" class="slide-image" />
+          <img [src]="slide.url" [alt]="slide.title" class="slide-image w-100" style="object-fit: cover; border-radius: 12px; height: 300px;" />
         </div>
-
         <div class="carousel-caption">
           <h3>{{ slide.title }}</h3>
           <p>{{ slide.description }}</p>
         </div>
-
       </ng-template>
-
     </ngb-carousel>
-
   </div>
 
-  <div class="row top_head">
-    <div class="col-12 col-md-12 col-sm-4">
-      <div class="category-section py-5">
-        <!-- <div class="container"> -->
-        <!-- <h3 class="text-center mb-4 section-title">Explore Categories</h3> -->
-
-        <ngb-carousel *ngIf="categoryChunks.length > 0" [interval]="3000" [showNavigationArrows]="false"
-          [showNavigationIndicators]="true">
-
-          <ng-template ngbSlide *ngFor="let chunk of categoryChunks; let i = index">
-
-            <div class="row justify-content-center">
-
-              <div class="col-3 text-center" *ngFor="let item of chunk">
-
-                <div class="circle-icon-card" style="padding-top: 10px;">
-                  <div class="icon-wrapper">
-                    <img
-                      src='https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
-                      class="slide-image" style="border-radius: 50%;" />
-                  </div>
-                  <p class="mt-2 category-name">{{ item.name }}</p>
-                </div>
-
-              </div>
-
-            </div>
-
-          </ng-template>
-
-        </ngb-carousel>
-
-        <!-- </div> -->
-      </div>
+  <!-- <div class="stats-row mb-4">
+    <div class="stat-card">
+      <span class="counter_nums text-highlight">{{total_counter}}</span>
+      <span class="stat-label">Orders</span>
     </div>
-  </div>
-
-  <div class="grid_body top_head">
-    <div>
-      <span class="counter_nums">{{total_counter}}</span>
-      <div class="row justify-content-center">
-        <span>Orders</span>
-      </div>
+    <div class="stat-card">
+      <span class="counter_nums text-highlight">{{Reviews_counter}}</span>
+      <span class="stat-label">Reviews</span>
     </div>
-    <div>
-      <span class="counter_nums">{{Reviews_counter}}</span>
-      <div class="row justify-content-center">
-        <span>Reviews</span>
-      </div>
+    <div class="stat-card">
+      <span class="counter_nums text-highlight">{{customer_counter}}</span>
+      <span class="stat-label">Customers</span>
     </div>
-    <div>
-      <span class="counter_nums">{{customer_counter}}</span>
-      <div class="row justify-content-center ">
-        <span>Customers</span>
-      </div>
-    </div>
-  </div>
+  </div> -->
 
-
-  <div class="row top_head_noback">
-
-  <div class="col-4 col-md-3">
-  
-  <div class="filter_box bg-light">
+  <div class="product_box bg-white p-4 rounded shadow-sm">
     
-    <h4 class="sub-header">Filter</h4>
-    
-    <hr class="thick-separator">
-    
-    <ul class="filter_ul">
-      <li>
-        <input type="checkbox" id="hot">
-        <label for="hot" class="filter_text">Hot Selling</label>
-      </li>
+    <div class="product-header-area">
+      <h3 class="sub-header m-0">Our Products</h3>
       
-      <li>
-        <input type="checkbox" id="ordered">
-        <label for="ordered" class="filter_text">Most Ordered</label>
-      </li>
-      
-      <li>
-        <input type="checkbox" id="low">
-        <label for="low" class="filter_text">Price: Low to High</label>
-      </li>
-      
-      <li>
-        <input type="checkbox" id="high">
-        <label for="high" class="filter_text">Price: High to Low</label>
-      </li>
-    </ul>
-
-  </div>
-</div>
-
-    <div class="col product_box bg-white" >
-      <div class="row sub-header">
-        Product
+      <div class="horizontal-filters">
+        <label class="filter-chip">
+          <input type="checkbox" id="hot">
+          <span>Hot Selling</span>
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" id="ordered">
+          <span>Most Ordered</span>
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" id="low">
+          <span>Price: Low to High</span>
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" id="high">
+          <span>Price: High to Low</span>
+        </label>
       </div>
-      <hr class="thick-separator">
+    </div>
+    
+    <hr class="thick-separator mb-4">
 
-      <div class="grid_body" >
-        <div class="col-6 col-md-3 col-sm-1" *ngFor="let item of product" style="  width: auto !important;">
-          <div class="product-card">
-
-            <div class="img-wrapper">
-              <img
-                [src]= item.image
-                alt="Product Image" class="card-image">
-            </div>
-
-            <h3 class="product-title">
-              {{item.title}}
-            </h3>
-
-            <div class="card-footer-row">
-
-              <div class="rating-box">
-                <i class="bi bi-star-fill text-warning"></i>
-                <span class="rating-text">{{item.rating}} ({{item.totalrating}} Reviews)</span>
-              </div>
-
-              <div class="wishlist-icon">
-                @if (item.wishlist == 1){
-                <i class="bi bi-heart-fill"  style="color:red"> </i>
-                }@else {
-                <i class="bi bi-heart"></i>
-                }
-              </div>
-
-            </div>
-
+    <div class="modern-product-grid">
+      
+      <div class="product-card" *ngFor="let item of product">
+        <div class="img-wrapper">
+          <img [src]="item.image" alt="Product Image" class="card-image">
+        </div>
+        <h4 class="product-title mt-2">{{item.title}}</h4>
+        
+        <div class="card-footer-row d-flex justify-content-between align-items-center mt-3">
+          <div class="rating-box">
+            <i class="bi bi-star-fill text-warning"></i>
+            <span class="rating-text ms-1">{{item.rating}} ({{item.totalrating}})</span>
           </div>
-
-        </div>
-
-
-
-      </div>
-      <div class="row  footer-card ">
-        <div >
-          <mat-paginator [length]=product.length
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]"
-              
-              aria-label="Select page">
-            </mat-paginator>
-
+          
+          <div class="wishlist-icon">
+            @if (item.wishlist == 1) {
+              <i class="bi bi-heart-fill text-danger fs-5"></i>
+            } @else {
+              <i class="bi bi-heart fs-5"></i>
+            }
+          </div>
         </div>
       </div>
 
     </div>
 
+    <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+      <mat-paginator [length]="product.length"
+                     [pageSize]="10"
+                     [pageSizeOptions]="[5, 10, 25, 100]"
+                     aria-label="Select page">
+      </mat-paginator>
+    </div>
+
   </div>
-</div>
-
-<div class="container" style="padding-top: 10px ;">
-
 </div>
