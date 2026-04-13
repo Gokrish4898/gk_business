@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { Router } from '@angular/router';
+import { Loading } from '../shared/spinner/loading';
 // import '@angular/localize/init';
 
 @Component({
@@ -26,6 +28,9 @@ slides = [
     }
   ];
 
+  constructor(private router : Router,private loading : Loading){
+
+  }
   categories = [
     { name: 'All Items', icon: 'bi-camera-reels' },
     { name: 'Brownie', icon: 'bi-balloon-heart' },
@@ -36,55 +41,57 @@ slides = [
   ];
 
   product =[
-    { title:'brownie', 
+    { id:1,
+      title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:2,
+  title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:3,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:4,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:0,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:5,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:6,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:0,
       rceipelst:{},
       totalrating: '20'
     },
-{ title:'brownie', 
+{ id:7,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
       rceipelst:{},totalrating: '20'
     },
-{ title:'brownie', 
+{ id:8,title:'brownie', 
       image:'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       rating:'4',
       wishlist:1,
@@ -101,6 +108,7 @@ slides = [
   private interval_01 :any;
   private interval_02 :any;
   ngOnInit() {
+    this.loading.showAndAutoHide();
     this.chunkCategories(4); // Group by 4 items per slide
     this.interval = setInterval(()=>{
       this.total_counter++
@@ -130,5 +138,9 @@ slides = [
     for (let i = 0; i < this.categories.length; i += chunkSize) {
       this.categoryChunks.push(this.categories.slice(i, i + chunkSize));
     }
+  }
+
+  product_page(data:any){
+    this.router.navigate(['/productdetails/', data.id]);
   }
 }

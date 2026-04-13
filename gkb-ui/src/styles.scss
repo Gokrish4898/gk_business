@@ -21,6 +21,10 @@
    ========================================= */
 html, body { 
   height: 100%; 
+// overscroll-behavior-y: none;
+// overflow-x: hidden;
+-ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
 }
 
 html {
@@ -86,6 +90,24 @@ body {
   background-size: cover; 
   background-repeat: no-repeat;
   min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  
+  /* Use DVH here too! */
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Modern mobile fix */
+  
+  /* Your custom purple gradient */
+  background: linear-gradient(135deg, rgb(100, 98, 233) 0%, rgb(183, 98, 252) 100%);
+  
+  z-index: -100; 
+  pointer-events: none; 
 }
 
 .box {
@@ -197,4 +219,111 @@ small, .caption, figcaption {
   opacity: 1; 
   margin: 20px 0; 
   border-radius: 4px; 
+}
+
+/* =========================================
+   FULL-SCREEN OVERLAY
+   ========================================= */
+.main-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(255, 255, 255, 0.4); /* Light overlay */
+  backdrop-filter: blur(10px); /* Apple-style glass effect */
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* Absolute top layer */
+}
+
+/* The card holding the animation */
+.loading-glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px 50px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 15px 35px rgba(212, 163, 115, 0.15), inset 0 1px 2px white;
+}
+
+.loading-text {
+  margin-top: 25px;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--accent-gold, #D4A373);
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  animation: pulseText 1.5s infinite alternate;
+}
+
+@keyframes pulseText {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.fade-in { animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* =========================================
+   UPSCALED CAKE BAKING ANIMATION
+   ========================================= */
+.baking-loader-large {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.cake-pan-large {
+  position: absolute;
+  bottom: 5px;
+  width: 50px;
+  height: 16px;
+  background-color: #4a4a4a;
+  border-radius: 4px 4px 10px 10px;
+  z-index: 2;
+}
+
+.cake-batter-large {
+  position: absolute;
+  bottom: 20px;
+  width: 42px;
+  height: 0px; 
+  background-color: #fce4c5; 
+  border-radius: 12px 12px 0 0;
+  z-index: 1;
+  animation: bakeAndRiseLarge 1.5s ease-in-out infinite alternate;
+}
+
+.steam-large {
+  position: absolute;
+  bottom: 45px;
+  width: 4px;
+  height: 12px;
+  background-color: rgba(212, 163, 115, 0.6);
+  border-radius: 5px;
+  opacity: 0;
+}
+
+.steam-1-large { left: 15px; animation: riseSteamLarge 1.5s ease-in infinite 0.2s; }
+.steam-2-large { right: 15px; animation: riseSteamLarge 1.5s ease-in infinite 0.7s; }
+
+/* The Upscaled Keyframes */
+@keyframes bakeAndRiseLarge {
+  0% { height: 0px; background-color: #fce4c5; }
+  50% { height: 22px; background-color: #D4A373; }
+  100% { height: 26px; background-color: #c48f5a; transform: scaleX(1.1); }
+}
+
+@keyframes riseSteamLarge {
+  0% { transform: translateY(0); opacity: 0; filter: blur(0px); }
+  50% { opacity: 1; }
+  100% { transform: translateY(-20px); opacity: 0; filter: blur(2px); }
 }

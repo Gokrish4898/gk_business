@@ -338,7 +338,50 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 <app-navbar></app-navbar>
-<div class="main-content" style="min-height: 80vh;"> 
+@if (loadingService.isLoading$ | async ) {
+  <div class="main-loading-overlay fade-in">
+    <div class="loading-glass-card">
+      <div class="baking-loader-large">
+        <div class="cake-batter-large"></div>
+        <div class="cake-pan-large"></div>
+        <div class="steam-large steam-1-large"></div>
+        <div class="steam-large steam-2-large"></div>
+      </div>
+      <p class="loading-text">Baking something fresh...</p>
+    </div>
+  </div>
+}
+<div class="global-refresh-indicator" 
+     [style.transform]="'translateY(' + pullDistance + 'px)'">
+  
+  <div class="refresh-bubble" 
+       [class.ready-to-release]="pullDistance >= triggerDistance">
+    
+    @if (isRefreshing) {
+      <div class="baking-loader">
+        <div class="cake-batter"></div>
+        <div class="cake-pan"></div>
+        <div class="steam steam-1"></div>
+        <div class="steam steam-2"></div>
+      </div>
+    } @else {
+      <i class="bi bi-arrow-down-short pull-icon"></i>
+    }
+
+  </div>
+</div>
+
+<div class="app-container" 
+     #scrollContainer
+     (touchstart)="onTouchStart($event)"
+     (touchmove)="onTouchMove($event)"
+     (touchend)="onTouchEnd()"
+     (mousedown)="onTouchStart($event)"
+     (mousemove)="onTouchMove($event)"
+     (mouseup)="onTouchEnd()"
+     (mouseleave)="onTouchEnd()">
+     
   <router-outlet></router-outlet>
+
 </div>
 <app-footer></app-footer>

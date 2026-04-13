@@ -178,3 +178,7 @@
     font-size: 1.25;
   }
 }
+@media (max-width: 400px) {
+    .btn-back span { display: none; }
+    .header-section { padding-left: 10px; padding-right: 10px; }
+}

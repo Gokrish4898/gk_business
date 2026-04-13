@@ -1,10 +1,155 @@
-<div class="container" style="padding-top: 10px;">
-    <div class="row top_head">
-        <div class="col-4 col-md-4">
-            <span class="sub-header">Product</span>
-        </div>
-        <div class="col-12" style="margin-top: 5px;">
-            <hr class="thick-separator">
-        </div>
+<div class="container" style="padding-top: 10px; margin-bottom: 10px">
+  <div class="row top_head">
+    <div
+      class="header-section d-flex justify-content-between align-items-center mb-4"
+      style="padding-top: 15px; padding-bottom: 15px"
+    >
+      <div>
+        <h3 class="brand-font m-0">Customize Your {{ product[0].title }} Recipe</h3>
+        <p class="text-muted m-0">Adjust ingredients to find your perfect mix</p>
+      </div>
+
+      <div class="action-area">
+        <button class="btn-back" (click)="goBack()">
+          <i class="fa fa-chevron-left me-2"></i> Back
+        </button>
+      </div>
     </div>
+
+    <div class="col-12">
+      <hr class="thick-separator" />
+    </div>
+    <div class="recipe-container container pt-4">
+      <div class="quick-options-bar mb-4">
+        <div
+          class="option-chip"
+          [class.active]="selectedOption === '1 kg'"
+          (click)="selectOption('1 kg')"
+        >
+          1 kg
+        </div>
+
+        <div
+          class="option-chip"
+          [class.active]="selectedOption === '1/2 kg'"
+          (click)="selectOption('1/2 kg')"
+        >
+          1/2 kg
+        </div>
+
+        <div
+          class="option-chip"
+          [class.active]="selectedOption === 'no sugar'"
+          (click)="selectOption('no sugar')"
+        >
+          No Sugar
+        </div>
+
+        <div
+          class="option-chip"
+          [class.active]="selectedOption === 'customize'"
+          (click)="selectOption('customize')"
+        >
+          Customize ✨
+        </div>
+      </div>
+
+      @if (selectedOption === 'customize') {
+        <div class="custom-recipe-grid">
+          <p>Custom sliders go here...</p>
+        </div>
+      }
+
+      @if (selectedOption === 'customize') {
+      <div class="recipe-grid">
+        @for (item of recipe; track item.ingredient) {
+          <div class="ingredient-card">
+            <div class="card-info">
+              <span class="ingredient-name">{{ item.ingredient }}</span>
+              <span class="cost-badge">₹{{ item.pergmcost || 0 }}/gm</span>
+            </div>
+
+            <div class="slider-section">
+              <input
+                type="range"
+                [min]="item.min"
+                [max]="item.max"
+                [(ngModel)]="item.quantity"
+                class="custom-slider"
+              />
+
+              <div class="range-labels">
+                <span>Min: {{ item.min }}g</span>
+                <span>Max: {{ item.max }}g</span>
+              </div>
+            </div>
+
+            <div class="input-display-area">
+              <div class="input-group">
+                <input
+                  type="number"
+                  [(ngModel)]="item.quantity"
+                  class="form-control quantity-input"
+                />
+                <span class="input-group-text">grams</span>
+              </div>
+              <div class="item-total">
+                <small>Subtotal</small>
+                <p>₹{{ (item.quantity || 0) * (item.pergmcost || 0) }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+      <div class="total-summary-card mt-5">
+        <div class="summary-content">
+          <span class="total-label">Estimated Recipe Cost:</span>
+          <span class="total-amount">₹{{ calculateTotal() }}</span>
+        </div>
+        <button class="btn-primary" (click)="openPaymentModal()">Add Custom Mix to Cart</button>
+      </div>
+    </div>
+  </div>
 </div>
+<ng-template #paymentModal let-modal>
+  
+  <div class="modal-header border-0 pb-0 justify-content-center position-relative pt-4">
+    <h4 class="clean-title m-0">Complete Order</h4>
+    <button type="button" class="btn-close position-absolute end-0 me-3" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body text-center px-4 pb-4">
+    <p class="text-muted mb-1 mt-2">Total Amount Due</p>
+    <h2 class="clean-total mb-4">₹{{ finalTotal }}</h2>
+
+    <div class="payment-list">
+      
+      <div class="payment-row-card" (click)="processPayment('UPI', modal)">
+        <div class="icon-wrapper gpay-colors"><i class="bi bi-google"></i></div>
+        <span class="payment-text">GPay / UPI</span>
+        <i class="bi bi-chevron-right ms-auto arrow-icon"></i>
+      </div>
+
+      <div class="payment-row-card" (click)="processPayment('Card', modal)">
+        <div class="icon-wrapper card-colors"><i class="bi bi-credit-card-fill"></i></div>
+        <span class="payment-text">Credit / Debit Card</span>
+        <i class="bi bi-chevron-right ms-auto arrow-icon"></i>
+      </div>
+
+      <div class="payment-row-card" (click)="processPayment('Apple Pay', modal)">
+        <div class="icon-wrapper apple-colors"><i class="bi bi-apple"></i></div>
+        <span class="payment-text">Apple Pay</span>
+        <i class="bi bi-chevron-right ms-auto arrow-icon"></i>
+      </div>
+
+      <div class="payment-row-card" (click)="processPayment('Cash', modal)">
+        <div class="icon-wrapper cash-colors"><i class="bi bi-cash-stack"></i></div>
+        <span class="payment-text">Cash on Delivery</span>
+        <i class="bi bi-chevron-right ms-auto arrow-icon"></i>
+      </div>
+
+    </div>
+  </div>
+  
+</ng-template>

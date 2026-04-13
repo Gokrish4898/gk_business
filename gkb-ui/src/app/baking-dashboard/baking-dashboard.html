@@ -31,8 +31,11 @@
 
   <div class="product_box bg-white p-4 rounded shadow-sm">
     
-    <div class="product-header-area">
-      <h3 class="sub-header m-0">Our Products</h3>
+    <div class="product-header-area header-section">
+      <div>
+        <h3 class="brand-font m-0">Our Products</h3>
+        <!-- <p class="text-muted m-0">Adjust ingredients to find your perfect mix</p> -->
+      </div>
       
       <div class="horizontal-filters">
         <label class="filter-chip">
@@ -59,6 +62,7 @@
     <div class="modern-product-grid">
       
       <div class="product-card" *ngFor="let item of product">
+        <div (click)="product_page(item)">
         <div class="img-wrapper">
           <img [src]="item.image" alt="Product Image" class="card-image">
         </div>
@@ -78,17 +82,18 @@
             }
           </div>
         </div>
+        </div>
       </div>
 
     </div>
 
-    <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+    <!-- <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
       <mat-paginator [length]="product.length"
-                     [pageSize]="10"
+                     [pageSize]="5"
                      [pageSizeOptions]="[5, 10, 25, 100]"
                      aria-label="Select page">
       </mat-paginator>
-    </div>
+    </div> -->
 
   </div>
 </div>
