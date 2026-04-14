@@ -1,0 +1,158 @@
+:host {
+  display: block;
+  /* Use your global variables if you have them, otherwise these will fallback */
+  --accent-gold: #D4A373;
+  --dark-bg: #121212;
+  --card-bg: #1c1c1e;
+}
+
+/* =========================================
+   PAGE LAYOUT & GLASS CARD
+   ========================================= */
+.maintenance-page {
+  min-height: 100dvh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+//   background: var(--dark-bg);
+  overflow: hidden; /* Locks the screen so it doesn't scroll */
+}
+
+.maintenance-card {
+  background: var(--dark-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 50px 40px;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+.m-title {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 5px;
+}
+
+.m-subtitle {
+  color: var(--accent-gold);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.divider {
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 auto 25px auto;
+  border-radius: 2px;
+}
+
+.m-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 35px;
+}
+
+/* =========================================
+   LIVE STATUS PILL
+   ========================================= */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 20px;
+  border-radius: 50px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.7);
+  animation: pulseGold 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+/* =========================================
+   SVG ANIMATION STYLES
+   ========================================= */
+.svg-container {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 30px auto;
+}
+
+.file-outline, .file-lines {
+  fill: none;
+  stroke: #ffffff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.file-outline { stroke-width: 4; opacity: 0.8; }
+.file-lines { stroke-width: 4; opacity: 0.4; }
+
+.gear-primary {
+  fill: none;
+  stroke: var(--accent-gold);
+  stroke-width: 12;
+  stroke-dasharray: 10 12;
+  transform-origin: 130px 140px;
+  animation: spinClockwise 10s linear infinite;
+}
+.gear-primary-center { fill: var(--dark-bg); stroke: var(--accent-gold); stroke-width: 4; }
+
+.gear-secondary {
+  fill: none;
+  stroke: #86868b;
+  stroke-width: 8;
+  stroke-dasharray: 8 10;
+  transform-origin: 90px 105px;
+  animation: spinCounter 8s linear infinite;
+}
+.gear-secondary-center { fill: var(--dark-bg); stroke: #86868b; stroke-width: 3; }
+
+.floating-group { animation: float 4s ease-in-out infinite; }
+
+/* =========================================
+   KEYFRAMES
+   ========================================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGold {
+  to { box-shadow: 0 0 0 12px rgba(212, 163, 115, 0); }
+}
+@keyframes spinClockwise { 100% { transform: rotate(360deg); } }
+@keyframes spinCounter { 100% { transform: rotate(-360deg); } }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 500px) {
+  .maintenance-card { padding: 40px 24px; }
+  .m-title { font-size: 1.5rem; }
+}

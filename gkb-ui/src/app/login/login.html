@@ -2,32 +2,126 @@
   <div class="login-card">
     
     <div class="text-center mb-4">
-      <h2 class="brand-title">SnapDough</h2>
+      <h2 class="brand-title"><i class="bi bi-camera"></i> SnapDough</h2>
       <p class="text-muted">Baking memories, one pixel at a time.</p>
     </div>
 
-    <form>
-      <div class="mb-4 sm-2">
-        <label class="form-label text-gradient">Email Address</label>
-        <input type="email" class="form-control custom-input" placeholder="chef@snapdough.com">
-      </div>
-
-      <div class="mb-4 sm-2" >
-        <label class="form-label text-gradient">Password</label>
-        <input type="password" class="form-control custom-input" placeholder="••••••••">
-      </div>
-
-      <div class="d-grid gap-2">
-        <button type="button" (click)="Login()" class="btn btn-primary custom-btn">
-          Login to Kitchen
-        </button>
-      </div>
-
-    </form>
-    
-    <div class="footer-link">
-      <small>Register? <a href="#">Create an account</a></small>
+    <div class="auth-toggle">
+      <button 
+        class="toggle-btn" 
+        [class.active]="isLoginMode" 
+        (click)="toggleMode('login')">Login</button>
+      <button 
+        class="toggle-btn" 
+        [class.active]="!isLoginMode" 
+        (click)="toggleMode('register')">Register</button>
+      <div class="toggle-pill" [class.slide-right]="!isLoginMode"></div>
     </div>
+
+    @if (isLoginMode) {
+      <form class="fade-in-form">
+        <div class="mb-4">
+          <label class="form-label text-gradient">Email Address</label>
+          <input type="email" class="form-control custom-input" placeholder="chef@snapdough.com">
+        </div>
+        <div class="mb-4">
+          <label class="form-label text-gradient">Password</label>
+          <input type="password" class="form-control custom-input" placeholder="••••••••">
+        </div>
+        <div class="d-grid gap-2 mt-4">
+          <button type="button" (click)="login()" class="btn btn-primary custom-btn">
+            Enter Kitchen
+          </button>
+        </div>
+      </form>
+    }
+
+    @else {
+      <form class="fade-in-form">
+        
+        <div class="address-grid">
+          <div class="input-group-custom full-width">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control custom-input" placeholder="Chef Name">
+          </div>
+
+          <div class="input-group-custom full-width">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control custom-input" placeholder="hello@example.com">
+          </div>
+
+          <div class="input-group-custom col-small">
+            <label class="form-label">House No.</label>
+            <input type="text" class="form-control custom-input" placeholder="42B">
+          </div>
+          <div class="input-group-custom col-large">
+            <label class="form-label">Address Line 1</label>
+            <input type="text" class="form-control custom-input" placeholder="Street Name">
+          </div>
+
+          <div class="input-group-custom full-width">
+            <label class="form-label">Address Line 2 (Optional)</label>
+            <input type="text" class="form-control custom-input" placeholder="Apartment, suite, etc.">
+          </div>
+
+          <div class="input-group-custom half-width">
+            <label class="form-label">Area</label>
+            <input type="text" class="form-control custom-input" placeholder="Downtown">
+          </div>
+          <div class="input-group-custom half-width">
+            <label class="form-label">State</label>
+            <input type="text" class="form-control custom-input" placeholder="NY">
+          </div>
+        </div>
+
+        <hr class="form-divider">
+
+        <div class="mb-4">
+          <label class="form-label text-gradient">Mobile Number Verification</label>
+          
+          <div class="otp-group">
+            <input 
+              type="tel" 
+              class="form-control custom-input" 
+              placeholder="(555) 000-0000"
+              [(ngModel)]="mobileNumber"
+              name="mobile"
+              [disabled]="otpVerified">
+            
+            @if (!otpSent && !otpVerified) {
+              <button type="button" class="btn custom-btn outline" (click)="sendOtp()">Send OTP</button>
+            }
+            @if (otpVerified) {
+              <div class="verified-badge"><i class="bi bi-check-circle-fill"></i> Verified</div>
+            }
+          </div>
+
+          @if (otpSent && !otpVerified) {
+            <div class="otp-group mt-2 fade-in">
+              <input 
+                type="text" 
+                class="form-control custom-input text-center letter-spacing" 
+                placeholder="0000"
+                maxlength="4"
+                [(ngModel)]="otpCode"
+                name="otp">
+              <button type="button" class="btn custom-btn success" (click)="verifyOtp()">Verify</button>
+            </div>
+          }
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button 
+            type="button" 
+            (click)="register()" 
+            class="btn btn-primary custom-btn"
+            [disabled]="!otpVerified">
+            Create Account
+          </button>
+        </div>
+
+      </form>
+    }
 
   </div>
 </div>

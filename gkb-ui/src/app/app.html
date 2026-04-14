@@ -336,9 +336,65 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="toast-container top-right">
+  @for (pos of ['top-right', 'top-left', 'bottom-right', 'bottom-left', 'top-center']; track pos) {
+    <div class="toast-container" [ngClass]="pos">
+      @for (toast of toastService.toasts$ | async; track toast.id) {
+        @if (toast.position === pos) {
+          <div class="premium-toast" [ngClass]="toast.type" (click)="toastService.remove(toast.id)">
+            @if (toast.type === 'info') {
+              <div class="info-icon-wrapper">
+                <div class="recipe-paper">
+                  <div class="recipe-line line-1"></div>
+                  <div class="recipe-line line-2"></div>
+                  <div class="recipe-line line-3"></div>
+                  <div class="recipe-pencil"></div>
+                </div>
+              </div>
+            } @else {
+              <div class="oven-icon-wrapper">
+                <div class="microwave">
+                  <div class="mw-interior">
+                    <div class="mw-cake"></div>
+                    <div class="mw-steam mw-steam-1"></div>
+                    <div class="mw-steam mw-steam-2"></div>
+                  </div>
+                  <div class="mw-door">
+                    <div class="mw-window"></div>
+                    <div class="mw-handle"></div>
+                  </div>
+                  <div class="mw-control-panel">
+                    <div class="mw-screen"></div>
+                    <div class="mw-button"></div>
+                    <div class="mw-button"></div>
+                  </div>
+                </div>
+              </div>
+            }
 
+            <div class="toast-content">
+              <h4 class="toast-title">
+                {{
+                  toast.type === 'success'
+                    ? 'Perfectly Golden'
+                    : toast.type === 'warning'
+                      ? 'Slightly Overdone' 
+                    : toast.type === 'info' ? 'Kitchen Update '
+                      : 'Burnt to a Crisp'
+                }}
+              </h4>
+              <p class="toast-text">{{ toast.text }}</p>
+            </div>
+
+            <!-- <button class="toast-close" >×</button> -->
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
 <app-navbar></app-navbar>
-@if (loadingService.isLoading$ | async ) {
+@if (loadingService.isLoading$ | async) {
   <div class="main-loading-overlay fade-in">
     <div class="loading-glass-card">
       <div class="baking-loader-large">
@@ -351,12 +407,8 @@
     </div>
   </div>
 }
-<div class="global-refresh-indicator" 
-     [style.transform]="'translateY(' + pullDistance + 'px)'">
-  
-  <div class="refresh-bubble" 
-       [class.ready-to-release]="pullDistance >= triggerDistance">
-    
+<div class="global-refresh-indicator" [style.transform]="'translateY(' + pullDistance + 'px)'">
+  <div class="refresh-bubble" [class.ready-to-release]="pullDistance >= triggerDistance">
     @if (isRefreshing) {
       <div class="baking-loader">
         <div class="cake-batter"></div>
@@ -367,21 +419,20 @@
     } @else {
       <i class="bi bi-arrow-down-short pull-icon"></i>
     }
-
   </div>
 </div>
 
-<div class="app-container" 
-     #scrollContainer
-     (touchstart)="onTouchStart($event)"
-     (touchmove)="onTouchMove($event)"
-     (touchend)="onTouchEnd()"
-     (mousedown)="onTouchStart($event)"
-     (mousemove)="onTouchMove($event)"
-     (mouseup)="onTouchEnd()"
-     (mouseleave)="onTouchEnd()">
-     
+<div
+  class="app-container"
+  #scrollContainer
+  (touchstart)="onTouchStart($event)"
+  (touchmove)="onTouchMove($event)"
+  (touchend)="onTouchEnd()"
+  (mousedown)="onTouchStart($event)"
+  (mousemove)="onTouchMove($event)"
+  (mouseup)="onTouchEnd()"
+  (mouseleave)="onTouchEnd()"
+>
   <router-outlet></router-outlet>
-
 </div>
 <app-footer></app-footer>

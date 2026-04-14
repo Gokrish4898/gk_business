@@ -1,57 +1,58 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+<nav class="navbar navbar-expand-lg premium-navbar sticky-top">
   <div class="container">
     
-    <a class="navbar-brand" routerLink="/" (click)="isMenuCollapsed = true">
-      <i class="bi bi-camera"></i> SnapDough
+    <a class="navbar-brand gold-brand" routerLink="/" (click)="closeMenu()">
+      <i class="bi bi-camera-fill"></i> SnapDough
     </a>
 
-    <button class="navbar-toggler" type="button" 
-            (click)="isMenuCollapsed = !isMenuCollapsed"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler custom-toggler" type="button" 
+            (click)="isMenuCollapsed = !isMenuCollapsed">
+      <i class="bi" [ngClass]="isMenuCollapsed ? 'bi-list' : 'bi-x'"></i>
     </button>
 
-    <div class="collapse navbar-collapse"
-     [ngbCollapse]="isMenuCollapsed"
-     id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+    <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed">
+      <ul class="navbar-nav ms-auto align-items-center">
         
         <li class="nav-item">
-          <a class="nav-link" 
-             routerLink="/bdashboard" 
-             routerLinkActive="active" 
-             [routerLinkActiveOptions]="{exact: true}"
-             (click)="isMenuCollapsed = true">
-             Home
-          </a>
+          <a class="nav-link" routerLink="/bdashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a>
         </li>
-        
         <li class="nav-item">
-          <a class="nav-link" 
-             routerLink="/menu" 
-             routerLinkActive="active"
-             (click)="isMenuCollapsed = true">
-             Menu
-          </a>
+          <a class="nav-link" routerLink="/menu" routerLinkActive="active" (click)="closeMenu()">Menu</a>
         </li>
-
         <li class="nav-item">
-          <a class="nav-link" 
-             routerLink="/yourorders" 
-             routerLinkActive="active"
-             (click)="isMenuCollapsed = true">
-             Orders
-          </a>
+          <a class="nav-link" routerLink="/yourorders" routerLinkActive="active" (click)="closeMenu()">Orders</a>
         </li>
 
-        <li class="nav-item ms-lg-3">
-          <a class="btn btn-outline-light btn-sm" 
-             routerLink="/login"
-             (click)="isMenuCollapsed = true">
-             Login
-          </a>
-        </li>
+        <li class="nav-item ms-lg-4 mt-3 mt-lg-0">
+          
+          @if (!isLoggedIn) {
+            <a class="btn custom-login-btn" routerLink="/login" (click)="login()">
+              Login to Kitchen
+            </a>
+          } @else {
+            
+            <div class="inline-profile-pill">
+              
+              <div class="pill-avatar">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              
+              <div class="pill-details">
+                <span class="pill-name">{{ currentUser.name }}</span>
+                <span class="pill-email">{{ currentUser.email }}</span>
+              </div>
+              
+              <div class="pill-divider"></div>
+              
+              <button class="pill-logout-btn" (click)="logout()" title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span class="d-lg-none ms-2">Logout</span> </button>
 
+            </div>
+
+          }
+
+        </li>
       </ul>
     </div>
   </div>

@@ -1,10 +1,14 @@
 <div class="container pt-3 pb-5">
-  
   <div class="carousel-container mb-4" *ngIf="slides && slides.length > 0">
     <ngb-carousel [interval]="3000" [pauseOnHover]="true" [showNavigationArrows]="true">
       <ng-template ngbSlide *ngFor="let slide of slides; let i = index" [id]="'slide-' + i">
         <div class="picsum-img-wrapper">
-          <img [src]="slide.url" [alt]="slide.title" class="slide-image w-100" style="object-fit: cover; border-radius: 12px; height: 300px;" />
+          <img
+            [src]="slide.url"
+            [alt]="slide.title"
+            class="slide-image w-100"
+            style="object-fit: cover; border-radius: 12px; height: 300px"
+          />
         </div>
         <div class="carousel-caption">
           <h3>{{ slide.title }}</h3>
@@ -30,61 +34,57 @@
   </div> -->
 
   <div class="product_box bg-white p-4 rounded shadow-sm">
-    
     <div class="product-header-area header-section">
       <div>
         <h3 class="brand-font m-0">Our Products</h3>
         <!-- <p class="text-muted m-0">Adjust ingredients to find your perfect mix</p> -->
       </div>
-      
+
       <div class="horizontal-filters">
         <label class="filter-chip">
-          <input type="checkbox" id="hot">
+          <input type="checkbox" id="hot" />
           <span>Hot Selling</span>
         </label>
         <label class="filter-chip">
-          <input type="checkbox" id="ordered">
+          <input type="checkbox" id="ordered" />
           <span>Most Ordered</span>
         </label>
         <label class="filter-chip">
-          <input type="checkbox" id="low">
+          <input type="checkbox" id="low" />
           <span>Price: Low to High</span>
         </label>
         <label class="filter-chip">
-          <input type="checkbox" id="high">
+          <input type="checkbox" id="high" />
           <span>Price: High to Low</span>
         </label>
       </div>
     </div>
-    
-    <hr class="thick-separator mb-4">
+
+    <hr class="thick-separator mb-4" />
 
     <div class="modern-product-grid">
-      
       <div class="product-card" *ngFor="let item of product">
         <div (click)="product_page(item)">
-        <div class="img-wrapper">
-          <img [src]="item.image" alt="Product Image" class="card-image">
-        </div>
-        <h4 class="product-title mt-2">{{item.title}}</h4>
-        
-        <div class="card-footer-row d-flex justify-content-between align-items-center mt-3">
-          <div class="rating-box">
-            <i class="bi bi-star-fill text-warning"></i>
-            <span class="rating-text ms-1">{{item.rating}} ({{item.totalrating}})</span>
+          <div class="img-wrapper">
+            <img [src]="item.image" alt="Product Image" class="card-image" />
           </div>
-          
-          <div class="wishlist-icon">
-            @if (item.wishlist == 1) {
+          <h4 class="product-title mt-2">{{ item.title }}</h4>
+        </div>
+        <div class="card-footer-row d-flex justify-content-between align-items-center mt-3">
+          <div class="rating-box" (click)="openReviewsModal()">
+            <i class="bi bi-star-fill text-warning"></i>
+            <span class="rating-text ms-1">{{ item.rating }} ({{ item.totalrating }})</span>
+          </div>
+
+          <div class="wishlist-icon" (click)="addwhishlist(item)">
+            @if (item.wishlist == true) {
               <i class="bi bi-heart-fill text-danger fs-5"></i>
             } @else {
               <i class="bi bi-heart fs-5"></i>
             }
           </div>
         </div>
-        </div>
       </div>
-
     </div>
 
     <!-- <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
@@ -94,6 +94,64 @@
                      aria-label="Select page">
       </mat-paginator>
     </div> -->
-
   </div>
 </div>
+
+@if (isReviewsOpen) {
+  <div class="custom-backdrop" (click)="closeReviewsModal()"></div>
+
+  <div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content glass-content fade-in-up">
+        <div class="modal-header border-bottom-0 pb-0">
+          <div>
+            <h5 class="modal-title brand-text mb-0">Customer Reviews</h5>
+            <div class="d-flex align-items-center mt-1">
+              <i class="bi bi-star-fill text-warning fs-5 me-2"></i>
+              <span class="fs-5 fw-bold text-white">{{ item.rating }}</span>
+              <span class="text-muted ms-2">Based on {{ item.totalrating }} reviews</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            aria-label="Close"
+            (click)="closeReviewsModal()"
+          ></button>
+        </div>
+
+        <div class="modal-body custom-scrollbar mt-3">
+          @for (review of mockReviews; track review.id) {
+            <div class="review-card">
+              <div class="review-avatar-col">
+                @if (review.image) {
+                  <img [src]="review.image" alt="User" class="review-avatar-img" />
+                } @else {
+                  <div class="review-avatar-icon"><i class="bi bi-person-fill"></i></div>
+                }
+              </div>
+
+              <div class="review-content-col">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <h6 class="review-name mb-0">{{ review.name }}</h6>
+                  <span class="review-date">{{ review.date }}</span>
+                </div>
+
+                <div class="review-stars mb-2">
+                  @for (star of getArray(review.rating); track $index) {
+                    <i class="bi bi-star-fill text-warning small me-1"></i>
+                  }
+                  @for (star of getArray(5 - review.rating); track $index) {
+                    <i class="bi bi-star-fill text-muted small opacity-50 me-1"></i>
+                  }
+                </div>
+
+                <p class="review-comment mb-0">{{ review.comment }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -4,13 +4,14 @@ import { Login } from "./login/login";
 import { Navbar } from "./shared/navbar/navbar";
 import { Footer } from "./shared/footer/footer";
 import { filter } from 'rxjs';
-import { ViewportScroller ,AsyncPipe} from '@angular/common';
+import { ViewportScroller ,AsyncPipe, CommonModule} from '@angular/common';
 import { Loading } from './shared/spinner/loading';
+import { ToastService } from './shared/toaster/toast-service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, Footer,AsyncPipe],
+  imports: [RouterOutlet, Navbar, Footer,AsyncPipe,CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -22,9 +23,9 @@ export class App implements OnInit {
   startY: number = 0;
   pullDistance: number = 0;
   isRefreshing: boolean = false;
-  readonly triggerDistance = 70; // Pixels needed to trigger refresh
+  readonly triggerDistance = 30; // Pixels needed to trigger refresh
 
-  constructor(private router: Router, private viewportScroller: ViewportScroller, public loadingService : Loading) {}
+  constructor(private router: Router, private viewportScroller: ViewportScroller, public loadingService : Loading,public toastService :ToastService) {}
 
   ngOnInit() {
     this.loadingService.hide();
@@ -82,7 +83,7 @@ export class App implements OnInit {
 
   executeGlobalRefresh() {
     this.isRefreshing = true;
-    this.pullDistance = 60; // Hold the bubble in view while baking
+    this.pullDistance = 90; // Hold the bubble in view while baking
 
     // Simulate the baking process, then reload the app
     setTimeout(() => {

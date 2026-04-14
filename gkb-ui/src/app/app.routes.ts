@@ -5,16 +5,20 @@ import { BakingDashboard } from './baking-dashboard/baking-dashboard';
 import { Userorders } from './userorders/userorders';
 import { Ordertacking } from './ordertacking/ordertacking';
 import { ProductDetails } from './product-details/product-details';
+import { Maintenance } from './shared/maintenance/maintenance';
+import { Userprofile } from './userprofile/userprofile';
 
 export const routes: Routes = [
 
     {path:'',component:Landingpage},
-    {path:'login',component:Landingpage},
+    {path:'login',component:Login},
     {path:'#',component:Landingpage},
     {path:'landingpage',component:Landingpage},
     {path:'bdashboard',component:BakingDashboard},
     {path:'yourorders',component:Userorders},
     {path:'order',component:Ordertacking},
+    {path:'maintenance',component:Maintenance},
+    {path:'userprofile',component:Userprofile},
     {path:'productdetails/:id',component:ProductDetails},
     {path:'**',component:Landingpage}
 

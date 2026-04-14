@@ -1,71 +1,207 @@
-/* 1. Main Footer Container */
-.footer-section {
-  background-color: #1A1A1D; /* Match your Navbar Dark Color */
-  color: #fff;
-  padding-top: 60px;
-  padding-bottom: 20px;
-  margin-top: auto; /* Pushes footer to bottom if page is short */
+:root {
+  --accent-gold: #D4A373;
+  --dark-bg: #121212;
 }
 
-/* 2. Headings & Brand */
-.footer-brand {
-  font-family: 'Playfair Display', serif;
-  color: #D4A373; /* Gold Accent */
+.ultra-footer {
+  background: var(--primary-dark);
+  padding: 50px 0 20px 0;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* 🌟 THE MAGIC BORDER: A fading gradient line at the top */
+.ultra-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.4), transparent);
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+/* --- LEFT SIDE: BRAND --- */
+.snapdough-logo {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.snapdough-logo i {
+  color: var(--accent-gold);
+  margin-right: 5px;
+}
+
+.tagline {
+  color: #86868b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- RIGHT SIDE: ACTIONS --- */
+.action-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* The Live Pulsing Dot */
+.kitchen-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 6px 12px;
+  background: rgba(212, 163, 115, 0.05);
+  border: 1px solid rgba(212, 163, 115, 0.2);
+  border-radius: 20px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.7);
+  animation: pulseGold 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+.status-text {
+  color: var(--accent-gold);
+  font-size: 0.75rem;
   font-weight: 700;
-}
-
-.footer-heading {
-  color: #fff;
-  font-weight: 600;
-  margin-bottom: 20px;
   text-transform: uppercase;
-  font-size: 0.9rem;
   letter-spacing: 1px;
 }
 
-/* 3. Links Styling */
-.footer-links li {
-  margin-bottom: 10px;
+/* The Floating Contact Pills */
+.contact-group {
+  display: flex;
+  gap: 12px;
 }
 
-.footer-links a {
-  color: #b0b0b0; /* Soft Grey */
+.premium-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e5e5ea;
+  font-size: 0.85rem;
+  font-weight: 500;
   text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.premium-pill i {
+  color: var(--accent-gold);
+  font-size: 1.1rem;
+}
+
+.premium-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 163, 115, 0.4);
+  transform: translateY(-3px); /* Lifts up towards the user */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+
+/* --- BOTTOM: META BAR --- */
+.footer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap-reverse;
+  gap: 20px;
+}
+
+.copyright {
+  color: #6e6e73;
+  font-size: 0.8rem;
+}
+
+.social-dock {
+  display: flex;
+  gap: 8px;
+}
+
+.social-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  color: #86868b;
+  font-size: 1rem;
   transition: all 0.3s ease;
 }
 
-.footer-links a:hover {
-  color: #D4A373; /* Gold on Hover */
-  padding-left: 5px; /* Subtle movement effect */
+.social-icon:hover {
+  background: var(--accent-gold);
+  color: var(--dark-bg);
+  transform: scale(1.1);
 }
 
-/* 4. Social Icons */
-.social-icons a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border-radius: 50%; /* Circle shape */
-  margin-right: 10px;
-  text-decoration: none;
-  transition: background 0.3s ease;
+/* --- KEYFRAMES --- */
+@keyframes pulseGold {
+  to { box-shadow: 0 0 0 10px rgba(212, 163, 115, 0); }
 }
 
-.social-icons a:hover {
-  background: #D4A373; /* Gold Background on hover */
-  transform: translateY(-3px);
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
+  .footer-grid {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .action-column {
+    align-items: center;
+  }
+  .footer-meta {
+    justify-content: center;
+    flex-direction: column;
+  }
 }
 
-/* 5. Divider & Copyright */
-.footer-divider {
-  border-color: rgba(255,255,255,0.1);
-  margin: 30px 0;
+/* =========================================
+   LIVE STATUS: CLOSED OVERRIDES
+   ========================================= */
+.kitchen-status.is-closed {
+  background: rgba(231, 76, 60, 0.05); /* Faint red glass */
+  border-color: rgba(231, 76, 60, 0.2);
 }
 
-.copyright-text {
-  color: #fafdff;
-  font-size: 0.85rem;
+.kitchen-status.is-closed .status-text {
+  color: #e74c3c; /* Crimson Red */
+}
+
+.kitchen-status.is-closed .pulse-dot {
+  background-color: #e74c3c;
+  /* A much slower, "sleepy" pulse for when the kitchen is resting */
+  animation: pulseRed 3s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+/* The Red Keyframe Animation */
+@keyframes pulseRed {
+  0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6); }
+  100% { box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
 }
