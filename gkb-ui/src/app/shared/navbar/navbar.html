@@ -33,15 +33,14 @@
             
             <div class="inline-profile-pill">
               
-              <div class="pill-avatar">
-                <i class="bi bi-person-fill"></i>
+              <div class="pill-avatar" (click)="userprofile()">
+                <i class="bi bi-person-fill" ></i>
               </div>
               
-              <div class="pill-details">
+              <div class="pill-details" (click)="userprofile()">
                 <span class="pill-name">{{ currentUser.name }}</span>
                 <span class="pill-email">{{ currentUser.email }}</span>
               </div>
-              
               <div class="pill-divider"></div>
               
               <button class="pill-logout-btn" (click)="logout()" title="Logout">

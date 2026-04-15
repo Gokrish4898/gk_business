@@ -53,4 +53,7 @@ isMenuCollapsed: boolean = true;
     this.closeMenu();
     // TODO: Add actual logout logic here
   }
+  userprofile(){
+    this.router.navigate(["/userprofile"]);
+  }
 }

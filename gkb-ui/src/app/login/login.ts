@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Landingpage } from '../shared/landingpage/landingpage';
 import { Router } from '@angular/router';
 import { ToastService } from '../shared/toaster/toast-service';
@@ -12,10 +12,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit{
 
   // UI State
   isLoginMode: boolean = true; 
+  
 
   // OTP State
   mobileNumber: string = '';
@@ -28,8 +29,14 @@ export class Login {
   constructor(private toastr : ToastService){
 
   }
+  ngOnInit(): void {
+       
+  }
+
+  
   Login(){
     this.router.navigate(['/landingpage']);
+
   }
 
   toggleMode(mode:'login'|'register'){
