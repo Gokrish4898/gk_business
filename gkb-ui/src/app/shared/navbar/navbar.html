@@ -11,16 +11,37 @@
     </button>
 
     <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed">
-      <ul class="navbar-nav ms-auto align-items-center">
+      <ul class="navbar-nav">
         
         <li class="nav-item">
           <a class="nav-link" routerLink="/bdashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/menu" routerLinkActive="active" (click)="closeMenu()">Menu</a>
+          <a class="nav-link" routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/yourorders" routerLinkActive="active" (click)="closeMenu()">Orders</a>
+
+        <li class="nav-item dropdown" (click)="toggleMenuDropdown($event)">
+          <a class="nav-link dropdown-toggle" [class.active]="isMenuDropdownOpen" style="cursor: pointer;">
+            Menu
+          </a>
+          <ul class="dropdown-menu custom-dropdown" [class.show]="isMenuDropdownOpen">
+            <li><a class="dropdown-item" routerLink="/menu/pizzas" (click)="closeMenu()">Pizzas</a></li>
+            <li><a class="dropdown-item" routerLink="/menu/pastas" (click)="closeMenu()">Pastas</a></li>
+            <li><a class="dropdown-item" routerLink="/menu/desserts" (click)="closeMenu()">Desserts</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-accent" routerLink="/menu/specials" (click)="closeMenu()">Today's Specials</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown" (click)="toggleOrdersDropdown($event)">
+          <a class="nav-link dropdown-toggle" [class.active]="isOrdersDropdownOpen" style="cursor: pointer;">
+            Orders
+          </a>
+          <ul class="dropdown-menu custom-dropdown" [class.show]="isOrdersDropdownOpen">
+            <li><a class="dropdown-item" routerLink="/yourcart" (click)="closeMenu()">Cart <i class="fa fa-cart-plus" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" routerLink="/yourorders" (click)="closeMenu()">Order History <i class="fa fa-history" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" routerLink="/order" (click)="closeMenu()">Track Active Order </a></li>
+          </ul>
         </li>
 
         <li class="nav-item ms-lg-4 mt-3 mt-lg-0">
@@ -33,25 +54,27 @@
             
             <div class="inline-profile-pill">
               
-              <div class="pill-avatar" (click)="userprofile()">
-                <i class="bi bi-person-fill" ></i>
+              <div class="pill-avatar" (click)="userprofile()" style="cursor: pointer;">
+                <i class="bi bi-person-fill"></i>
               </div>
               
-              <div class="pill-details" (click)="userprofile()">
+              <div class="pill-details" (click)="userprofile()" style="cursor: pointer;">
                 <span class="pill-name">{{ currentUser.name }}</span>
                 <span class="pill-email">{{ currentUser.email }}</span>
               </div>
+              
               <div class="pill-divider"></div>
               
               <button class="pill-logout-btn" (click)="logout()" title="Logout">
                 <i class="bi bi-box-arrow-right"></i>
-                <span class="d-lg-none ms-2">Logout</span> </button>
+                <span class="d-lg-none ms-2">Logout</span> 
+              </button>
 
             </div>
-
+            
           }
-
         </li>
+
       </ul>
     </div>
   </div>

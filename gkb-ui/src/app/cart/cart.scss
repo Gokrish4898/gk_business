@@ -1,0 +1,223 @@
+/* =========================================
+   CART PAGE WRAPPER 
+   (Uses the warm off-white background)
+   ========================================= */
+.cart-page-wrapper {
+  min-height: 100dvh;
+  background: var(--bg-color); 
+  color: var(--text-main);
+}
+
+/* =========================================
+   THE MAIN CART BOX
+   ========================================= */
+.main-cart-box {
+  background: var(--primary-light); /* Flour White */
+  border-radius: var(--radius-main);
+  padding: 40px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.03); /* Very subtle edge */
+}
+
+.cart-title {
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-main);
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* =========================================
+   THE CART ITEM CARDS
+   ========================================= */
+.cart-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-item-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff; /* Pure white creates contrast against the Flour White box */
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-main);
+  padding: 16px;
+  gap: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.cart-item-card:hover {
+  border-color: var(--accent-gold);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+/* --- Image --- */
+.item-image-wrapper {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: var(--radius-main);
+  overflow: hidden;
+  background: var(--bg-color);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Details Middle --- */
+.item-details {
+  flex-grow: 1;
+}
+
+.item-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.item-recipe {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Using the Sage Green for a fresh delivery badge */
+.address-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-green); 
+  color: var(--color-primary); /* Dark Blue-Grey text on Sage green looks premium */
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+/* --- Actions Right --- */
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.item-price {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.remove-btn {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.remove-btn:hover {
+  background: rgba(231, 76, 60, 0.08);
+  border-color: rgba(231, 76, 60, 0.3);
+  color: #e74c3c;
+}
+
+/* =========================================
+   SUMMARY BOX (Right Side)
+   ========================================= */
+.summary-box {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-main);
+  padding: 30px;
+  box-shadow: var(--card-shadow);
+}
+
+.summary-box h4 {
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+/* Using the Baked Crust Orange to make the final price pop! */
+.gold-text {
+  color: var(--color-accent); 
+}
+
+/* The Checkout Button */
+.custom-btn {
+  background: var(--accent-gold);
+  color: var(--primary-dark);
+  border: none;
+  border-radius: var(--radius-main);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.custom-btn:hover:not(:disabled) {
+  background: var(--color-accent); /* Switches from gold to orange on hover */
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(230, 126, 34, 0.3);
+}
+
+.custom-btn:disabled {
+  background: #e0e0e0;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   EMPTY STATE & ANIMATIONS
+   ========================================= */
+.empty-cart-state i {
+  color: var(--color-highlight) !important; /* Dough yellow for the empty icon */
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 991px) {
+  .main-cart-box { padding: 20px; }
+  
+  .cart-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .item-image-wrapper { width: 100%; height: 160px; }
+  
+  .item-actions {
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    height: auto;
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  }
+}

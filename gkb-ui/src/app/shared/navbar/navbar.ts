@@ -14,46 +14,67 @@ import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './navbar.scss',
 })
 export class Navbar {
-isMenuCollapsed: boolean = true;
   
-  // Auth & Menu State
-  isLoggedIn: boolean = true; // Set to true to see the profile
-  isProfileMenuOpen: boolean = false;
+  // Mobile Menu State
+  isMenuCollapsed = true;
 
-  constructor(private router : Router){
+  // Dropdown States (Pure Angular Control)
+  isMenuDropdownOpen = false;
+  isOrdersDropdownOpen = false;
 
-  }
-
-  // Mock User Data
+  // Mock Authentication State
+  isLoggedIn = true; // Set to false to see the Login button
   currentUser = {
     name: 'Chef Gordon',
-    email: 'gordon@snapdough.com',
-    image: 'assets/default-avatar.png' // Add a path to a default image, or we'll use an icon fallback
+    email: 'gordon@snapdough.com'
   };
 
-  toggleProfileMenu() {
-    this.isProfileMenuOpen = !this.isProfileMenuOpen;
-  }
+  constructor(private eRef: ElementRef) {}
 
+  // Closes the mobile menu and dropdowns when a link is clicked
   closeMenu() {
-    this.isProfileMenuOpen = false;
-    this.isMenuCollapsed = true; // Closes mobile menu too if open
+    this.isMenuCollapsed = true;
+    this.isMenuDropdownOpen = false;
+    this.isOrdersDropdownOpen = false;
   }
 
-  login(){
-    //  this.isLoggedIn = false;
-    //  this.isProfileMenuOpen = true;
-    this.isLoggedIn = true;
+  // Toggles the Menu dropdown
+  toggleMenuDropdown(event: Event) {
+    event.stopPropagation();
+    this.isMenuDropdownOpen = !this.isMenuDropdownOpen;
+    this.isOrdersDropdownOpen = false; // Close the other one
+  }
 
-     this.router.navigate(["/login"]);
+  // Toggles the Orders dropdown
+  toggleOrdersDropdown(event: Event) {
+    event.stopPropagation();
+    this.isOrdersDropdownOpen = !this.isOrdersDropdownOpen;
+    this.isMenuDropdownOpen = false; // Close the other one
+  }
+
+  // Listens for clicks anywhere on the page to close open dropdowns
+  @HostListener('document:click', ['$event'])
+  clickout(event: Event) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.isMenuDropdownOpen = false;
+      this.isOrdersDropdownOpen = false;
+    }
+  }
+
+  // Mock Actions
+  login() {
+    console.log('Navigating to login...');
+    this.closeMenu();
   }
 
   logout() {
+    console.log('Logging out user...');
     this.isLoggedIn = false;
     this.closeMenu();
-    // TODO: Add actual logout logic here
   }
-  userprofile(){
-    this.router.navigate(["/userprofile"]);
+
+  userprofile() {
+    console.log('Navigating to profile...');
+    this.closeMenu();
   }
 }

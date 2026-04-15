@@ -1,355 +1,356 @@
-:root {
-  --accent-gold: #D4A373;
-  --dark-bg: rgba(18, 18, 18, 0.85); /* Glassmorphism background */
-  --card-bg: #1c1c1e;
-}
-
-/* --- MAIN NAVBAR --- */
+/* =========================================
+   NAVBAR BASE
+   ========================================= */
 .premium-navbar {
-  background: var(--dark-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 12px 0;
+  background-color: var(--primary-light, #FAFAF5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .gold-brand {
-  color: #ffffff !important;
+  font-family: 'Lato', sans-serif;
   font-weight: 800;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  color: var(--accent-gold, #D4A373) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   letter-spacing: -0.5px;
 }
 
-.gold-brand i { color: var(--accent-gold); }
-
-/* --- NAVIGATION LINKS --- */
+/* =========================================
+   NAVIGATION LINKS (Fixed for Dark Navbar)
+   ========================================= */
 .nav-link {
-  color: rgba(255, 255, 255, 0.7) !important;
-  font-weight: 500;
-  margin: 0 8px;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: #ffffff !important;
-}
-
-/* Premium Gold Underline for Active Tab */
-.nav-link.active {
-  color: var(--accent-gold) !important;
-  font-weight: 700;
-}
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 10%;
-  width: 80%;
-  height: 2px;
-  background-color: var(--accent-gold);
-  border-radius: 2px;
-}
-
-/* --- LOGIN BUTTON --- */
-.custom-login-btn {
-  background: transparent;
-  color: var(--accent-gold);
-  border: 1px solid var(--accent-gold);
-  border-radius: 50px;
-  padding: 8px 20px;
+  color: rgba(255, 255, 255, 0.8) !important; /* Soft white so inactive links are visible */
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.custom-login-btn:hover {
-  background: var(--accent-gold);
-  color: #121212;
-}
-
-/* --- AVATAR & DROPDOWN STRUCTURE --- */
-.profile-container {
-  position: relative; /* Anchors the absolute popup */
-}
-
-.avatar-btn {
-  background: transparent;
-  border: none;
-  padding: 0;
-}
-
-.avatar-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-}
-
-.avatar-btn:hover .avatar-circle {
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
-}
-
-/* ✨ THE INVISIBLE BACKDROP */
-.invisible-backdrop {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  z-index: 998; /* Sits right behind the dropdown! */
-  cursor: default;
-}
-
-/* --- THE PROFILE DROPDOWN --- */
-.profile-dropdown {
-  position: absolute;
-  top: 55px;
-  right: 0;
-  width: 250px;
-  background: var(--card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-  padding: 16px;
-  z-index: 999; /* Highest layer */
-}
-
-.dropdown-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.dropdown-avatar {
-  font-size: 2.2rem;
-  color: var(--accent-gold);
-  line-height: 1;
-}
-
-.dropdown-user-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-name { color: #fff; font-weight: 700; font-size: 1rem; }
-.user-email { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
-
-.dropdown-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 12px 0;
-}
-
-.dropdown-action-btn {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: left;
-  padding: 10px 12px;
+  font-size: 1rem;
+  padding: 8px 16px !important;
+  margin: 0 4px;
   border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  border: 1px solid transparent; /* Keeps the size stable when hovered */
 }
 
-.dropdown-action-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-.dropdown-action-btn i { color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; }
-.dropdown-action-btn:hover i { color: var(--accent-gold); }
-
-/* Logout Style */
-.logout-text:hover { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
-.logout-text:hover i { color: #e74c3c; }
-
-/* Mobile Menu Toggler overrides */
-.custom-toggler { border: none; font-size: 1.8rem; color: #fff; padding: 0; }
-.custom-toggler:focus { box-shadow: none; }
-
-/* --- ANIMATION --- */
-.fade-in-down {
-  animation: fadeInDown 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-  transform-origin: top right;
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* MOBILE FIX FOR POPUP */
-@media (max-width: 991px) {
-  .profile-container { display: flex; justify-content: center; margin-top: 15px; }
-  .profile-dropdown { top: 60px; right: auto; left: 50%; transform: translateX(-50%); transform-origin: top center; width: 90%; max-width: 300px; }
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translate(-50%, -10px) scale(0.95); }
-    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  }
+/* Hover and Active State */
+.nav-link:hover, .nav-link.active {
+  color: var(--accent-gold, #D4A373) !important; /* Bright Gold Text */
+  background: rgba(212, 163, 115, 0.1); /* Faint gold background */
+  border: 1px solid rgba(212, 163, 115, 0.25); /* Adds a crisp edge to stop it from looking muddy */
+  box-shadow: 0 4px 10px rgba(212, 163, 115, 0.05); /* Very subtle glow */
 }
 
 /* =========================================
-   INLINE PROFILE PILL
+   CUSTOM DROPDOWNS (Angular Controlled)
    ========================================= */
+.dropdown {
+  position: relative;
+}
 
+.custom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 8px;
+  margin-top: 10px;
+  min-width: 200px;
+  
+  /* Angular Animation */
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease-out;
+}
+
+.custom-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.custom-dropdown .dropdown-item {
+  color: var(--text-main, #1A1A1D);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown .dropdown-item:hover {
+  background-color: rgba(212, 163, 115, 0.1);
+  color: var(--accent-gold, #D4A373);
+  transform: translateX(4px);
+}
+
+.custom-dropdown .dropdown-divider {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 8px 0;
+}
+
+.text-accent {
+  color: var(--color-accent, #E67E22) !important;
+  font-weight: 700 !important;
+}
+
+/* =========================================
+   PROFILE PILL & BUTTONS (Animated Expand)
+   ========================================= */
 .inline-profile-pill {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50px; /* Makes it a perfect rounded pill */
-  padding: 6px 16px 6px 6px; /* Extra padding on right for the logout button */
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 50px;
+  padding: 4px 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  overflow: hidden; 
 }
 
 .inline-profile-pill:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(212, 163, 115, 0.3); /* Subtle gold glow on hover */
+  border-color: var(--accent-gold, #D4A373);
+  box-shadow: 0 4px 15px rgba(212, 163, 115, 0.15);
+  padding-right: 6px; 
 }
 
-/* 1. The Avatar */
 .pill-avatar {
   width: 36px;
   height: 36px;
-  background: rgba(212, 163, 115, 0.15); /* Faint gold background */
-  color: var(--accent-gold);
+  background: rgba(212, 163, 115, 0.15);
+  color: var(--accent-gold, #D4A373);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.1rem;
-  margin-right: 12px;
+  flex-shrink: 0;
 }
 
-/* 2. Text Details */
 .pill-details {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
-  margin-right: 12px;
+  margin: 0 12px;
+  white-space: nowrap; 
 }
 
 .pill-name {
-  color: #ffffff;
   font-size: 0.85rem;
   font-weight: 700;
-  white-space: nowrap;
+  color: var(--text-main, #1A1A1D);
+  line-height: 1;
 }
 
 .pill-email {
-  color: rgba(255, 255, 255, 0.5);
   font-size: 0.7rem;
-  white-space: nowrap;
+  color: var(--text-muted, #7F8C8D);
+  margin-top: 2px;
 }
 
-/* Divider Line */
+/* --- HIDDEN BY DEFAULT --- */
 .pill-divider {
-  width: 1px;
+  width: 0px; 
   height: 24px;
-  background: rgba(255, 255, 255, 0.15);
-  margin: 0 12px;
+  background: rgba(0,0,0,0.08);
+  margin: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
-/* 3. Logout Button */
 .pill-logout-btn {
   background: transparent;
   border: none;
-  color: rgba(231, 76, 60, 0.8); /* Soft Red */
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
+  color: #e74c3c; 
+  width: 0px; 
+  height: 36px;
   padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none; 
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* --- REVEAL ON HOVER --- */
+.inline-profile-pill:hover .pill-divider {
+  width: 1px;
+  margin: 0 4px;
+  opacity: 1;
+}
+
+.inline-profile-pill:hover .pill-logout-btn {
+  width: 36px;
+  opacity: 1;
+  pointer-events: auto; 
 }
 
 .pill-logout-btn:hover {
-  color: #e74c3c; /* Bright Red */
-  transform: scale(1.1);
+  background: rgba(231, 76, 60, 0.1); 
+  transform: scale(1.1); 
 }
 
-/* --- MOBILE OPTIMIZATION --- */
+/* --- Login Button (When Logged Out) --- */
+.custom-login-btn {
+  background: var(--accent-gold, #D4A373);
+  color: #ffffff;
+  border-radius: 50px;
+  padding: 8px 24px;
+  font-weight: 700;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.custom-login-btn:hover {
+  background: var(--color-accent, #E67E22);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Mobile Toggler */
+.custom-toggler {
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-main, #1A1A1D);
+}
+
+.custom-toggler:focus { box-shadow: none; }
+/* --- Mobile Toggler --- */
+.custom-toggler {
+  border: none;
+  font-size: 1.8rem; /* Made slightly larger for easier tapping */
+  color: var(--accent-gold, #D4A373); /* Changed from dark to GOLD so it pops on the dark navbar */
+  padding: 4px 8px;
+  background: transparent;
+}
+
+.custom-toggler:focus { 
+  box-shadow: none; 
+  outline: none;
+}
 /* =========================================
-   📱 MOBILE OVERRIDES (LEFT-ALIGNED APP MENU)
+   MOBILE RESPONSIVENESS
    ========================================= */
 @media (max-width: 991px) {
   
-  /* --- 1. THE NAVIGATION MENU --- */
-  .navbar-nav {
-    align-items: flex-start !important; /* 🚀 Forces everything to the left edge */
-    width: 100%;
-    padding: 10px 0;
+  /* 1. The Main Mobile Menu Container */
+  .navbar-collapse {
+    background: var(--primary-dark, #1A1A1D); 
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.05); /* Subtle edge to define the box */
+    align-items: start;
   }
 
-  .nav-item {
-    width: 100%; /* Make each row take the full width */
-  }
-
+  /* 2. Main Navigation Links */
   .nav-link {
-    text-align: left; /* Left align the text */
-    font-size: 1.25rem; /* Larger text for easy reading */
-    padding: 14px 24px !important; /* Big tap target for thumbs */
-    margin: 0; 
+    color: rgba(255, 255, 255, 0.8) !important; /* Soft white */
+    padding: 12px 16px !important; 
+    border-radius: 8px;
+    text-align: center; /* Center aligning looks much better on mobile */
   }
 
-  /* Shorten the active underline so it only sits under the word on mobile */
-  .nav-link.active::after {
-    left: 24px;
-    width: 35px; 
+  .nav-link:hover, .nav-link.active {
+    background: rgba(212, 163, 115, 0.1);
+    color: var(--accent-gold, #D4A373) !important;
   }
 
-
-  /* --- 2. THE PROFILE CARD --- */
-  .profile-container {
-    margin-top: 15px; 
-    width: 100%;
-    display: flex;
-    justify-content: flex-start; /* Keep the card left-aligned too */
-    padding: 0 24px; /* Matches the padding of the menu links above it */
+  /* 3. The Dropdown Sub-Menus */
+  .custom-dropdown {
+    position: static;
+    box-shadow: none;
+    border: none;
+    /* REMOVED the white background. Made it slightly lighter dark to nest nicely */
+    background-color: rgba(255, 255, 255, 0.03); 
+    border-radius: 12px;
+    padding: 10px;
+    margin: 5px 15px 10px 15px; /* Added margins to sit nicely inside the main menu */
+    opacity: 0;
+    display: none;
+    text-align: center;
+  }
+  
+  .custom-dropdown.show {
+    display: block;
+    opacity: 1;
+    animation: fadeIn 0.2s ease-in;
   }
 
-  /* Turn the pill into a premium glass box */
+  /* Fix the text colors inside the dark mobile dropdown */
+  .custom-dropdown .dropdown-item {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+  }
+  
+  .custom-dropdown .dropdown-item:hover {
+    color: var(--accent-gold, #D4A373);
+    background: transparent;
+  }
+
+  .custom-dropdown .dropdown-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* 4. The Profile Pill Container */
   .inline-profile-pill {
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.08); 
-    border-radius: 16px; 
-    padding: 12px 16px;
-    width: 100%;
-    max-width: 350px; 
+    background: rgba(255, 255, 255, 0.03); /* Subtle dark box instead of pure white */
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px; /* Squarer radius for mobile */
+    padding: 16px; 
+    margin-top: 15px;
     display: flex;
-    align-items: center;
-    margin: 0; /* Removed auto margin so it aligns left */
+    flex-direction: column; /* Stack avatar/text and logout vertically */
+    align-items: center; /* Center everything */
+    width: 100%;
   }
 
+  /* Profile Details */
   .pill-details {
-    text-align: left;
+    margin: 10px 0;
+    text-align: center;
   }
 
-  .pill-divider {
-    display: none; /* Hide the vertical line */
+  .pill-name {
+    color: #ffffff;
+    font-size: 1rem;
   }
 
-  /* Push the logout button to the far right inside the card */
+  .pill-email {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Remove Divider */
+  .pill-divider { display: none; }
+  
+  /* 5. The Logout Button */
   .pill-logout-btn {
-    margin-left: auto; 
-    background: rgba(231, 76, 60, 0.1); 
-    border: 1px solid rgba(231, 76, 60, 0.2); 
+    width: 100% !important; /* Full width button on mobile */
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin: 10px 0 0 0; 
+    justify-content: center; /* Center the text and icon */
+    background: rgba(231, 76, 60, 0.1); /* Red tint background */
     color: #e74c3c;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border: 1px solid rgba(231, 76, 60, 0.2);
   }
 
-  .pill-logout-btn:active {
-    background: rgba(231, 76, 60, 0.25);
+  .pill-logout-btn:hover {
+    background: rgba(231, 76, 60, 0.2);
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }

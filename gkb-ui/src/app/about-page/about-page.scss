@@ -1,0 +1,140 @@
+/* =========================================
+   PAGE WRAPPER & TYPOGRAPHY
+   ========================================= */
+.about-page-wrapper {
+  min-height: 80vh;
+  background-color: var(--bg-color, #f5f3f3); /* Blends perfectly with your global background */
+}
+
+.text-accent {
+  color: var(--color-accent, #E67E22);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+}
+
+.title-text {
+  color: var(--primary-dark, #1A1A1D);
+  letter-spacing: -1px;
+}
+
+.text-main {
+  color: var(--text-main, #1A1A1D);
+}
+
+.text-muted {
+  color: var(--text-muted, #7F8C8D) !important;
+  line-height: 1.8;
+}
+
+/* =========================================
+   IMAGE STYLING (The Offset Box Effect)
+   ========================================= */
+.image-wrapper {
+  position: relative;
+  border-radius: 20px;
+  z-index: 1;
+  padding: 15px; /* Gives room for the backdrop to show */
+}
+
+/* The Gold Decorative Box behind the photo */
+.image-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 90%;
+  height: 90%;
+  background-color: transparent;
+  border: 3px solid var(--accent-gold, #D4A373);
+  border-radius: 20px;
+  z-index: -1;
+  transform: translate(25px, 35px); /* Pushes the gold box down and right */
+  transition: all 0.4s ease;
+}
+
+.chef-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* Hover Effect for the Image */
+.image-wrapper:hover .chef-photo {
+  transform: translateY(-5px);
+}
+
+.image-wrapper:hover .image-backdrop {
+  transform: translate(15px, 25px); /* Brings the gold box slightly closer on hover */
+}
+
+/* =========================================
+   SOCIAL MEDIA LINKS
+   ========================================= */
+.social-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-color: rgba(0, 0, 0, 0.08) !important; /* Soften the bootstrap border-top */
+}
+
+.social-label {
+  font-weight: 700;
+  color: var(--primary-dark, #1A1A1D);
+  font-size: 1.1rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
+  background: #ffffff;
+  color: var(--primary-dark, #1A1A1D);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Springy animation */
+}
+
+.social-btn:hover {
+  background: var(--accent-gold, #D4A373);
+  color: #ffffff;
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(212, 163, 115, 0.3);
+}
+
+/* =========================================
+   ANIMATIONS & MOBILE RESPONSIVENESS
+   ========================================= */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 991px) {
+  .image-wrapper {
+    max-width: 400px;
+    margin: 0 auto 30px auto; /* Centers the image on mobile */
+  }
+  
+  .social-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

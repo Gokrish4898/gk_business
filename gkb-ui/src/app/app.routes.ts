@@ -8,6 +8,8 @@ import { ProductDetails } from './product-details/product-details';
 import { Maintenance } from './shared/maintenance/maintenance';
 import { Userprofile } from './userprofile/userprofile';
 import { maintenanceGuard } from './shared/maintenance/maintenance-guard';
+import { Cart } from './cart/cart';
+import { AboutPage } from './about-page/about-page';
 
 export const routes: Routes = [
   {
@@ -30,6 +32,8 @@ export const routes: Routes = [
       { path: 'maintenance', component: Maintenance },
       { path: 'userprofile', component: Userprofile },
       { path: 'productdetails/:id', component: ProductDetails },
+      { path: 'yourcart', component: Cart },
+      { path: 'about', component: AboutPage },
       { path: '**', component: Landingpage },
     ],
   },

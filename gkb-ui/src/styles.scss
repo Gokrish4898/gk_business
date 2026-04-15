@@ -82,13 +82,12 @@ body {
   
   /* Default Material background setup */
   color-scheme: light;
-  background-color: var(--mat-sys-surface);
-  
+  background-color: var(--bg-color);
   /* Your custom purple gradient background */
-  background: linear-gradient(135deg, rgb(100, 98, 233) 0%, rgb(183, 98, 252) 100%) !important;
-  background-attachment: fixed; /* Keeps gradient locked while scrolling */
-  background-size: cover; 
-  background-repeat: no-repeat;
+  // background: linear-gradient(135deg, rgb(100, 98, 233) 0%, rgb(183, 98, 252) 100%) !important;
+  // background-attachment: fixed; /* Keeps gradient locked while scrolling */
+  // background-size: cover; 
+  // background-repeat: no-repeat;
   min-height: 100vh;
 }
 
@@ -104,7 +103,7 @@ body::before {
   height: 100dvh; /* Modern mobile fix */
   
   /* Your custom purple gradient */
-  background: linear-gradient(135deg, rgb(100, 98, 233) 0%, rgb(183, 98, 252) 100%);
+  // background: linear-gradient(135deg, rgb(100, 98, 233) 0%, rgb(183, 98, 252) 100%);
   
   z-index: -100; 
   pointer-events: none; 

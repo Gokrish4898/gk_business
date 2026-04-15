@@ -1,0 +1,84 @@
+<div class="cart-page-wrapper">
+  <div class="container py-5">
+    
+    <div class="main-cart-box fade-in-up">
+      
+      <div class="cart-header border-bottom border-secondary pb-3 mb-4 d-flex justify-content-between align-items-end">
+        <h1 class="cart-title mb-0">Your Cart</h1>
+        <span class="text-muted">{{ cartItems.length }} Items</span>
+      </div>
+
+      <div class="row">
+        
+        <div class="col-lg-8">
+          
+          @if (cartItems.length === 0) {
+            <div class="empty-cart-state text-center py-5">
+              <i class="bi bi-cart-x fs-1 text-muted mb-3"></i>
+              <h4>Your kitchen is empty!</h4>
+              <p class="text-muted">Looks like you haven't added any SnapDough items yet.</p>
+              <a class="btn custom-btn mt-3" routerLink="/menu">Browse Menu</a>
+            </div>
+          } @else {
+            
+            <div class="cart-items-container">
+              @for (item of cartItems; track item.id) {
+                
+                <div class="cart-item-card">
+                  
+                  <div class="item-image-wrapper">
+                    <img [src]="item.image" [alt]="item.title" class="item-image" onerror="this.src='assets/fallback.png'">
+                  </div>
+
+                  <div class="item-details">
+                    <h4 class="item-title">{{ item.title }}</h4>
+                    <p class="item-recipe text-muted">{{ item.recipeNote }}</p>
+                    <div class="address-badge mt-2">
+                      <i class="bi bi-geo-alt-fill"></i>
+                      <span>{{ item.deliveryAddress }}</span>
+                    </div>
+                  </div>
+
+                  <div class="item-actions">
+                    <div class="item-price">${{ item.price | number:'1.2-2' }}</div>
+                    <button class="remove-btn" (click)="removeItem(item.id)" title="Remove from Cart">
+                      <i class="bi bi-trash3"></i> Remove
+                    </button>
+                  </div>
+
+                </div>
+
+              }
+            </div>
+          }
+        </div>
+
+        <div class="col-lg-4 mt-4 mt-lg-0">
+          <div class="summary-box">
+            <h4 class="mb-4">Order Summary</h4>
+            
+            <div class="d-flex justify-content-between mb-2 text-muted">
+              <span>Subtotal</span>
+              <span>${{ subtotal | number:'1.2-2' }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-3 text-muted">
+              <span>Delivery Fee</span>
+              <span>${{ deliveryFee | number:'1.2-2' }}</span>
+            </div>
+            
+            <hr class="border-secondary">
+            
+            <div class="d-flex justify-content-between mb-4 mt-3">
+              <span class="fs-5 fw-bold">Total</span>
+              <span class="fs-5 fw-bold gold-text">${{ grandTotal | number:'1.2-2' }}</span>
+            </div>
+
+            <button class="btn custom-btn w-100 py-3 fs-5" [disabled]="cartItems.length === 0">
+              Checkout Now
+            </button>
+          </div>
+        </div>
+
+      </div> </div> </div>
+</div>
