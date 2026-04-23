@@ -1,7 +1,7 @@
 # Stage 1: The Build Environment
 # We use the heavy SDK image to get all the tools needed to compile the code
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR /gkb_service
 
 # Copy just the project file first and restore dependencies (Optimizes Docker caching)
 COPY ["gkb_service.csproj", "./"]
@@ -21,4 +21,4 @@ EXPOSE 8080
 COPY --from=build /app/publish .
 
 # Tell Docker how to start your app
-ENTRYPOINT ["dotnet", "gkb_service.dll"]
+ENTRYPOINT ["dotnet","/gkb_service/bin/Release/net8.0/gkb_service.dll"]
