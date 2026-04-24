@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { maintenanceService } from './maintenance-service';
 
 export const maintenanceGuard: CanActivateFn = (route, state) => {
-  debugger;
+  // debugger;
   const maintenance  = inject(maintenanceService);
 
   const maintenance_ = maintenance.getmaintenance();

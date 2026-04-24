@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastService } from '../shared/toaster/toast-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LoginService } from './login-service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,9 @@ export class Login implements OnInit{
 
   private router = inject(Router)
 
-  constructor(private toastr : ToastService){
+  constructor(private toastr : ToastService,
+    private loginservice : LoginService
+  ){
 
   }
   ngOnInit(): void {
@@ -34,9 +37,14 @@ export class Login implements OnInit{
   }
 
   
-  Login(){
+  login(){
+    debugger;
+        this.loginservice.login().subscribe(
+      res=>{
+        console.log(res,"fdssdhfkj")
+      }
+    )
     this.router.navigate(['/landingpage']);
-
   }
 
   toggleMode(mode:'login'|'register'){
@@ -55,16 +63,21 @@ export class Login implements OnInit{
   }
 
   verifyOtp(){
-    debugger;
+    /* The `debugger;` statement in JavaScript is a breakpoint that can be used for debugging purposes.
+    When the browser encounters this statement while executing the code, it will pause the execution
+    at that point, allowing you to inspect variables, check the call stack, and step through the
+    code using developer tools. It is commonly used during development to pause the execution flow
+    and analyze the state of the application at that particular point in the code. */
+    // debugger;
     if(this.otpCode.length == 4){
       this.otpVerified = true;
       this.toastr.show("OTP Verified","success","top-right");
     }
   }
 
-  login(){
-    console.log("logging in..")
-  }
+  // login(){
+  //   console.log("logging in..")
+  // }
 
   register(){
     if(!this.otpVerified){

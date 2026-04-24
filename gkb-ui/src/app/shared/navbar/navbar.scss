@@ -235,6 +235,10 @@
   box-shadow: none; 
   outline: none;
 }
+
+.navbar-collapse{
+  justify-content: flex-end !important;
+}
 /* =========================================
    MOBILE RESPONSIVENESS
    ========================================= */

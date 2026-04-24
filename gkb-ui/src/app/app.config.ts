@@ -2,6 +2,8 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { errorInterceptor } from '../error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -10,5 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes,withInMemoryScrolling({
       scrollPositionRestoration:'enabled'
     })),
+    provideHttpClient(withInterceptors([errorInterceptor]))
   ]
 };

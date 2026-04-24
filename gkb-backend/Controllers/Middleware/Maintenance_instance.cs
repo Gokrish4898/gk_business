@@ -27,7 +27,8 @@
                 await context.Response.WriteAsJsonAsync(new
                 {
                     error = "The service is currently under maintenance. Please try again later.",
-                    message = message
+                    message = message,
+                    maintenance = isMaintenanceMode
                 });
 
                 return; // 🛑 We return IMMEDIATELY. We do NOT call _next.
