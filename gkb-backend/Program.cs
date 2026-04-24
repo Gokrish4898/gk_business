@@ -18,6 +18,19 @@ builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(builder.C
 // 2. Register ASP.NET Core Identity
 builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
 
+// 1. ADD THIS BLOCK to create the CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularUI", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // IMPORTANT: No trailing slash at the end!
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+builder.Services.AddControllers();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,6 +62,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+ 
+// 2. ADD THIS LINE exactly here
+app.UseCors("AllowAngularUI");
+
 app.UseMiddleware<gkb_service.Controllers.Middleware.Maintenance_instance>();
 app.UseAuthentication(); // 1. The bouncer checks the ID (Validates JWT)
 app.UseAuthorization();  // 2. The bouncer checks the VIP list (Checks Roles)
