@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularUI", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // IMPORTANT: No trailing slash at the end!
+        policy.WithOrigins("http://localhost:4200", "https://gokrish4898.github.io", "https://gokrish4898.github.io/gk_business/") // IMPORTANT: No trailing slash at the end!
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
