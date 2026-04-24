@@ -61,7 +61,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
  
 // 2. ADD THIS LINE exactly here
 app.UseCors("AllowAngularUI");
