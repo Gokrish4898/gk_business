@@ -1,15 +1,18 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using gkb_service.Controllers.Mail_service;
+using gkb_service.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace gkb_service.Controllers
+namespace gkb_service.Controllers.AuthApi
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -19,13 +22,20 @@ namespace gkb_service.Controllers
         private readonly IConfiguration _config;
         private readonly UserManager<IdentityUser> _usermanager;
         private readonly SignInManager<IdentityUser> _signmanager;
-        public AuthApiController(IConfiguration config,UserManager<IdentityUser> usermanager, SignInManager<IdentityUser> signmanager )
+        private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _cache;
+        private readonly EmailOtpService _emailOtpService;
+        public AuthApiController(IConfiguration config,UserManager<IdentityUser> usermanager, SignInManager<IdentityUser> signmanager, IConfiguration configuration, IMemoryCache cache, EmailOtpService emailOtpService)
         {
             _config = config;
             _signmanager = signmanager;
             _usermanager = usermanager;
+            _configuration = configuration;
+            _cache = cache;
+            _emailOtpService = emailOtpService;
 
         }
+
 
         // GET: api/<AuthApiController>
         [HttpGet]
@@ -104,6 +114,33 @@ namespace gkb_service.Controllers
                 {
                     error = errorMessage
                 });
+            }
+        }
+
+
+        [HttpPost]
+        [Route("GenerateOtp")]
+        public async Task<IActionResult> GenerateOtp([FromBody] OtpRequest request)
+        {
+            try
+            {
+                long otp = await _emailOtpService.generateAndSendOtp(request.Email);
+                _cache.Set(request.Email, otp, TimeSpan.FromMinutes(5)); // Cache OTP for 5 minutes
+                if (otp == 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Error generating OTP for {request.Email}");
+                }
+                else
+                {
+                    Console.WriteLine($"OTP generated for {request.Email}: {otp}");
+                    return Ok($"OTP generated and sent to {request.Email}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ex.StackTrace: " + ex.StackTrace + "\n ex.Message: " + ex.Message + "\n ex.InnerException: " + ex.InnerException + "\n");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error generating OTP: {ex.Message}");
             }
         }
 

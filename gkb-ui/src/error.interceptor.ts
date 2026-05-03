@@ -5,13 +5,11 @@ import { catchError, throwError } from "rxjs";
 
 export const errorInterceptor: HttpInterceptorFn =(req,next)=>{
     const route = inject(Router);
-debugger;
     return next(req).pipe(
         catchError((error:any)=>{
         // catchError((error:HttpErrorResponse)=>{
-        console.log(error,"error")
+        console.log(error,"error","https://gokrish4898.github.io",)
             if(error.error.maintenance){
-                // console.log("maintance Mode")
                 route.navigate(["/maintenance"]);
             }
 

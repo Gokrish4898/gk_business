@@ -38,13 +38,27 @@ export class Login implements OnInit{
 
   
   login(){
-    debugger;
-        this.loginservice.login().subscribe(
-      res=>{
-        console.log(res,"fdssdhfkj")
-      }
-    )
-    this.router.navigate(['/landingpage']);
+    //     this.loginservice.login().subscribe(
+    //   res=>{
+    //     console.log(res,"fdssdhfkj")
+    // this.router.navigate(['/landingpage']);
+
+    //   }
+    // )
+    var formdata = {
+      Email : "mohamedshamir988@gmail.com"
+    }
+    this.loginservice.generateotp(formdata).subscribe({
+  // 1. The 'next' block handles a successful response
+  next: (res) => {
+    console.log(res);
+  },
+  
+  // 2. The 'error' block handles the failure
+  error: (error: any) => {
+    console.log(error, "generateotp");
+  }
+});
   }
 
   toggleMode(mode:'login'|'register'){

@@ -1,6 +1,12 @@
 # Stage 1: Build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Change sdk:8.0 to sdk:10.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
+# ... your copy and build commands ...
+
+# Change aspnet:8.0 to aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS publish
+WORKDIR /app
 
 # We use gkb_service.csproj exactly as it appears in your folder
 COPY ["gkb_service.csproj", "./"]
