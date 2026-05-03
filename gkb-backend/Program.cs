@@ -12,11 +12,30 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 1. Register the SQLite Database
-builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+//// 1. Register the SQLite Database
+//builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Register ASP.NET Core Identity
-builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
+//// 2. Register ASP.NET Core Identity
+//builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
+
+string connectionString = string.Empty;
+if (String.IsNullOrEmpty(builder.Configuration.GetValue<string>("DBconfig:dbconnection")))
+{
+
+}
+else
+{
+    var uri = new Uri(builder.Configuration.GetValue<string>("DBconfig:dbconnection").ToString());
+    var username = uri.UserInfo.Split(':')[0];
+    var password = uri.UserInfo.Split(':')[1];
+
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.Substring(1)};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+}
+
+// --- 2. REGISTER POSTGRESQL ---
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+
 
 // 1. ADD THIS BLOCK to create the CORS policy
 builder.Services.AddCors(options =>
@@ -30,7 +49,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<gkb_service.Controllers.Mail_service.EmailOtpService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -54,6 +74,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+
+// --- 3. auto-migrate ---
+
+//using(var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.Migrate();
+//}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -65,7 +94,7 @@ if (app.Environment.IsDevelopment())
  
 // 2. ADD THIS LINE exactly here
 app.UseCors("AllowAngularUI");
-
+app.UseRouting();
 app.UseMiddleware<gkb_service.Controllers.Middleware.Maintenance_instance>();
 app.UseAuthentication(); // 1. The bouncer checks the ID (Validates JWT)
 app.UseAuthorization();  // 2. The bouncer checks the VIP list (Checks Roles)
