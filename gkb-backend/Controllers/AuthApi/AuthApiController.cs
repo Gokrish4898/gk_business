@@ -1,14 +1,22 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
+
+//using gkb_service.Controllers.DBcontext;
 using gkb_service.Controllers.Mail_service;
 using gkb_service.Model;
+using gkb_service.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,28 +28,49 @@ namespace gkb_service.Controllers.AuthApi
     {
 
         private readonly IConfiguration _config;
-        private readonly UserManager<IdentityUser> _usermanager;
-        private readonly SignInManager<IdentityUser> _signmanager;
+        //private readonly UserManager<IdentityUser> _usermanager;
+        //private readonly SignInManager<IdentityUser> _signmanager;
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _cache;
         private readonly EmailOtpService _emailOtpService;
-        public AuthApiController(IConfiguration config,UserManager<IdentityUser> usermanager, SignInManager<IdentityUser> signmanager, IConfiguration configuration, IMemoryCache cache, EmailOtpService emailOtpService)
+        private readonly AppDbContext _context;
+        private readonly IDistributedCache _rediscache;
+        public AuthApiController(IConfiguration config,
+            //UserManager<IdentityUser> usermanager, SignInManager<IdentityUser> signmanager, 
+            IConfiguration configuration, IMemoryCache cache, EmailOtpService emailOtpService, AppDbContext context,IDistributedCache rediscache)
         {
             _config = config;
-            _signmanager = signmanager;
-            _usermanager = usermanager;
+            //_signmanager = signmanager;
+            //_usermanager = usermanager;
             _configuration = configuration;
             _cache = cache;
             _emailOtpService = emailOtpService;
-
+            _context = context;
+            _rediscache = rediscache;
         }
 
 
         // GET: api/<AuthApiController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            string cache_key = "testing";
+            var check_cache = _rediscache.GetString(cache_key);
+            if (check_cache == null)
+            {
+                var result = await _context.Database.SqlQueryRaw<int>("SELECT 1").ToListAsync();
+                int myNumber = result.FirstOrDefault();
+                _rediscache.SetString("testing", JsonConvert.SerializeObject(new { value1 = "value1", value2 = myNumber.ToString() }));
+                return new string[] { "value1", myNumber.ToString() };
+
+            }
+            else
+            {
+                return new string[] { "value1", JsonConvert.DeserializeObject<object>(check_cache)?.ToString().Split(',')?.LastOrDefault() ?? "1" };
+            }
+            // This will actually return the number 1!
+
+
         }
 
         // GET api/<AuthApiController>/5
@@ -152,14 +181,14 @@ namespace gkb_service.Controllers.AuthApi
             string msg = "Failed";
             try
             {
-                var user = new IdentityUser { UserName = Data.Email, Email = Data.Email };
+                //var user = new IdentityUser { UserName = Data.Email, Email = Data.Email };
 
-                var result = await _usermanager.CreateAsync(user, Data.Password);
+                //var result = await _usermanager.CreateAsync(user, Data.Password);
 
-                if (result.Succeeded)
-                {
-                    msg = "succed";
-                }
+                //if (result.Succeeded)
+                //{
+                //    msg = "succed";
+                //}
 
                 return Ok(new
                 {
