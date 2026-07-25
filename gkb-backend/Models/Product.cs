@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Product
+namespace gkb_service.Models
 {
-    public int Productid { get; set; }
+    public class Product : BaseAuditableEntity
+    {
+        public int ProductId { get; set; }
+        public string? Name { get; set; }
+        public int? Delivery { get; set; }
 
-    public string? Name { get; set; }
-
-    public int? Delivery { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual ICollection<Price> Prices { get; set; } = new List<Price>();
-
-    public virtual ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
-
-    public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+        // Navigation Properties for one-to-many relationships
+        public ICollection<Price> Prices { get; set; } = new List<Price>();
+        public ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
+        public ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+    }
 }

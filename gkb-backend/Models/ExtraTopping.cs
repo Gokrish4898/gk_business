@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class ExtraTopping
+namespace gkb_service.Models
 {
-    public int ExToppingid { get; set; }
-
-    public string? Name { get; set; }
-
-    public string? Unit { get; set; }
-
-    public decimal? Unitprice { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
+    public class ExtraTopping : BaseAuditableEntity
+    {
+        public int ExToppingId { get; set; }
+        public string? Name { get; set; }
+        public string? Unit { get; set; }
+        public int? UnitPrice { get; set; }
+    }
 }

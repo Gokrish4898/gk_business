@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Recipe
+namespace gkb_service.Models
 {
-    public int Recipeid { get; set; }
+    public class Recipe : BaseAuditableEntity
+    {
+        public int RecipeId { get; set; }
+        public int ProductId { get; set; }
+        public string? RecipeName { get; set; }
 
-    public int? Productid { get; set; }
+        // This will hold the raw JSON string from PostgreSQL
+        public string? RecipeDetails { get; set; }
 
-    public string? RecipeName { get; set; }
-
-    public string? RecipeDetails { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual Product? Product { get; set; }
+        // Navigation Property back to the parent Product
+        public Product? Product { get; set; }
+    }
 }

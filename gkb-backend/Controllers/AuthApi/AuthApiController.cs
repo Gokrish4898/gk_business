@@ -17,6 +17,7 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using snapdough_api.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -128,8 +129,9 @@ namespace gkb_service.Controllers.AuthApi
                 var token = Gjwttoken("Gokul");
 
                 var obj_jwt = new JwtSecurityTokenHandler();
+                var result = await _context.Database.SqlQueryRaw<int>("SELECT 1").ToListAsync();
+                int myNumber = result.FirstOrDefault();
 
-                //var  token = obj_jwt.cre
 
                 return Ok(new
                 {

@@ -1,45 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Order
+namespace gkb_service.Models
 {
-    public int Orderid { get; set; }
+    public class Order : BaseAuditableEntity
+    {
+        public int OrderId { get; set; }
+        public int UserId { get; set; }
+        public int PaymentTypeId { get; set; }
 
-    public int? Userid { get; set; }
+        // Stored as JSON in PostgreSQL
+        public string? OrderDetails { get; set; }
+        public int? Price { get; set; }
+        public int? DiscountId { get; set; }
+        public int? DeliveryId { get; set; }
+        public int? TaxId { get; set; }
 
-    public int? Paymenttypeid { get; set; }
-
-    public string? Orderdetails { get; set; }
-
-    public decimal? Price { get; set; }
-
-    public string? OrderStatus { get; set; }
-
-    public int? Discountid { get; set; }
-
-    public int? Deliveryid { get; set; }
-
-    public int? Taxid { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual Deliverycharge? Delivery { get; set; }
-
-    public virtual Discount? Discount { get; set; }
-
-    public virtual Paymenttype? Paymenttype { get; set; }
-
-    public virtual Tax? Tax { get; set; }
-
-    public virtual UserDetail? User { get; set; }
+        // Navigation Properties
+        public UserDetails? User { get; set; }
+        public PaymentType? PaymentType { get; set; }
+        public Discount? Discount { get; set; }
+        public DeliveryCharge? DeliveryCharge { get; set; }
+        public Tax? Tax { get; set; }
+    }
 }

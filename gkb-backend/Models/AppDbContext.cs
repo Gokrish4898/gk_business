@@ -1,483 +1,208 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using gkb_service.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace gkb_service.Models;
-
-public partial class AppDbContext : DbContext
+namespace snapdough_api.Data
 {
-    public AppDbContext()
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserDetails> UserDetails { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Price> Prices { get; set; }
+        public DbSet<PaymentType> PaymentTypes { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<DeliveryCharge> DeliveryCharges { get; set; }
+        public DbSet<Tax> Taxes { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<ExtraTopping> ExtraToppings { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // 1. Role & User Details
+            modelBuilder.Entity<Role>(e => {
+                e.ToTable("role");
+                e.HasKey(r => r.RoleId);
+                e.Property(r => r.RoleId).HasColumnName("roleid");
+                e.Property(r => r.RoleType).HasColumnName("role_type");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<UserDetails>(e => {
+                e.ToTable("user_details");
+                e.HasKey(u => u.UserId);
+                e.Property(u => u.UserId).HasColumnName("userid");
+                e.Property(u => u.Username).HasColumnName("username");
+                e.Property(u => u.Email).HasColumnName("email");
+                e.Property(u => u.RoleId).HasColumnName("roleid");
+                e.Property(u => u.SaltHash).HasColumnName("salthash");
+                e.Property(u => u.PasswordHash).HasColumnName("passwordhash");
+                e.Property(u => u.AddressOne).HasColumnName("address_one");
+                e.Property(u => u.AddressTwo).HasColumnName("address_two");
+                e.Property(u => u.Pincode).HasColumnName("pincode");
+                e.Property(u => u.State).HasColumnName("state");
+                e.Property(u => u.Country).HasColumnName("country");
+                e.Property(u => u.MobileNo).HasColumnName("mobileno");
+                MapAuditColumns(e);
+
+                e.HasOne(u => u.Role)
+                 .WithMany(r => r.Users)
+                 .HasForeignKey(u => u.RoleId);
+            });
+
+            // 2. Product, Recipe, Price
+            modelBuilder.Entity<Product>(e => {
+                e.ToTable("product");
+                e.HasKey(p => p.ProductId);
+                e.Property(p => p.ProductId).HasColumnName("productid");
+                e.Property(p => p.Name).HasColumnName("name");
+                e.Property(p => p.Delivery).HasColumnName("delivery");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<Recipe>(e => {
+                e.ToTable("recipe");
+                e.HasKey(r => r.RecipeId);
+                e.Property(r => r.RecipeId).HasColumnName("recipeid");
+                e.Property(r => r.ProductId).HasColumnName("productid");
+                e.Property(r => r.RecipeName).HasColumnName("recipe_name");
+                e.Property(r => r.RecipeDetails).HasColumnName("recipe_details").HasColumnType("json");
+                MapAuditColumns(e);
+
+                e.HasOne(r => r.Product)
+                 .WithMany(p => p.Recipes)
+                 .HasForeignKey(r => r.ProductId);
+            });
+
+            modelBuilder.Entity<Price>(e => {
+                e.ToTable("price");
+                e.HasKey(p => p.PriceId);
+                e.Property(p => p.PriceId).HasColumnName("priceid");
+                e.Property(p => p.ProductId).HasColumnName("productid");
+                e.Property(p => p.Unit).HasColumnName("unit");
+                e.Property(p => p.UnitPrice).HasColumnName("unit_price");
+                MapAuditColumns(e);
+
+                e.HasOne(p => p.Product)
+                 .WithMany(pr => pr.Prices)
+                 .HasForeignKey(p => p.ProductId);
+            });
+
+            // 3. Wishlist
+            modelBuilder.Entity<Wishlist>(e => {
+                e.ToTable("wishlist");
+                e.HasKey(w => w.WishlistId);
+                e.Property(w => w.WishlistId).HasColumnName("wishlist");
+                e.Property(w => w.UserId).HasColumnName("userid");
+                e.Property(w => w.ProductId).HasColumnName("productid");
+                MapAuditColumns(e);
+
+                e.HasOne(w => w.User)
+                 .WithMany(u => u.Wishlists)
+                 .HasForeignKey(w => w.UserId);
+
+                e.HasOne(w => w.Product)
+                 .WithMany(p => p.Wishlists)
+                 .HasForeignKey(w => w.ProductId);
+            });
+
+            // 4. Orders & Checkout Metadata
+            modelBuilder.Entity<PaymentType>(e => {
+                e.ToTable("paymenttype");
+                e.HasKey(p => p.PaymentTypeId);
+                e.Property(p => p.PaymentTypeId).HasColumnName("paymenttypeid");
+                e.Property(p => p.Type).HasColumnName("type");
+                e.Property(p => p.Availability).HasColumnName("availability");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<Discount>(e => {
+                e.ToTable("discount");
+                e.HasKey(d => d.DiscountId);
+                e.Property(d => d.DiscountId).HasColumnName("discountid");
+                e.Property(d => d.Type).HasColumnName("type");
+                e.Property(d => d.PromoCode).HasColumnName("promocode");
+                e.Property(d => d.ExpireDate).HasColumnName("expiredate");
+                e.Property(d => d.Precentage).HasColumnName("precentage");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<DeliveryCharge>(e => {
+                e.ToTable("deliverycharge");
+                e.HasKey(d => d.DeliveryCId);
+                e.Property(d => d.DeliveryCId).HasColumnName("deliverycid");
+                e.Property(d => d.Type).HasColumnName("type");
+                e.Property(d => d.Price).HasColumnName("price");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<Tax>(e => {
+                e.ToTable("Tax");
+                e.HasKey(t => t.TaxId);
+                e.Property(t => t.TaxId).HasColumnName("taxid");
+                e.Property(t => t.TaxName).HasColumnName("taxname");
+                e.Property(t => t.TaxPercentage).HasColumnName("taxpercentage");
+                e.Property(t => t.TaxInculde).HasColumnName("taxinculde");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<Order>(e => {
+                e.ToTable("orders");
+                e.HasKey(o => o.OrderId);
+                e.Property(o => o.OrderId).HasColumnName("orderid");
+                e.Property(o => o.UserId).HasColumnName("userid");
+                e.Property(o => o.PaymentTypeId).HasColumnName("paymenttypeid");
+                e.Property(o => o.OrderDetails).HasColumnName("orderdetails").HasColumnType("json");
+                e.Property(o => o.Price).HasColumnName("price");
+                e.Property(o => o.DiscountId).HasColumnName("discountid");
+                e.Property(o => o.DeliveryId).HasColumnName("deliveryid");
+                e.Property(o => o.TaxId).HasColumnName("taxid");
+                MapAuditColumns(e);
+
+                e.HasOne(o => o.User).WithMany(u => u.Orders).HasForeignKey(o => o.UserId);
+                e.HasOne(o => o.PaymentType).WithMany(p => p.Orders).HasForeignKey(o => o.PaymentTypeId);
+                e.HasOne(o => o.Discount).WithMany(d => d.Orders).HasForeignKey(o => o.DiscountId);
+                e.HasOne(o => o.DeliveryCharge).WithMany(dc => dc.Orders).HasForeignKey(o => o.DeliveryId);
+                e.HasOne(o => o.Tax).WithMany(t => t.Orders).HasForeignKey(o => o.TaxId);
+            });
+
+            // 5. Standalone Tables
+            modelBuilder.Entity<Stock>(e => {
+                e.ToTable("stock");
+                e.HasKey(s => s.StockId);
+                e.Property(s => s.StockId).HasColumnName("stockid");
+                e.Property(s => s.StockName).HasColumnName("stock_name");
+                e.Property(s => s.Unit).HasColumnName("unit");
+                e.Property(s => s.UnitPrice).HasColumnName("unit_price");
+                e.Property(s => s.Availability).HasColumnName("availability");
+                MapAuditColumns(e);
+            });
+
+            modelBuilder.Entity<ExtraTopping>(e => {
+                e.ToTable("extra_topping");
+                e.HasKey(et => et.ExToppingId);
+                e.Property(et => et.ExToppingId).HasColumnName("ex_toppingid");
+                e.Property(et => et.Name).HasColumnName("name");
+                e.Property(et => et.Unit).HasColumnName("unit");
+                e.Property(et => et.UnitPrice).HasColumnName("unitprice");
+                MapAuditColumns(e);
+            });
+        }
+
+        // Helper method to keep audit mappings DRY
+        private static void MapAuditColumns<T>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> entity) where T : BaseAuditableEntity
+        {
+            entity.Property(e => e.CreatedOn).HasColumnName("createdon");
+            entity.Property(e => e.UpdatedOn).HasColumnName("updatedon");
+            entity.Property(e => e.CreatedBy).HasColumnName("createdby");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updatedby");
+            entity.Property(e => e.Active).HasColumnName("active");
+        }
     }
-
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-    {
-    }
-
-    public virtual DbSet<Deliverycharge> Deliverycharges { get; set; }
-
-    public virtual DbSet<Discount> Discounts { get; set; }
-
-    public virtual DbSet<ExtraTopping> ExtraToppings { get; set; }
-
-    public virtual DbSet<Order> Orders { get; set; }
-
-    public virtual DbSet<Paymenttype> Paymenttypes { get; set; }
-
-    public virtual DbSet<Price> Prices { get; set; }
-
-    public virtual DbSet<Product> Products { get; set; }
-
-    public virtual DbSet<Recipe> Recipes { get; set; }
-
-    public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<Stock> Stocks { get; set; }
-
-    public virtual DbSet<Tax> Taxes { get; set; }
-
-    public virtual DbSet<UserDetail> UserDetails { get; set; }
-
-    public virtual DbSet<Wishlist> Wishlists { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=dpg-d7no68gg4nts73bar8gg-a.ohio-postgres.render.com;Port=5432;Database=gkb_dev;Username=gkb_dev_user;Password=Rq6sz94W1X3kLM9Q8DhcEJ7SCpEQ3jvf;SslMode=Require;TrustServerCertificate=True;Include Error Detail=true;");
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Deliverycharge>(entity =>
-        {
-            entity.HasKey(e => e.Deliverycid).HasName("deliverycharge_pkey");
-
-            entity.ToTable("deliverycharge");
-
-            entity.Property(e => e.Deliverycid).HasColumnName("deliverycid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Price)
-                .HasPrecision(10, 2)
-                .HasColumnName("price");
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .HasColumnName("type");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Discount>(entity =>
-        {
-            entity.HasKey(e => e.Discountid).HasName("discount_pkey");
-
-            entity.ToTable("discount");
-
-            entity.Property(e => e.Discountid).HasColumnName("discountid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Expiredate)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("expiredate");
-            entity.Property(e => e.Percentage)
-                .HasPrecision(5, 2)
-                .HasColumnName("percentage");
-            entity.Property(e => e.Promocode)
-                .HasMaxLength(50)
-                .HasColumnName("promocode");
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .HasColumnName("type");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<ExtraTopping>(entity =>
-        {
-            entity.HasKey(e => e.ExToppingid).HasName("extra_topping_pkey");
-
-            entity.ToTable("extra_topping");
-
-            entity.Property(e => e.ExToppingid).HasColumnName("ex_toppingid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .HasColumnName("name");
-            entity.Property(e => e.Unit)
-                .HasMaxLength(50)
-                .HasColumnName("unit");
-            entity.Property(e => e.Unitprice)
-                .HasPrecision(10, 2)
-                .HasColumnName("unitprice");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Order>(entity =>
-        {
-            entity.HasKey(e => e.Orderid).HasName("orders_pkey");
-
-            entity.ToTable("orders");
-
-            entity.Property(e => e.Orderid).HasColumnName("orderid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Deliveryid).HasColumnName("deliveryid");
-            entity.Property(e => e.Discountid).HasColumnName("discountid");
-            entity.Property(e => e.OrderStatus)
-                .HasMaxLength(50)
-                .HasDefaultValueSql("'Pending'::character varying")
-                .HasColumnName("order_status");
-            entity.Property(e => e.Orderdetails)
-                .HasColumnType("json")
-                .HasColumnName("orderdetails");
-            entity.Property(e => e.Paymenttypeid).HasColumnName("paymenttypeid");
-            entity.Property(e => e.Price)
-                .HasPrecision(10, 2)
-                .HasColumnName("price");
-            entity.Property(e => e.Taxid).HasColumnName("taxid");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-            entity.Property(e => e.Userid).HasColumnName("userid");
-
-            entity.HasOne(d => d.Delivery).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.Deliveryid)
-                .HasConstraintName("orders_deliveryid_fkey");
-
-            entity.HasOne(d => d.Discount).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.Discountid)
-                .HasConstraintName("orders_discountid_fkey");
-
-            entity.HasOne(d => d.Paymenttype).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.Paymenttypeid)
-                .HasConstraintName("orders_paymenttypeid_fkey");
-
-            entity.HasOne(d => d.Tax).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.Taxid)
-                .HasConstraintName("orders_taxid_fkey");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.Userid)
-                .HasConstraintName("orders_userid_fkey");
-        });
-
-        modelBuilder.Entity<Paymenttype>(entity =>
-        {
-            entity.HasKey(e => e.Paymenttypeid).HasName("paymenttype_pkey");
-
-            entity.ToTable("paymenttype");
-
-            entity.Property(e => e.Paymenttypeid).HasColumnName("paymenttypeid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Availability).HasColumnName("availability");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .HasColumnName("type");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Price>(entity =>
-        {
-            entity.HasKey(e => e.Priceid).HasName("price_pkey");
-
-            entity.ToTable("price");
-
-            entity.Property(e => e.Priceid).HasColumnName("priceid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Productid).HasColumnName("productid");
-            entity.Property(e => e.Unit)
-                .HasMaxLength(50)
-                .HasColumnName("unit");
-            entity.Property(e => e.UnitPrice)
-                .HasPrecision(10, 2)
-                .HasColumnName("unit_price");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.Prices)
-                .HasForeignKey(d => d.Productid)
-                .HasConstraintName("price_productid_fkey");
-        });
-
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.HasKey(e => e.Productid).HasName("product_pkey");
-
-            entity.ToTable("product");
-
-            entity.Property(e => e.Productid).HasColumnName("productid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Delivery).HasColumnName("delivery");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Recipe>(entity =>
-        {
-            entity.HasKey(e => e.Recipeid).HasName("recipe_pkey");
-
-            entity.ToTable("recipe");
-
-            entity.Property(e => e.Recipeid).HasColumnName("recipeid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Productid).HasColumnName("productid");
-            entity.Property(e => e.RecipeDetails)
-                .HasColumnType("json")
-                .HasColumnName("recipe_details");
-            entity.Property(e => e.RecipeName)
-                .HasMaxLength(255)
-                .HasColumnName("recipe_name");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.Recipes)
-                .HasForeignKey(d => d.Productid)
-                .HasConstraintName("recipe_productid_fkey");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasKey(e => e.Roleid).HasName("role_pkey");
-
-            entity.ToTable("role");
-
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.RoleType)
-                .HasMaxLength(50)
-                .HasColumnName("role_type");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Stock>(entity =>
-        {
-            entity.HasKey(e => e.Stockid).HasName("stock_pkey");
-
-            entity.ToTable("stock");
-
-            entity.Property(e => e.Stockid).HasColumnName("stockid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Availability).HasColumnName("availability");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.StockName)
-                .HasMaxLength(255)
-                .HasColumnName("stock_name");
-            entity.Property(e => e.Unit)
-                .HasMaxLength(50)
-                .HasColumnName("unit");
-            entity.Property(e => e.UnitPrice)
-                .HasPrecision(10, 2)
-                .HasColumnName("unit_price");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<Tax>(entity =>
-        {
-            entity.HasKey(e => e.Taxid).HasName("Tax_pkey");
-
-            entity.ToTable("Tax");
-
-            entity.Property(e => e.Taxid).HasColumnName("taxid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Taxinclude).HasColumnName("taxinclude");
-            entity.Property(e => e.Taxname)
-                .HasMaxLength(100)
-                .HasColumnName("taxname");
-            entity.Property(e => e.Taxpercentage)
-                .HasPrecision(5, 2)
-                .HasColumnName("taxpercentage");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-        });
-
-        modelBuilder.Entity<UserDetail>(entity =>
-        {
-            entity.HasKey(e => e.Userid).HasName("user_details_pkey");
-
-            entity.ToTable("user_details");
-
-            entity.HasIndex(e => e.Email, "user_details_email_key").IsUnique();
-
-            entity.Property(e => e.Userid).HasColumnName("userid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.AddressOne).HasColumnName("address_one");
-            entity.Property(e => e.AddressTwo).HasColumnName("address_two");
-            entity.Property(e => e.Country)
-                .HasMaxLength(50)
-                .HasColumnName("country");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Email)
-                .HasMaxLength(100)
-                .HasColumnName("email");
-            entity.Property(e => e.Mobileno)
-                .HasMaxLength(20)
-                .HasColumnName("mobileno");
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .HasColumnName("password");
-            entity.Property(e => e.Passwordhash)
-                .HasMaxLength(255)
-                .HasColumnName("passwordhash");
-            entity.Property(e => e.Pincode)
-                .HasMaxLength(20)
-                .HasColumnName("pincode");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Salthash)
-                .HasMaxLength(255)
-                .HasColumnName("salthash");
-            entity.Property(e => e.State)
-                .HasMaxLength(50)
-                .HasColumnName("state");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .HasColumnName("username");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.UserDetails)
-                .HasForeignKey(d => d.Roleid)
-                .HasConstraintName("user_details_roleid_fkey");
-        });
-
-        modelBuilder.Entity<Wishlist>(entity =>
-        {
-            entity.HasKey(e => e.Wishlistid).HasName("wishlist_pkey");
-
-            entity.ToTable("wishlist");
-
-            entity.Property(e => e.Wishlistid).HasColumnName("wishlistid");
-            entity.Property(e => e.Active)
-                .HasDefaultValue(1)
-                .HasColumnName("active");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Createdon)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdon");
-            entity.Property(e => e.Productid).HasColumnName("productid");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Updatedon)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedon");
-            entity.Property(e => e.Userid).HasColumnName("userid");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.Wishlists)
-                .HasForeignKey(d => d.Productid)
-                .HasConstraintName("wishlist_productid_fkey");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Wishlists)
-                .HasForeignKey(d => d.Userid)
-                .HasConstraintName("wishlist_userid_fkey");
-        });
-
-        OnModelCreatingPartial(modelBuilder);
-    }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

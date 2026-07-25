@@ -1,27 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Wishlist
+namespace gkb_service.Models
 {
-    public int Wishlistid { get; set; }
+    public class Wishlist : BaseAuditableEntity
+    {
+        public int WishlistId { get; set; }
+        public int UserId { get; set; }
+        public int ProductId { get; set; }
 
-    public int? Userid { get; set; }
-
-    public int? Productid { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual Product? Product { get; set; }
-
-    public virtual UserDetail? User { get; set; }
+        // Navigation Properties bridging User and Product
+        public UserDetails? User { get; set; }
+        public Product? Product { get; set; }
+    }
 }

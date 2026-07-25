@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Paymenttype
+namespace gkb_service.Models
 {
-    public int Paymenttypeid { get; set; }
+    public class PaymentType : BaseAuditableEntity
+    {
+        public int PaymentTypeId { get; set; }
+        public string? Type { get; set; }
+        public int? Availability { get; set; }
 
-    public string? Type { get; set; }
-
-    public int? Availability { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        // Navigation Property
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
+    }
 }

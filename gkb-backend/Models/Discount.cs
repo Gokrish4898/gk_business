@@ -1,29 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StackExchange.Redis;
 
-namespace gkb_service.Models;
-
-public partial class Discount
+namespace gkb_service.Models
 {
-    public int Discountid { get; set; }
+    public class Discount : BaseAuditableEntity
+    {
+        public int DiscountId { get; set; }
+        public string? Type { get; set; }
+        public string? PromoCode { get; set; }
+        public DateTime? ExpireDate { get; set; }
+        public int? Precentage { get; set; }
 
-    public string? Type { get; set; }
-
-    public string? Promocode { get; set; }
-
-    public DateTime? Expiredate { get; set; }
-
-    public decimal? Percentage { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
+    }
 }

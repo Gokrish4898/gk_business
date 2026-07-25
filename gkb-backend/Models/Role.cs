@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace gkb_service.Models;
-
-public partial class Role
+﻿namespace gkb_service.Models
 {
-    public int Roleid { get; set; }
+    public class Role : BaseAuditableEntity
+    {
+        public int RoleId { get; set; }
+        public string? RoleType { get; set; }
 
-    public string? RoleType { get; set; }
-
-    public DateTime? Createdon { get; set; }
-
-    public DateTime? Updatedon { get; set; }
-
-    public int? Createdby { get; set; }
-
-    public int? Updatedby { get; set; }
-
-    public int? Active { get; set; }
-
-    public virtual ICollection<UserDetail> UserDetails { get; set; } = new List<UserDetail>();
+        // Navigation Property
+        public ICollection<UserDetails> Users { get; set; } = new List<UserDetails>();
+    }
 }

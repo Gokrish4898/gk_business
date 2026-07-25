@@ -1,7 +1,9 @@
-using gkb_service.Controllers.DBcontext;
+//using gkb_service.Controllers.DBcontext;
+using gkb_service.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using snapdough_api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,24 +20,35 @@ builder.Services.AddSwaggerGen();
 //// 2. Register ASP.NET Core Identity
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
 
-string connectionString = string.Empty;
-if (String.IsNullOrEmpty(builder.Configuration.GetValue<string>("DBconfig:dbconnection")))
-{
+//string connectionString = string.Empty;
+//if (String.IsNullOrEmpty(builder.Configuration.GetValue<string>("DBconfig:dbconnection")))
+//{
 
-}
-else
-{
-    var uri = new Uri(builder.Configuration.GetValue<string>("DBconfig:dbconnection").ToString());
-    var username = uri.UserInfo.Split(':')[0];
-    var password = uri.UserInfo.Split(':')[1];
+//}
+//else
+//{
+//    var uri = new Uri(builder.Configuration.GetValue<string>("DBconfig:dbconnection").ToString());
+//    var username = uri.UserInfo.Split(':')[0];
+//    var password = uri.UserInfo.Split(':')[1];
 
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.Substring(1)};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
-}
+//    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.Substring(1)};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+//}
 
 // --- 2. REGISTER POSTGRESQL ---
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+//builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetValue<string>("DBconfig:DefaultConnection")));
+
+//redis connection
+//builder.Services.AddStackExchangeRedisCache(options => 
+//{ 
+//    options.Configuration = builder.Configuration.GetValue<string>("Redis:redisConnection"); 
+//    options.InstanceName = "gkb_dev_cache"; 
+//});
+
+//builder.Services.AddHostedService<gkb_service.subscribe_class.Request_sub>()>
 
 // 1. ADD THIS BLOCK to create the CORS policy
 builder.Services.AddCors(options =>
