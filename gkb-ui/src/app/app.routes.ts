@@ -10,6 +10,9 @@ import { Userprofile } from './userprofile/userprofile';
 import { maintenanceGuard } from './shared/maintenance/maintenance-guard';
 import { Cart } from './cart/cart';
 import { AboutPage } from './about-page/about-page';
+import { Products } from './Admin/master/products/products';
+import { AdminDashboard } from './Admin/admin-dashboard/admin-dashboard';
+import { Recipe } from './Admin/master/recipe/recipe';
 
 export const routes: Routes = [
   {
@@ -34,6 +37,9 @@ export const routes: Routes = [
       { path: 'productdetails/:id', component: ProductDetails },
       { path: 'yourcart', component: Cart },
       { path: 'about', component: AboutPage },
+      { path: 'admin/products', component: Products },
+      { path: 'admin/recipes', component: Recipe },
+      { path: 'admin', component: AdminDashboard },
       { path: '**', component: Landingpage },
     ],
   },

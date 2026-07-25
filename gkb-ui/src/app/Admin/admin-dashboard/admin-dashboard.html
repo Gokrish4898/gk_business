@@ -1,1 +1,147 @@
-<p>admin-dashboard works!</p>
+<div class="container pt-4 pb-5">
+    <div class="dashboard-wrapper bg-white p-4 p-md-5 rounded-4 shadow-sm">
+        
+        <!-- Dashboard Header -->
+        <div class="text-center mb-4">
+            <span class="sub-header text-uppercase tracking-wider">GK Business Portal</span>
+            <h2 class="brand-font display-6 text-dark mt-2 mb-2">Admin Dashboard</h2>
+            <p class="text-muted mx-auto mb-4" style="max-width: 600px;">
+                Manage business masters, product catalog configurations, inventory formulations, and operational metadata.
+            </p>
+            <div class="separator-line mx-auto"></div>
+        </div>
+
+        <!-- Custom Sliding Tabs Navigation -->
+        <div class="tabs-navigation-wrapper mb-5 d-flex justify-content-center">
+            <div class="custom-tab-bar p-1 rounded-pill d-inline-flex bg-light">
+                <button type="button" class="btn tab-btn rounded-pill px-4 py-2 d-flex align-items-center gap-2"
+                    [class.tab-btn-active]="activeTab === 'analytics'" (click)="selectTab('analytics')">
+                    <i class="bi bi-graph-up-arrow"></i> Reports & Analytics
+                </button>
+                <button type="button" class="btn tab-btn rounded-pill px-4 py-2 d-flex align-items-center gap-2"
+                    [class.tab-btn-active]="activeTab === 'masters'" (click)="selectTab('masters')">
+                    <i class="bi bi-folder2-open"></i> System Masters
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Body Content -->
+        <div class="tab-body-container">
+            
+            <!-- SECTION 1: REPORTS & ANALYTICS -->
+            @if (activeTab === 'analytics') {
+            <div class="tab-panel-fade-in">
+                <!-- KPI Highlight Grid -->
+                <div class="row g-4 mb-5">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="kpi-card p-4 rounded-3 shadow-sm border bg-white d-flex align-items-center gap-3">
+                            <div class="kpi-icon-box bg-primary-light text-primary">
+                                <i class="bi bi-cart-check-fill fs-4 text-primary"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small d-block">Total Orders (Weekly)</span>
+                                <h3 class="m-0 fw-bold text-dark">{{ getTotalOrders() }}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="kpi-card p-4 rounded-3 shadow-sm border bg-white d-flex align-items-center gap-3">
+                            <div class="kpi-icon-box bg-gold-light text-warning">
+                                <i class="bi bi-people-fill fs-4 text-warning"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small d-block">Total Visitors (Weekly)</span>
+                                <h3 class="m-0 fw-bold text-dark">{{ getTotalVisitors() }}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="kpi-card p-4 rounded-3 shadow-sm border bg-white d-flex align-items-center gap-3">
+                            <div class="kpi-icon-box bg-accent-light text-danger">
+                                <i class="bi bi-speedometer fs-4 text-danger"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small d-block">Avg Orders / Day</span>
+                                <h3 class="m-0 fw-bold text-dark">{{ getAverageOrders() }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart.js Canvas Grid -->
+                <div class="row g-4">
+                    <!-- Daily Orders Line Chart -->
+                    <div class="col-lg-6">
+                        <div class="chart-card p-4 rounded-3 shadow-sm border bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="chart-title m-0 text-dark">Order Volume by Date</h5>
+                                    <span class="text-muted small">Daily completed orders</span>
+                                </div>
+                                <span class="badge bg-success-subtle text-success">+14% vs last week</span>
+                            </div>
+
+                            <!-- Canvas Container -->
+                            <div class="chart-canvas-container" style="position: relative; height: 220px; width: 100%;">
+                                <canvas #ordersCanvas></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Visitors Bar Chart -->
+                    <div class="col-lg-6">
+                        <div class="chart-card p-4 rounded-3 shadow-sm border bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="chart-title m-0 text-dark">No. of Visitors by Date</h5>
+                                    <span class="text-muted small">Daily landing traffic stats</span>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary">+22% vs last week</span>
+                            </div>
+
+                            <!-- Canvas Container -->
+                            <div class="chart-canvas-container" style="position: relative; height: 220px; width: 100%;">
+                                <canvas #visitorsCanvas></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- SECTION 2: SYSTEM MASTERS -->
+            @if (activeTab === 'masters') {
+            <div class="tab-panel-fade-in">
+                <!-- Panels Grid -->
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-lg-4" *ngFor="let panel of panels">
+                        <div class="card panel-card h-100 border-0 shadow-sm p-4" [class.panel-card-disabled]="panel.disabled">
+                            <div class="panel-icon-box mb-4" 
+                                 [style.background-color]="panel.disabled ? '#f1f2f6' : panel.color + '18'" 
+                                 [style.color]="panel.disabled ? '#a5b1c2' : panel.color">
+                                <i [class]="panel.icon"></i>
+                            </div>
+
+                            <h4 class="panel-title mb-2 text-dark">{{ panel.title }}</h4>
+                            <p class="panel-desc text-muted mb-4 flex-grow-1">{{ panel.desc }}</p>
+
+                            <div class="panel-footer mt-auto pt-2">
+                                <a *ngIf="!panel.disabled" [routerLink]="panel.route" class="btn btn-panel-action w-100 d-flex align-items-center justify-content-center gap-2">
+                                    Access Master <i class="bi bi-arrow-right-short"></i>
+                                </a>
+                                <span *ngIf="panel.disabled" class="badge bg-secondary w-100 py-2 fs-6">
+                                    Under Construction
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+        </div>
+
+    </div>
+</div>

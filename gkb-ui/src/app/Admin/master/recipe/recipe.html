@@ -1,1 +1,228 @@
-<p>recipe works!</p>
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <!-- Left Top Actions -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary-action d-flex align-items-center gap-2" (click)="addRecipe()">
+                    <i class="bi bi-plus-lg"></i> Add Recipe
+                </button>
+                <button class="btn btn-secondary-action d-flex align-items-center gap-2" [disabled]="!selectedRecipeId"
+                    (click)="editRecipe()">
+                    <i class="bi bi-pencil-square"></i> Edit Recipe
+                </button>
+            </div>
+
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Recipes Master</h3>
+            <p class="text-muted m-0">Formulate baking recipes and detail raw material ingredients requirements</p>
+        </div>
+
+        <!-- Recipe List Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col" style="width: 120px;">Recipe ID</th>
+                        <th scope="col">Recipe Name</th>
+                        <th scope="col" style="width: 200px;">Total Ingredients</th>
+                        <th scope="col" style="width: 100px;" class="text-center">Expand</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let r of displayedRecipes">
+                        <!-- Primary row -->
+                        <tr [class.table-row-selected]="selectedRecipeId === r.recipeid"
+                            (click)="selectRecipe(r.recipeid)" style="cursor: pointer;">
+                            <td>
+                                <div class="form-check select-check">
+                                    <input class="form-check-input" type="radio" name="selectedRecipe"
+                                        [checked]="selectedRecipeId === r.recipeid"
+                                        (click)="$event.stopPropagation(); selectRecipe(r.recipeid)" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-id">{{ r.recipeid }}</span>
+                            </td>
+                            <td>
+                                <strong class="recipe-name text-dark">{{ r.recipename }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                                    {{ r.ingredients.length }} Ingredients
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-link p-0 text-muted btn-expand" (click)="toggleExpand(r.recipeid, $event)">
+                                    <i class="bi" [class.bi-chevron-down]="expandedRecipeId !== r.recipeid"
+                                                    [class.bi-chevron-up]="expandedRecipeId === r.recipeid"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Expanded details row -->
+                        <tr *ngIf="expandedRecipeId === r.recipeid">
+                            <td colspan="5" class="p-0 border-0">
+                                <div class="expanded-detail-box p-4 bg-light">
+                                    <div class="ingredients-header mb-3 d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0 text-primary-action brand-font">Ingredients Formulation</h5>
+                                        <span class="text-muted small">Format: JSON Array</span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10 col-lg-8">
+                                            <div class="table-responsive rounded shadow-sm bg-white border">
+                                                <table class="table table-custom align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Stock Name</th>
+                                                            <th scope="col" class="text-end" style="width: 150px;">Quantity</th>
+                                                            <th scope="col" style="width: 150px;">Unit of Measure</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let ing of r.ingredients">
+                                                            <td>
+                                                                <strong class="recipe-name text-dark fw-semibold">{{ ing.stockname }}</strong>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <span class="text-highlight fw-bold">{{ ing.quantity }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-light border text-dark px-3 py-2">{{ ing.unitomeasure }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr *ngIf="displayedRecipes.length === 0">
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No recipes found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allRecipes.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dialog -->
+@if (isModalOpen) {
+<div class="custom-backdrop" (click)="closeModal()"></div>
+
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-content">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title brand-text">{{ modalTitle }}</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+
+            <div class="modal-body mt-3">
+                <form #recipeForm="ngForm" (ngSubmit)="submitRecipe()">
+                    <!-- Recipe Name -->
+                    <div class="mb-4">
+                        <label for="recipeName" class="form-label text-white">Recipe Name</label>
+                        <input type="text" class="form-control text-dark" id="recipeName" name="recipename"
+                            [(ngModel)]="modalRecipeName" required #nameField="ngModel"
+                            placeholder="Enter recipe name" />
+                        <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
+                            class="text-danger small mt-1">
+                            Recipe name is required.
+                        </div>
+                    </div>
+
+                    <!-- Ingredients Editor Title -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label text-white mb-0">Ingredients List</label>
+                        <button type="button" class="btn btn-sm btn-secondary-action py-1 px-3 d-flex align-items-center gap-1"
+                            (click)="addIngredientRow()">
+                            <i class="bi bi-plus-circle"></i> Add Ingredient Row
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Ingredients Editor List -->
+                    <div class="ingredients-editor-container rounded p-3 mb-4" style="background: rgba(255, 255, 255, 0.05); max-height: 300px; overflow-y: auto;">
+                        
+                        <!-- Header Row for Editor -->
+                        <div class="row g-2 mb-2 d-none d-md-flex text-muted small fw-bold">
+                            <div class="col-md-6 text-white">Stock Name</div>
+                            <div class="col-md-3 text-white">Quantity</div>
+                            <div class="col-md-2 text-white">Unit of Measure</div>
+                            <div class="col-md-1 text-center text-white">Remove</div>
+                        </div>
+
+                        <!-- Editor Rows -->
+                        <div class="row g-2 align-items-center mb-3 mb-md-2 editor-row" *ngFor="let ing of modalIngredients; let i = index">
+                            <!-- Stock Name -->
+                            <div class="col-12 col-md-6">
+                                <label class="d-block d-md-none text-muted small mb-1">Stock Name</label>
+                                <input type="text" class="form-control text-dark" [name]="'stockname_' + i"
+                                    [(ngModel)]="ing.stockname" required placeholder="e.g. Cake Flour" />
+                            </div>
+                            
+                            <!-- Quantity -->
+                            <div class="col-6 col-md-3">
+                                <label class="d-block d-md-none text-muted small mb-1">Quantity</label>
+                                <input type="number" class="form-control text-dark" [name]="'quantity_' + i"
+                                    [(ngModel)]="ing.quantity" required min="0.01" step="any" placeholder="1.00" />
+                            </div>
+
+                            <!-- Unit of Measure -->
+                            <div class="col-5 col-md-2">
+                                <label class="d-block d-md-none text-muted small mb-1">Unit</label>
+                                <select class="form-select text-dark" [name]="'unit_' + i"
+                                    [(ngModel)]="ing.unitomeasure">
+                                    <option *ngFor="let unit of availableUnits" [value]="unit">{{ unit }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Delete Action -->
+                            <div class="col-1 col-md-1 text-center pt-3 pt-md-0">
+                                <button type="button" class="btn btn-sm btn-link text-danger border-0 p-0 fs-5 btn-remove-row"
+                                    (click)="removeIngredientRow(i)">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary-action bg-secondary"
+                            (click)="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary-action"
+                            [disabled]="recipeForm.invalid">Submit Recipe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+}

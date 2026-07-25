@@ -5,6 +5,7 @@ import { ToastService } from '../shared/toaster/toast-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoginService } from './login-service';
+import { ReversePipe } from '../custom-pipe/reverse-pipe';
 
 @Component({
   selector: 'app-login',
@@ -45,6 +46,10 @@ export class Login implements OnInit{
 
     //   }
     // )
+    let postdata = "asdfg";
+    let result = new ReversePipe().transform(postdata);
+
+    console.log(result,"result")
     var formdata = {
       Email : "mohamedshamir988@gmail.com"
     }

@@ -1,1 +1,157 @@
-<p>products works!</p>
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <!-- Left Top Actions -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary-action d-flex align-items-center gap-2" (click)="addProduct()">
+                    <i class="bi bi-plus-lg"></i> Add Product
+                </button>
+                <button class="btn btn-secondary-action d-flex align-items-center gap-2" [disabled]="!selectedProductId"
+                    (click)="editProduct()">
+                    <i class="bi bi-pencil-square"></i> Edit Product
+                </button>
+            </div>
+
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Products Master</h3>
+            <p class="text-muted m-0">Manage products, pricing, and stock status</p>
+        </div>
+
+        <!-- Product List Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col">Product ID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of displayedProducts"
+                        [class.table-row-selected]="selectedProductId === p.productid"
+                        (click)="selectProduct(p.productid)" style="cursor: pointer;">
+                        <td>
+                            <div class="form-check select-check">
+                                <input class="form-check-input" type="radio" name="selectedProduct"
+                                    [checked]="selectedProductId === p.productid"
+                                    (click)="$event.stopPropagation(); selectProduct(p.productid)" />
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-id">{{ p.productid }}</span>
+                        </td>
+                        <td>
+                            <strong class="product-name">{{ p.name }}</strong>
+                        </td>
+                        <td>{{ p.category }}</td>
+                        <td>
+                            <span class="text-highlight font-weight-bold">{{ p.price | currency:'USD' }}</span>
+                        </td>
+                        <td>
+                            <span class="status-pill" [class.in-stock]="p.status === 'In Stock'"
+                                [class.out-of-stock]="p.status !== 'In Stock'">
+                                {{ p.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="displayedProducts.length === 0">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No products found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allProducts.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>
+
+@if (isModalOpen) {
+<div class="custom-backdrop" (click)="closeModal()"></div>
+
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-content">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title brand-text">{{ modalTitle }}</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+
+            <div class="modal-body mt-3">
+                <form #productForm="ngForm" (ngSubmit)="submitProduct(productForm.value)">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label text-white">Product Name</label>
+                        <input type="text" class="form-control text-dark" id="productName" name="name"
+                            [ngModel]="modalProduct.name" required #nameField="ngModel"
+                            placeholder="Enter product name" />
+                        <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
+                            class="text-danger small mt-1">
+                            Product name is required.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label text-white">Price ($)</label>
+                        <input type="number" class="form-control text-dark" id="productPrice" name="price"
+                            [ngModel]="modalProduct.price" required min="0.01" step="0.01" #priceField="ngModel"
+                            placeholder="0.00" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="productCategory" class="form-label text-white">Category</label>
+                        <select class="form-select text-dark" id="productCategory" name="category"
+                            [ngModel]="modalProduct.category">
+                            <option value="Brownie">Brownie</option>
+                            <option value="Cakes">Cakes</option>
+                            <option value="Breads">Breads</option>
+                            <option value="Apple Pie">Apple Pie</option>
+                            <option value="Muffins">Muffins</option>
+                            <option value="Cookies">Cookies</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="productStatus" class="form-label text-white">Status</label>
+                        <select class="form-select text-dark" id="productStatus" name="status"
+                            [ngModel]="modalProduct.status">
+                            <option value="In Stock">In Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-secondary-action bg-secondary"
+                            (click)="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary-action"
+                            [disabled]="productForm.invalid">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,188 @@
+.dashboard-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.separator-line {
+  width: 60px;
+  height: 4px;
+  background-color: var(--accent-gold, #d4a373);
+  border-radius: 2px;
+}
+
+/* Custom Segmented Sliding Tabs */
+.tabs-navigation-wrapper {
+  margin-top: 10px;
+}
+
+.custom-tab-bar {
+  border: 1px solid #eef2f5;
+  background: #f8f9fa;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.tab-btn {
+  border: none;
+  font-weight: 600;
+  color: var(--text-muted, #7f8c8d);
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  font-size: 0.9rem;
+  box-shadow: none;
+
+  &:hover {
+    color: var(--color-primary, #2c3e50);
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.tab-btn-active {
+  background-color: #ffffff !important;
+  color: var(--color-primary, #2c3e50) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Tab Fade In Transition */
+.tab-panel-fade-in {
+  animation: tabFadeIn 0.45s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* KPI Summary Cards */
+.kpi-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-color: #f1f2f6 !important;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  h3 {
+    font-family: 'Lato', sans-serif !important;
+    font-weight: 700;
+    color: var(--color-primary, #2c3e50);
+  }
+}
+
+.kpi-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-primary-light { background-color: rgba(44, 62, 80, 0.08); }
+.bg-gold-light { background-color: rgba(212, 163, 115, 0.1); }
+.bg-accent-light { background-color: rgba(230, 126, 34, 0.08); }
+
+/* Chart.js Cards & Styling */
+.chart-card {
+  border-color: #f1f2f6 !important;
+}
+
+.chart-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+}
+
+.chart-canvas-container {
+  height: 220px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* Masters Cards Styling */
+.panel-card {
+  background: #ffffff;
+  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f1f2f6;
+
+  &:hover:not(.panel-card-disabled) {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+    border-color: rgba(212, 163, 115, 0.2);
+
+    .btn-panel-action {
+      background-color: var(--color-primary, #2c3e50);
+      color: #ffffff;
+    }
+  }
+}
+
+.panel-card-disabled {
+  opacity: 0.75;
+  background-color: #fafbfc;
+  cursor: not-allowed;
+}
+
+.panel-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  transition: all 0.25s ease;
+}
+
+.panel-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.panel-desc {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.btn-panel-action {
+  background-color: transparent;
+  color: var(--color-primary, #2c3e50);
+  border: 1.5px solid var(--color-primary, #2c3e50);
+  padding: 10px 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: var(--color-primary, #2c3e50);
+    color: #ffffff;
+    
+    i {
+      transform: translateX(4px);
+    }
+  }
+
+  i {
+    transition: transform 0.2s ease;
+  }
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
