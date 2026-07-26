@@ -20,6 +20,7 @@ namespace snapdough_api.Data
         public DbSet<Tax> Taxes { get; set; }
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<ExtraTopping> ExtraToppings { get; set; }
+        //public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,14 +71,13 @@ namespace snapdough_api.Data
                 e.ToTable("recipe");
                 e.HasKey(r => r.RecipeId);
                 e.Property(r => r.RecipeId).HasColumnName("recipeid");
-                e.Property(r => r.ProductId).HasColumnName("productid");
                 e.Property(r => r.RecipeName).HasColumnName("recipe_name");
-                e.Property(r => r.RecipeDetails).HasColumnName("recipe_details").HasColumnType("json");
+                e.Property(r => r.Ingredients).HasColumnName("ingredients");
+
+                // Ensure MapAuditColumns(e) is still here if you use it
                 MapAuditColumns(e);
 
-                e.HasOne(r => r.Product)
-                 .WithMany(p => p.Recipes)
-                 .HasForeignKey(r => r.ProductId);
+                // Make sure all .HasOne() and .ProductId mappings are completely gone
             });
 
             modelBuilder.Entity<Price>(e => {

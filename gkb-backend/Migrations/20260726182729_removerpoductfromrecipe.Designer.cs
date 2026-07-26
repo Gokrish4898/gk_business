@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using snapdough_api.Data;
@@ -11,9 +12,11 @@ using snapdough_api.Data;
 namespace gkb_service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260726182729_removerpoductfromrecipe")]
+    partial class removerpoductfromrecipe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -721,9 +724,11 @@ namespace gkb_service.Migrations
 
             modelBuilder.Entity("gkb_service.Models.Recipe", b =>
                 {
-                    b.HasOne("gkb_service.Models.Product", null)
+                    b.HasOne("gkb_service.Models.Product", "Product")
                         .WithMany("Recipes")
                         .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("gkb_service.Models.UserDetails", b =>

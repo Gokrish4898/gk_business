@@ -46,29 +46,29 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let s of displayedStock"
-                        [class.table-row-selected]="selectedStockId === s.stockid"
-                        (click)="selectStock(s.stockid)" style="cursor: pointer;">
+                        [class.table-row-selected]="selectedStockId === s.stockId"
+                        (click)="selectStock(s.stockId)" style="cursor: pointer;">
                         <td>
                             <div class="form-check select-check">
                                 <input class="form-check-input" type="radio" name="selectedStock"
-                                    [checked]="selectedStockId === s.stockid"
-                                    (click)="$event.stopPropagation(); selectStock(s.stockid)" />
+                                    [checked]="selectedStockId === s.stockId"
+                                    (click)="$event.stopPropagation(); selectStock(s.stockId)" />
                             </div>
                         </td>
                         <td>
-                            <span class="badge badge-id">{{ s.stockid }}</span>
+                            <span class="badge badge-id">{{ s.stockId }}</span>
                         </td>
                         <td>
-                            <strong class="product-name">{{ s.stockname }}</strong>
+                            <strong class="product-name">{{ s.stockName }}</strong>
                         </td>
                         <td>
                             <span class="badge bg-light text-dark border">{{ s.unit }}</span>
                         </td>
                         <td>
-                            <span class="text-highlight font-weight-bold">{{ s.unitprice | currency:'USD' }}</span>
+                            <span class="text-highlight font-weight-bold">{{ s.unitPrice }}</span>
                         </td>
                         <td>
-                            <span>{{ s.availability | number }} {{ s.unit }}</span>
+                            <span>{{ s.availability }} {{ s.unit }}</span>
                         </td>
                         <td>
                             <span class="status-pill" 
@@ -114,7 +114,7 @@
                     <div class="mb-3">
                         <label for="stockName" class="form-label text-white">Stock Name</label>
                         <input type="text" class="form-control text-dark" id="stockName" name="stockname"
-                            [ngModel]="modalStock.stockname" required #nameField="ngModel"
+                            [ngModel]="modalStock.stockName" required #nameField="ngModel"
                             placeholder="Enter stock name" />
                         <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
                             class="text-danger small mt-1">
@@ -133,7 +133,7 @@
                     <div class="mb-3">
                         <label for="stockUnitPrice" class="form-label text-white">Unit Price ($)</label>
                         <input type="number" class="form-control text-dark" id="stockUnitPrice" name="unitprice"
-                            [ngModel]="modalStock.unitprice" required min="0" #priceField="ngModel"
+                            [ngModel]="modalStock.unitPrice" required min="0" #priceField="ngModel"
                             placeholder="0" />
                         <div *ngIf="priceField.invalid && (priceField.dirty || priceField.touched)"
                             class="text-danger small mt-1">
