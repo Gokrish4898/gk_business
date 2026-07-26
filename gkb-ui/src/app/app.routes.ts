@@ -13,6 +13,7 @@ import { AboutPage } from './about-page/about-page';
 import { Products } from './Admin/master/products/products';
 import { AdminDashboard } from './Admin/admin-dashboard/admin-dashboard';
 import { Recipe } from './Admin/master/recipe/recipe';
+import { Stock } from './Admin/master/stock/stock';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,7 @@ export const routes: Routes = [
       { path: 'about', component: AboutPage },
       { path: 'admin/products', component: Products },
       { path: 'admin/recipes', component: Recipe },
+      { path: 'admin/stock', component: Stock },
       { path: 'admin', component: AdminDashboard },
       { path: '**', component: Landingpage },
     ],

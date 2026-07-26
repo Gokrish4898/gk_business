@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
+import { Loading } from '../../../shared/spinner/loading';
 
 interface Product {
   productid: number;
@@ -50,7 +51,10 @@ export class Products implements OnInit {
     status: 'In Stock'
   };
 
+  constructor(private loading: Loading) {}
+
   ngOnInit() {
+    this.loading.showAndAutoHide();
     this.updateDisplayedProducts();
   }
 

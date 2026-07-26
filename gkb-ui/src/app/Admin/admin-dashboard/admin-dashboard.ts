@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
+import { Loading } from '../../shared/spinner/loading';
 
 Chart.register(...registerables);
 
@@ -91,9 +92,9 @@ export class AdminDashboard implements OnInit, OnDestroy {
       title: 'Inventory & Stock',
       desc: 'Control raw material stock levels and pricing',
       icon: 'bi bi-box-seam-fill',
-      route: '/admin',
-      color: '#7f8c8d',
-      disabled: true
+      route: '/admin/stock',
+      color: '#2980b9',
+      disabled: false
     },
     {
       title: 'Extra Toppings',
@@ -105,8 +106,10 @@ export class AdminDashboard implements OnInit, OnDestroy {
     }
   ];
 
+  constructor(private loading: Loading) {}
+
   ngOnInit() {
-    // Keep standard hook signatures
+    this.loading.showAndAutoHide();
   }
 
   ngOnDestroy() {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
+import { Loading } from '../../../shared/spinner/loading';
 
 export interface Ingredient {
   stockname: string;
@@ -78,7 +79,10 @@ export class Recipe implements OnInit {
   // Predefined lists of standard units
   availableUnits = ['g', 'kg', 'ml', 'l', 'pcs', 'tsp', 'tbsp', 'cup', 'pinch'];
 
+  constructor(private loading: Loading) {}
+
   ngOnInit() {
+    this.loading.showAndAutoHide();
     this.updateDisplayedRecipes();
   }
 

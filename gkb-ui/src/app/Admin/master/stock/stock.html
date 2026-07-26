@@ -1,1 +1,166 @@
-<p>stock works!</p>
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <!-- Left Top Actions -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary-action d-flex align-items-center gap-2" (click)="addStock()">
+                    <i class="bi bi-plus-lg"></i> Add Stock
+                </button>
+                <button class="btn btn-secondary-action d-flex align-items-center gap-2" [disabled]="!selectedStockId"
+                    (click)="editStock()">
+                    <i class="bi bi-pencil-square"></i> Edit Stock
+                </button>
+            </div>
+
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Inventory & Stock Master</h3>
+            <p class="text-muted m-0">Manage raw material stock levels, measure units, and unit pricing</p>
+        </div>
+
+        <!-- Stock List Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col">Stock ID</th>
+                        <th scope="col">Stock Name</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Unit Price</th>
+                        <th scope="col">Availability</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of displayedStock"
+                        [class.table-row-selected]="selectedStockId === s.stockid"
+                        (click)="selectStock(s.stockid)" style="cursor: pointer;">
+                        <td>
+                            <div class="form-check select-check">
+                                <input class="form-check-input" type="radio" name="selectedStock"
+                                    [checked]="selectedStockId === s.stockid"
+                                    (click)="$event.stopPropagation(); selectStock(s.stockid)" />
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-id">{{ s.stockid }}</span>
+                        </td>
+                        <td>
+                            <strong class="product-name">{{ s.stockname }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ s.unit }}</span>
+                        </td>
+                        <td>
+                            <span class="text-highlight font-weight-bold">{{ s.unitprice | currency:'USD' }}</span>
+                        </td>
+                        <td>
+                            <span>{{ s.availability | number }} {{ s.unit }}</span>
+                        </td>
+                        <td>
+                            <span class="status-pill" 
+                                [class.in-stock]="s.availability > 50"
+                                [class.low-stock]="s.availability > 0 && s.availability <= 50"
+                                [class.out-of-stock]="s.availability <= 0">
+                                {{ s.availability > 50 ? 'In Stock' : (s.availability > 0 ? 'Low Stock' : 'Out of Stock') }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="displayedStock.length === 0">
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            No stock items found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allStock.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>
+
+@if (isModalOpen) {
+<div class="custom-backdrop" (click)="closeModal()"></div>
+
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-content">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title brand-text">{{ modalTitle }}</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+
+            <div class="modal-body mt-3">
+                <form #stockForm="ngForm" (ngSubmit)="submitStock(stockForm.value)">
+                    <div class="mb-3">
+                        <label for="stockName" class="form-label text-white">Stock Name</label>
+                        <input type="text" class="form-control text-dark" id="stockName" name="stockname"
+                            [ngModel]="modalStock.stockname" required #nameField="ngModel"
+                            placeholder="Enter stock name" />
+                        <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
+                            class="text-danger small mt-1">
+                            Stock name is required.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stockUnit" class="form-label text-white">Measure Unit</label>
+                        <select class="form-select text-dark" id="stockUnit" name="unit"
+                            [ngModel]="modalStock.unit" required>
+                            <option *ngFor="let u of availableUnits" [value]="u">{{ u }}</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stockUnitPrice" class="form-label text-white">Unit Price ($)</label>
+                        <input type="number" class="form-control text-dark" id="stockUnitPrice" name="unitprice"
+                            [ngModel]="modalStock.unitprice" required min="0" #priceField="ngModel"
+                            placeholder="0" />
+                        <div *ngIf="priceField.invalid && (priceField.dirty || priceField.touched)"
+                            class="text-danger small mt-1">
+                            Unit price must be 0 or higher.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stockAvailability" class="form-label text-white">Availability (Qty)</label>
+                        <input type="number" class="form-control text-dark" id="stockAvailability" name="availability"
+                            [ngModel]="modalStock.availability" required min="0" #availabilityField="ngModel"
+                            placeholder="0" />
+                        <div *ngIf="availabilityField.invalid && (availabilityField.dirty || availabilityField.touched)"
+                            class="text-danger small mt-1">
+                            Availability must be 0 or higher.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-secondary-action bg-secondary"
+                            (click)="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary-action"
+                            [disabled]="stockForm.invalid">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+}
