@@ -10,6 +10,7 @@ import { StockService } from '../stock/stock-service';
 
 export interface Ingredient {
   StockId: number;
+  StackName?: string;
   Quantity: number;
   UnitOfMeasure: string;
 }
@@ -172,11 +173,15 @@ export class Recipe implements OnInit {
     // Filter out rows without a stockname
     const validIngredients = this.modalIngredients
       .filter(ing => ing.StockId)
-      .map(ing => ({
-        StockId: ing.StockId,
-        Quantity: ing.Quantity,
-        UnitOfMeasure: ing.UnitOfMeasure
-      }));
+      .map(ing => {
+        const stock = this.availableStocks.find((s: any) => s.stockId == ing.StockId);
+        return {
+          StockId: Number(ing.StockId),
+          StackName: stock ? stock.stockName : '',
+          Quantity: ing.Quantity,
+          UnitOfMeasure: ing.UnitOfMeasure
+        };
+      });
 
     if (validIngredients.length === 0) {
       alert('Please define at least one valid ingredient with a name.');
@@ -184,26 +189,21 @@ export class Recipe implements OnInit {
     }
 
     if (this.modalTitle === 'Add Recipe') {
-      const nextId = this.allRecipes.length > 0 ? Math.max(...this.allRecipes.map(r => r.recipeid)) + 1 : 201;
       const newRecipe = {
-        recipeid: nextId,
+        recipeid: 0,
         recipename: this.modalRecipeName.trim(),
-        ingredients: JSON.stringify(validIngredients)
+        ingredients: validIngredients
       };
-      // this.allRecipes.push(newRecipe);
       this._addrecipe(newRecipe);
     } else if (this.modalTitle === 'Edit Recipe' && this.selectedRecipeId !== null) {
-      const index = this.allRecipes.findIndex(r => r.recipeid === this.selectedRecipeId);
-      if (index !== -1) {
-        this.allRecipes[index] = {
-          recipeid: this.selectedRecipeId,
-          recipename: this.modalRecipeName.trim(),
-          ingredients: validIngredients
-        };
-      }
+      const editedRecipe = {
+        recipeid: this.selectedRecipeId,
+        recipename: this.modalRecipeName.trim(),
+        ingredients: validIngredients
+      };
+      this._editrecipe(editedRecipe);
     }
 
-    // this.updateDisplayedRecipes();
     this.closeModal();
     this.selectedRecipeId = null;
     this.expandedRecipeId = null;
@@ -225,13 +225,13 @@ export class Recipe implements OnInit {
         },
       });
     }
-    _editrecipe(editRecipe: RecipeData) {
+    _editrecipe(editRecipe: any) {
       this.loading.show();
       this.recipeservice.editrecipe(editRecipe).subscribe({
         next: (res) => {
           this.loading.hide();
-          if (res.body != null && res.body != null) {
-            this.toastr.show(editRecipe.recipename + ' Stock Added Successfully', 'success');
+          if (res.body != null) {
+            this.toastr.show(editRecipe.recipename + ' Recipe Updated Successfully', 'success');
           }
           this._getrecipe();
         },
@@ -250,9 +250,38 @@ export class Recipe implements OnInit {
 
         // Ensure the response and the array actually exist
         if (res.body != null && res.body.stocklst != null) {
-          // FIX: Directly assign the array!
-          this.allRecipes = res.body.stocklst;
-          console.log("⚡ [LogPurge] [recipe.ts:231] this.allRecipes:", this.allRecipes);
+          this.allRecipes = res.body.stocklst.map((r: any) => {
+            const recipeid = r.recipeId ?? r.recipeid ?? r.RecipeId;
+            const recipename = r.recipeName ?? r.recipename ?? r.RecipeName;
+            
+            let ingredientsRaw = r.ingredients ?? r.Ingredients;
+            let ingredientsList: Ingredient[] = [];
+            if (typeof ingredientsRaw === 'string') {
+              try {
+                ingredientsList = JSON.parse(ingredientsRaw);
+              } catch (e) {
+                ingredientsList = [];
+              }
+            } else if (Array.isArray(ingredientsRaw)) {
+              ingredientsList = ingredientsRaw;
+            }
+
+            const normalizedIngredients = ingredientsList.map((ing: any) => {
+              return {
+                StockId: ing.stockId ?? ing.StockId ?? ing.stockid,
+                StackName: ing.stackName ?? ing.StackName ?? ing.stackname ?? ing.UnitOfMeasure ?? '',
+                Quantity: ing.quantity ?? ing.Quantity,
+                UnitOfMeasure: ing.unitOfMeasure ?? ing.UnitOfMeasure ?? ing.unitofmeasure
+              };
+            });
+
+            return {
+              recipeid,
+              recipename,
+              ingredients: normalizedIngredients
+            };
+          });
+          console.log("⚡ [recipe.ts] this.allRecipes normalized:", this.allRecipes);
           this.updateDisplayedRecipes();
         }
         this.toastr.show('Stock Loaded', 'success');

@@ -1,4 +1,5 @@
 //using gkb_service.Controllers.DBcontext;
+using gkb_service.Controllers.Admin;
 using gkb_service.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +65,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<gkb_service.Controllers.Mail_service.EmailOtpService>();
+builder.Services.AddTransient<IRecipe,RecipeService>();
+builder.Services.AddTransient<IStock,StockService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

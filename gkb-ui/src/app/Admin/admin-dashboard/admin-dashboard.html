@@ -1,12 +1,13 @@
 <div class="container pt-4 pb-5">
     <div class="dashboard-wrapper bg-white p-4 p-md-5 rounded-4 shadow-sm">
-        
+
         <!-- Dashboard Header -->
         <div class="text-center mb-4">
             <span class="sub-header text-uppercase tracking-wider">GK Business Portal</span>
             <h2 class="brand-font display-6 text-dark mt-2 mb-2">Admin Dashboard</h2>
             <p class="text-muted mx-auto mb-4" style="max-width: 600px;">
-                Manage business masters, product catalog configurations, inventory formulations, and operational metadata.
+                Manage business masters, product catalog configurations, inventory formulations, and operational
+                metadata.
             </p>
             <div class="separator-line mx-auto"></div>
         </div>
@@ -27,7 +28,7 @@
 
         <!-- Tab Body Content -->
         <div class="tab-body-container">
-            
+
             <!-- SECTION 1: REPORTS & ANALYTICS -->
             @if (activeTab === 'analytics') {
             <div class="tab-panel-fade-in">
@@ -117,10 +118,11 @@
                 <!-- Panels Grid -->
                 <div class="row g-4 justify-content-center">
                     <div class="col-md-6 col-lg-4" *ngFor="let panel of panels">
-                        <div class="card panel-card h-100 border-0 shadow-sm p-4" [class.panel-card-disabled]="panel.disabled">
-                            <div class="panel-icon-box mb-4" 
-                                 [style.background-color]="panel.disabled ? '#f1f2f6' : panel.color + '18'" 
-                                 [style.color]="panel.disabled ? '#a5b1c2' : panel.color">
+                        <div class="card panel-card h-100 border-0 shadow-sm p-4"
+                            [class.panel-card-disabled]="panel.disabled">
+                            <div class="panel-icon-box mb-4"
+                                [style.background-color]="panel.disabled ? '#f1f2f6' : panel.color + '18'"
+                                [style.color]="panel.disabled ? '#a5b1c2' : panel.color">
                                 <i [class]="panel.icon"></i>
                             </div>
 
@@ -128,7 +130,8 @@
                             <p class="panel-desc text-muted mb-4 flex-grow-1">{{ panel.desc }}</p>
 
                             <div class="panel-footer mt-auto pt-2">
-                                <a *ngIf="!panel.disabled" [routerLink]="panel.route" class="btn btn-panel-action w-100 d-flex align-items-center justify-content-center gap-2">
+                                <a *ngIf="!panel.disabled" [routerLink]="panel.route"
+                                    class="btn btn-panel-action w-100 d-flex align-items-center justify-content-center gap-2">
                                     Access Master <i class="bi bi-arrow-right-short"></i>
                                 </a>
                                 <span *ngIf="panel.disabled" class="badge bg-secondary w-100 py-2 fs-6">

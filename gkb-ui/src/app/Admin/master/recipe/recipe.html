@@ -99,7 +99,7 @@
                                                         <tr *ngFor="let ing of r.ingredients">
                                                             <td>
                                                                 <strong class="recipe-name text-dark fw-semibold">{{
-                                                                    ing.UnitOfMeasure }}</strong>
+                                                                    ing.StackName || 'Unknown Ingredient' }}</strong>
                                                             </td>
                                                             <td class="text-end">
                                                                 <span class="text-highlight fw-bold">{{ ing.Quantity }}</span>

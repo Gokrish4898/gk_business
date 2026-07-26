@@ -1,4 +1,4 @@
-﻿using gkb_service.Models;
+using gkb_service.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using snapdough_api.Data;
@@ -27,7 +27,11 @@ namespace gkb_service.Controllers.Admin
         public async Task<IActionResult> AddRecipe([FromBody] Models.Recipe recipe)
         {
             var res = await recipeservice.AddRecipe(recipe);
-            return Ok();
+            if (res == null)
+            {
+                return BadRequest(new { message = "Failed to add recipe. Check server logs." });
+            }
+            return Ok(res);
         }
         
         [HttpPost]
@@ -35,8 +39,11 @@ namespace gkb_service.Controllers.Admin
         public async Task<IActionResult> EditRecipe([FromBody] Models.Recipe recipe)
         {
             var res = await recipeservice.EditRecipe(recipe, CancellationToken.None);
-            // Implement logic to create a new stock
-            return Ok();
+            if (res == null)
+            {
+                return BadRequest(new { message = "Failed to edit recipe. Check server logs." });
+            }
+            return Ok(res);
         }
 
         [HttpGet]
