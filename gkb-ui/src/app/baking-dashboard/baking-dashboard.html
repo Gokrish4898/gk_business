@@ -63,7 +63,11 @@
     <hr class="thick-separator mb-4" />
 
     <div class="modern-product-grid">
-      <div class="product-card" *ngFor="let item of product">
+      <div class="product-card" 
+           #prodCard
+           (mousemove)="onMouseMove($event, prodCard)"
+           (mouseleave)="onMouseLeave(prodCard)"
+           *ngFor="let item of product">
         <div (click)="product_page(item)">
           <div class="img-wrapper">
             <img [src]="item.image" alt="Product Image" class="card-image" />
@@ -71,12 +75,12 @@
           <h4 class="product-title mt-2">{{ item.title }}</h4>
         </div>
         <div class="card-footer-row d-flex justify-content-between align-items-center mt-3">
-          <div class="rating-box" (click)="openReviewsModal()">
+          <div class="rating-box" (click)="$event.stopPropagation(); openReviewsModal(item)">
             <i class="bi bi-star-fill text-warning"></i>
             <span class="rating-text ms-1">{{ item.rating }} ({{ item.totalrating }})</span>
           </div>
 
-          <div class="wishlist-icon" (click)="addwhishlist(item)">
+          <div class="wishlist-icon" (click)="$event.stopPropagation(); addwhishlist(item)">
             @if (item.wishlist == true) {
               <i class="bi bi-heart-fill text-danger fs-5"></i>
             } @else {
@@ -108,8 +112,8 @@
             <h5 class="modal-title brand-text mb-0">Customer Reviews</h5>
             <div class="d-flex align-items-center mt-1">
               <i class="bi bi-star-fill text-warning fs-5 me-2"></i>
-              <span class="fs-5 fw-bold text-white">{{ item.rating }}</span>
-              <span class="text-muted ms-2">Based on {{ item.totalrating }} reviews</span>
+              <span class="fs-5 fw-bold text-white">{{ selectedProduct?.rating }}</span>
+              <span class="text-muted ms-2">Based on {{ selectedProduct?.totalrating }} reviews</span>
             </div>
           </div>
           <button
@@ -121,7 +125,7 @@
         </div>
 
         <div class="modal-body custom-scrollbar mt-3">
-          @for (review of mockReviews; track review.id) {
+          @for (review of activeReviews; track review.id) {
             <div class="review-card">
               <div class="review-avatar-col">
                 @if (review.image) {
@@ -150,8 +154,46 @@
               </div>
             </div>
           }
+          @if (activeReviews.length === 0) {
+            <p class="text-muted text-center my-4">No reviews yet for this product. Be the first!</p>
+          }
+
+          <!-- Write Review Section -->
+          <div class="write-review-section border-top pt-3 mt-4">
+            <h6 class="text-white mb-2 fw-semibold">Write a Review</h6>
+            <div class="mb-2">
+              <span class="text-muted small d-block mb-1">Select Rating</span>
+              <div class="rating-input d-flex gap-2 text-warning fs-5">
+                <i class="bi" [class.bi-star-fill]="newRatingStar >= 1" [class.bi-star]="newRatingStar < 1" (click)="newRatingStar = 1" style="cursor: pointer;"></i>
+                <i class="bi" [class.bi-star-fill]="newRatingStar >= 2" [class.bi-star]="newRatingStar < 2" (click)="newRatingStar = 2" style="cursor: pointer;"></i>
+                <i class="bi" [class.bi-star-fill]="newRatingStar >= 3" [class.bi-star]="newRatingStar < 3" (click)="newRatingStar = 3" style="cursor: pointer;"></i>
+                <i class="bi" [class.bi-star-fill]="newRatingStar >= 4" [class.bi-star]="newRatingStar < 4" (click)="newRatingStar = 4" style="cursor: pointer;"></i>
+                <i class="bi" [class.bi-star-fill]="newRatingStar >= 5" [class.bi-star]="newRatingStar < 5" (click)="newRatingStar = 5" style="cursor: pointer;"></i>
+              </div>
+            </div>
+            <div class="mb-3">
+              <span class="text-muted small d-block mb-1">Comment</span>
+              <textarea class="form-control text-dark bg-white" rows="2" [(ngModel)]="newRatingComment" placeholder="Share your experience with this item..."></textarea>
+            </div>
+            <button class="btn btn-warning btn-sm w-100 text-dark fw-bold py-2" (click)="submitNewReview()">Submit Review</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 }
+
+<!-- Big Heart Wink Overlay Animation -->
+<div class="heart-wink-overlay" *ngIf="showHeartWink">
+  <div class="heart-wink-content">
+    <div class="heart-icon-wrapper">
+      <i class="bi bi-heart-fill text-danger main-heart"></i>
+      <div class="heart-face">
+        <span class="eye eye-left"></span>
+        <span class="eye eye-right winking"></span>
+        <span class="smile"></span>
+      </div>
+    </div>
+    <div class="overlay-text">Added to Wishlist!</div>
+  </div>
+</div>

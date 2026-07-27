@@ -1,0 +1,118 @@
+.master-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-main, 12px);
+  box-shadow: var(--card-shadow, 0 8px 30px rgba(0, 0, 0, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.brand-font {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--color-primary, #2c3e50);
+}
+
+.btn-dashboard {
+  background-color: transparent;
+  color: var(--color-primary, #2c3e50);
+  border: 1.5px solid var(--color-primary, #2c3e50);
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: var(--color-primary, #2c3e50);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+}
+
+.table-custom {
+  margin-bottom: 0;
+
+  thead th {
+    background-color: #f8f9fa;
+    color: var(--text-muted, #7f8c8d);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    border-bottom: 2px solid #eef2f5;
+  }
+
+  tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eef2f5;
+
+    &:hover {
+      background-color: rgba(212, 163, 115, 0.04);
+    }
+
+    &.table-row-selected {
+      background-color: rgba(212, 163, 115, 0.1) !important;
+      position: relative;
+
+      td {
+        color: var(--color-primary, #2c3e50);
+        font-weight: 500;
+      }
+    }
+  }
+
+  td {
+    padding: 16px;
+    color: var(--text-main, #1a1a1d);
+  }
+}
+
+.badge-id {
+  background-color: #ebf5ff;
+  color: #0066cc;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.text-highlight {
+  color: var(--color-accent, #e67e22);
+}
+
+.select-check {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .form-check-input {
+    cursor: pointer;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-color: var(--accent-gold, #d4a373);
+
+    &:checked {
+      background-color: var(--color-primary, #2c3e50);
+      border-color: var(--color-primary, #2c3e50);
+    }
+  }
+}
+
+.paginator-wrapper {
+  ::v-deep .mat-mdc-paginator-container {
+    justify-content: center;
+  }
+}
+
+.expanded-detail-box {
+  background-color: #fcfbf9 !important;
+  border-left: 4px solid var(--accent-gold, #d4a373);
+}
+
+.btn-expand {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+  &:hover {
+    color: var(--accent-gold, #d4a373) !important;
+  }
+}

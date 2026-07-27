@@ -12,8 +12,11 @@
         <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
           
           <div class="category-card" 
+               #card
                role="button" 
                tabindex="0" 
+               (mousemove)="onMouseMove($event, card)"
+               (mouseleave)="onMouseLeave(card)"
                (click)="navigate_dashboard(item.name)">
             
             <div class="card-bg" [style.background-image]="'url(' + (item.image || '/assets/default-bakery.jpg') + ')'"></div>

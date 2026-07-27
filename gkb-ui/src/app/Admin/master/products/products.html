@@ -27,7 +27,7 @@
         <!-- Title Area -->
         <div class="mb-4">
             <h3 class="brand-font m-0 text-dark">Products Master</h3>
-            <p class="text-muted m-0">Manage products, pricing, and stock status</p>
+            <p class="text-muted m-0">Manage products, pricing, stock availability, and recipes mapping</p>
         </div>
 
         <!-- Product List Table -->
@@ -36,43 +36,121 @@
                 <thead>
                     <tr>
                         <th scope="col" style="width: 50px;">Select</th>
-                        <th scope="col">Product ID</th>
+                        <th scope="col" style="width: 120px;">Product ID</th>
+                        <th scope="col" style="width: 80px;">Image</th>
                         <th scope="col">Product Name</th>
-                        <th scope="col">Category</th>
                         <th scope="col">Price</th>
-                        <th scope="col">Status</th>
+                        <th scope="col">Delivery (Days)</th>
+                        <th scope="col" style="width: 220px;">Availability</th>
+                        <th scope="col" style="width: 180px;">Total Recipes</th>
+                        <th scope="col" style="width: 100px;" class="text-center">Expand</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let p of displayedProducts"
-                        [class.table-row-selected]="selectedProductId === p.productid"
-                        (click)="selectProduct(p.productid)" style="cursor: pointer;">
-                        <td>
-                            <div class="form-check select-check">
-                                <input class="form-check-input" type="radio" name="selectedProduct"
-                                    [checked]="selectedProductId === p.productid"
-                                    (click)="$event.stopPropagation(); selectProduct(p.productid)" />
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge badge-id">{{ p.productid }}</span>
-                        </td>
-                        <td>
-                            <strong class="product-name">{{ p.name }}</strong>
-                        </td>
-                        <td>{{ p.category }}</td>
-                        <td>
-                            <span class="text-highlight font-weight-bold">{{ p.price | currency:'USD' }}</span>
-                        </td>
-                        <td>
-                            <span class="status-pill" [class.in-stock]="p.status === 'In Stock'"
-                                [class.out-of-stock]="p.status !== 'In Stock'">
-                                {{ p.status }}
-                            </span>
-                        </td>
-                    </tr>
+                    <ng-container *ngFor="let p of displayedProducts">
+                        <!-- Primary row -->
+                        <tr [class.table-row-selected]="selectedProductId === p.productid"
+                             (click)="selectProduct(p.productid)" style="cursor: pointer;">
+                            <td>
+                                <div class="form-check select-check">
+                                    <input class="form-check-input" type="radio" name="selectedProduct"
+                                        [checked]="selectedProductId === p.productid"
+                                        (click)="$event.stopPropagation(); selectProduct(p.productid)" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-id">{{ p.productid }}</span>
+                            </td>
+                            <td>
+                                <img [src]="p.imagelink || 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'" 
+                                     alt="Product Image" 
+                                     class="rounded-circle border" 
+                                     style="width: 40px; height: 40px; object-fit: cover;" />
+                            </td>
+                            <td>
+                                <strong class="product-name text-dark">{{ p.name }}</strong>
+                            </td>
+                            <td>
+                                <span class="text-highlight font-weight-bold">{{ p.price | currency:'USD' }}</span>
+                            </td>
+                            <td>
+                                <span>{{ p.delivery }} days</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-3 align-items-center" (click)="$event.stopPropagation()">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'instock_' + p.productid" 
+                                            [id]="'avail_' + p.productid" [checked]="p.instock === true" 
+                                            (change)="toggleStockStatus(p, true)">
+                                        <label class="form-check-label text-success small fw-semibold" [for]="'avail_' + p.productid" style="cursor:pointer;">In Stock</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'instock_' + p.productid" 
+                                            [id]="'unavail_' + p.productid" [checked]="p.instock === false" 
+                                            (change)="toggleStockStatus(p, false)">
+                                        <label class="form-check-label text-danger small fw-semibold" [for]="'unavail_' + p.productid" style="cursor:pointer;">Out</label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                                    {{ p.receipeid.length }} Recipes Mapped
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-link p-0 text-muted btn-expand"
+                                    (click)="toggleExpand(p.productid, $event)">
+                                    <i class="bi" [class.bi-chevron-down]="expandedProductId !== p.productid"
+                                        [class.bi-chevron-up]="expandedProductId === p.productid"></i>
+                                </button>
+                            </td>
+                        </tr>
+ 
+                        <!-- Expanded details row -->
+                        <tr *ngIf="expandedProductId === p.productid">
+                            <td colspan="9" class="p-0 border-0">
+                                <div class="expanded-detail-box p-4 bg-light">
+                                    <div class="ingredients-header mb-3 d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0 text-primary-action brand-font">Mapped Recipes Formulation</h5>
+                                        <span class="text-muted small">Format: JSON Array</span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10 col-lg-8">
+                                            <div class="table-responsive rounded shadow-sm bg-white border">
+                                                <table class="table table-custom align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" style="width: 150px;">Recipe ID</th>
+                                                            <th scope="col">Recipe Name</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let rec of p.receipeid">
+                                                            <td>
+                                                                <span class="badge badge-id">{{ rec.recipeid }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <strong class="recipe-name text-dark fw-semibold">
+                                                                    {{ getRecipeName(rec.recipeid) }}
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                        <tr *ngIf="p.receipeid.length === 0">
+                                                            <td colspan="2" class="text-center py-2 text-muted">
+                                                                No recipes mapped.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
                     <tr *ngIf="displayedProducts.length === 0">
-                        <td colspan="6" class="text-center py-4 text-muted">
+                        <td colspan="8" class="text-center py-4 text-muted">
                             No products found.
                         </td>
                     </tr>
@@ -93,7 +171,7 @@
 <div class="custom-backdrop" (click)="closeModal()"></div>
 
 <div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content glass-content">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title brand-text">{{ modalTitle }}</h5>
@@ -102,11 +180,11 @@
             </div>
 
             <div class="modal-body mt-3">
-                <form #productForm="ngForm" (ngSubmit)="submitProduct(productForm.value)">
+                <form #productForm="ngForm" (ngSubmit)="submitProduct()">
                     <div class="mb-3">
                         <label for="productName" class="form-label text-white">Product Name</label>
                         <input type="text" class="form-control text-dark" id="productName" name="name"
-                            [ngModel]="modalProduct.name" required #nameField="ngModel"
+                            [(ngModel)]="modalProduct.name" required #nameField="ngModel"
                             placeholder="Enter product name" />
                         <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
                             class="text-danger small mt-1">
@@ -115,32 +193,91 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="productImageLink" class="form-label text-white">Image Link</label>
+                        <input type="text" class="form-control text-dark" id="productImageLink" name="imagelink"
+                            [(ngModel)]="modalProduct.imagelink" placeholder="Enter image URL (e.g. https://...)" />
+                    </div>
+
+                    <div class="mb-3">
                         <label for="productPrice" class="form-label text-white">Price ($)</label>
                         <input type="number" class="form-control text-dark" id="productPrice" name="price"
-                            [ngModel]="modalProduct.price" required min="0.01" step="0.01" #priceField="ngModel"
+                            [(ngModel)]="modalProduct.price" required min="0.01" step="0.01" #priceField="ngModel"
                             placeholder="0.00" />
+                        <div *ngIf="priceField.invalid && (priceField.dirty || priceField.touched)"
+                            class="text-danger small mt-1">
+                            Price must be a valid positive number.
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="productCategory" class="form-label text-white">Category</label>
-                        <select class="form-select text-dark" id="productCategory" name="category"
-                            [ngModel]="modalProduct.category">
-                            <option value="Brownie">Brownie</option>
-                            <option value="Cakes">Cakes</option>
-                            <option value="Breads">Breads</option>
-                            <option value="Apple Pie">Apple Pie</option>
-                            <option value="Muffins">Muffins</option>
-                            <option value="Cookies">Cookies</option>
-                        </select>
+                        <label for="productDelivery" class="form-label text-white">Delivery Time (Days)</label>
+                        <input type="number" class="form-control text-dark" id="productDelivery" name="delivery"
+                            [(ngModel)]="modalProduct.delivery" required min="0" #deliveryField="ngModel"
+                            placeholder="e.g. 1" />
+                        <div *ngIf="deliveryField.invalid && (deliveryField.dirty || deliveryField.touched)"
+                            class="text-danger small mt-1">
+                            Delivery time is required.
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="productStatus" class="form-label text-white">Status</label>
-                        <select class="form-select text-dark" id="productStatus" name="status"
-                            [ngModel]="modalProduct.status">
-                            <option value="In Stock">In Stock</option>
-                            <option value="Out of Stock">Out of Stock</option>
-                        </select>
+                        <label class="form-label text-white d-block">Stock Status</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="modalInstock" id="modalInStockYes" 
+                                [value]="true" [(ngModel)]="modalProduct.instock">
+                            <label class="form-check-label text-white" for="modalInStockYes" style="cursor:pointer;">In Stock</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="modalInstock" id="modalInStockNo" 
+                                [value]="false" [(ngModel)]="modalProduct.instock">
+                            <label class="form-check-label text-white" for="modalInStockNo" style="cursor:pointer;">Out of Stock</label>
+                        </div>
+                    </div>
+
+                    <!-- Recipes Mapping Editor Title -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label text-white mb-0">Mapped Recipes</label>
+                        <button type="button"
+                            class="btn btn-sm btn-secondary-action py-1 px-3 d-flex align-items-center gap-1"
+                            (click)="addRecipeRow()">
+                            <i class="bi bi-plus-circle"></i> Add Recipe Mapping
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Recipes Editor List -->
+                    <div class="ingredients-editor-container rounded p-3 mb-4"
+                        style="background: rgba(255, 255, 255, 0.05); max-height: 250px; overflow-y: auto;">
+
+                        <!-- Header Row for Editor -->
+                        <div class="row g-2 mb-2 d-none d-md-flex text-muted small fw-bold">
+                            <div class="col-md-10 text-white">Recipe Name</div>
+                            <div class="col-md-2 text-center text-white">Remove</div>
+                        </div>
+
+                        <!-- Editor Rows -->
+                        <div class="row g-2 align-items-center mb-3 mb-md-2 editor-row"
+                            *ngFor="let r of modalProduct.receipeid; let i = index">
+                            <!-- Recipe Dropdown -->
+                            <div class="col-10 col-md-10">
+                                <label class="d-block d-md-none text-muted small mb-1">Recipe Name</label>
+                                <select class="form-select text-dark" [name]="'recipeid_' + i"
+                                    [(ngModel)]="r.recipeid" required>
+                                    <option value="0" disabled>Select a recipe...</option>
+                                    <option *ngFor="let rec of allRecipes" [value]="rec.recipeid">
+                                        {{ rec.recipename }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Delete Action -->
+                            <div class="col-2 col-md-2 text-center pt-3 pt-md-0">
+                                <button type="button"
+                                    class="btn btn-sm btn-link text-danger border-0 p-0 fs-5 btn-remove-row"
+                                    (click)="removeRecipeRow(i)">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">

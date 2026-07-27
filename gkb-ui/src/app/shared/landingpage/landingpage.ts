@@ -21,8 +21,24 @@ export class Landingpage {
 
   navigate_dashboard(mode:string){
     if(mode == 'Bakery'){
-    this.router.navigate(['/bdashboard'])
-    }else{
+      this.router.navigate(['/bdashboard'])
+    }
   }
-}
+
+  onMouseMove(event: MouseEvent, card: HTMLElement) {
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((centerY - y) / centerY) * 15; // Rotate up/down up to 15deg
+    const rotateY = ((x - centerX) / centerX) * 15; // Rotate left/right up to 15deg
+    card.style.setProperty('--rx', `${rotateX}deg`);
+    card.style.setProperty('--ry', `${rotateY}deg`);
+  }
+
+  onMouseLeave(card: HTMLElement) {
+    card.style.setProperty('--rx', '0deg');
+    card.style.setProperty('--ry', '0deg');
+  }
 }

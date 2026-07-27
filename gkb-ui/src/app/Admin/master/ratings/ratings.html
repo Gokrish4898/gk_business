@@ -1,0 +1,182 @@
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <!-- Spacer or back actions -->
+            </div>
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Ratings & Reviews Master</h3>
+            <p class="text-muted m-0">View product ratings, reviews details, and toggle user visibility</p>
+        </div>
+
+        <!-- Ratings Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col" style="width: 150px;">Rating ID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col" style="width: 180px;">Average Stars</th>
+                        <th scope="col" style="width: 150px;">Total Reviews</th>
+                        <th scope="col" style="width: 250px;">User Visibility</th>
+                        <th scope="col" style="width: 100px;" class="text-center">Expand</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let r of displayedRatings">
+                        <!-- Primary row -->
+                        <tr [class.table-row-selected]="selectedRatingId === r.ratingid"
+                            (click)="selectRating(r.ratingid)" style="cursor: pointer;">
+                            <td>
+                                <div class="form-check select-check">
+                                    <input class="form-check-input" type="radio" name="selectedRating"
+                                        [checked]="selectedRatingId === r.ratingid"
+                                        (click)="$event.stopPropagation(); selectRating(r.ratingid)" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-id">{{ r.ratingid }}</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark">{{ getProductName(r.productid) }}</strong>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    <span class="fw-bold text-dark">{{ getAverageStars(r.ratingdetails) }}</span>
+                                    <span class="text-muted small ms-1">/ 5</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                                    {{ r.ratingdetails.length }} Reviews
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-3 align-items-center" (click)="$event.stopPropagation()">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid" 
+                                            [id]="'active_yes_' + r.ratingid" [checked]="r.active === 1" 
+                                            (change)="toggleRatingVisibility(r, 1)">
+                                        <label class="form-check-label text-success small fw-semibold" [for]="'active_yes_' + r.ratingid" style="cursor:pointer;">Active</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid" 
+                                            [id]="'active_no_' + r.ratingid" [checked]="r.active === 0" 
+                                            (change)="toggleRatingVisibility(r, 0)">
+                                        <label class="form-check-label text-danger small fw-semibold" [for]="'active_no_' + r.ratingid" style="cursor:pointer;">Inactive</label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-link p-0 text-muted btn-expand"
+                                    (click)="toggleExpand(r.ratingid, $event)">
+                                    <i class="bi" [class.bi-chevron-down]="expandedRatingId !== r.ratingid"
+                                        [class.bi-chevron-up]="expandedRatingId === r.ratingid"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Expanded details row -->
+                        <tr *ngIf="expandedRatingId === r.ratingid">
+                            <td colspan="7" class="p-0 border-0">
+                                <div class="expanded-detail-box p-4 bg-light">
+                                    <div class="ingredients-header mb-3">
+                                        <h5 class="m-0 text-primary-action brand-font">Individual Customer Reviews</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive rounded shadow-sm bg-white border">
+                                                <table class="table table-custom align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" style="width: 120px;">User ID</th>
+                                                            <th scope="col" style="width: 150px;">Rating Stars</th>
+                                                            <th scope="col">Review Comment</th>
+                                                            <th scope="col" style="width: 180px;">Created On</th>
+                                                            <th scope="col" style="width: 250px;">Visibility State</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of r.ratingdetails">
+                                                            <td>
+                                                                <span class="badge badge-id">User #{{ item.userid }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="text-warning">
+                                                                    <i class="bi bi-star-fill me-1" *ngFor="let star of getArray(item.ratingstar)"></i>
+                                                                    <i class="bi bi-star me-1" *ngFor="let star of getEmptyStarsArray(item.ratingstar)"></i>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span class="text-dark">{{ item.ratingcomment || 'No comment provided.' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="text-muted small">{{ item.createdon | date:'short' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex gap-3 align-items-center">
+                                                                    <div class="form-check form-check-inline m-0">
+                                                                        <input class="form-check-input" type="radio" 
+                                                                            [name]="'item_active_' + r.ratingid + '_' + item.userid" 
+                                                                            [id]="'item_yes_' + r.ratingid + '_' + item.userid" 
+                                                                            [checked]="item.active === 1" 
+                                                                            (change)="toggleReviewActiveStatus(r, item, 1)">
+                                                                        <label class="form-check-label text-success small fw-semibold" [for]="'item_yes_' + r.ratingid + '_' + item.userid" style="cursor:pointer;">Visible</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline m-0">
+                                                                        <input class="form-check-input" type="radio" 
+                                                                            [name]="'item_active_' + r.ratingid + '_' + item.userid" 
+                                                                            [id]="'item_no_' + r.ratingid + '_' + item.userid" 
+                                                                            [checked]="item.active === 0" 
+                                                                            (change)="toggleReviewActiveStatus(r, item, 0)">
+                                                                        <label class="form-check-label text-danger small fw-semibold" [for]="'item_no_' + r.ratingid + '_' + item.userid" style="cursor:pointer;">Hidden</label>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr *ngIf="r.ratingdetails.length === 0">
+                                                            <td colspan="5" class="text-center py-2 text-muted">
+                                                                No reviews found for this product.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr *ngIf="displayedRatings.length === 0">
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            No ratings found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allRatings.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>

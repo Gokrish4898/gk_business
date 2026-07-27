@@ -97,6 +97,22 @@ export class AdminDashboard implements OnInit, OnDestroy {
       disabled: false
     },
     {
+      title: 'Wishlist Master',
+      desc: 'View user wishlists, wishlist items, and configure visibility',
+      icon: 'bi bi-heart-fill',
+      route: '/admin/wishlists',
+      color: '#e74c3c',
+      disabled: false
+    },
+    {
+      title: 'Ratings & Reviews',
+      desc: 'Inspect customer reviews, ratings stars, and moderate comments',
+      icon: 'bi bi-star-fill',
+      route: '/admin/ratings',
+      color: '#f1c40f',
+      disabled: false
+    },
+    {
       title: 'Extra Toppings',
       desc: 'Configure premium topping additions and pricing',
       icon: 'bi bi-sparkles',

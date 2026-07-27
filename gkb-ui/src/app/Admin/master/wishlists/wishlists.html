@@ -1,0 +1,169 @@
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <!-- Spacer or back actions -->
+            </div>
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Wishlist Master</h3>
+            <p class="text-muted m-0">View user wishlists, individual wishlist item states, and configure user visibility</p>
+        </div>
+
+        <!-- Wishlist Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col" style="width: 150px;">Wishlist ID</th>
+                        <th scope="col" style="width: 150px;">User ID</th>
+                        <th scope="col">Total Wishlist Items</th>
+                        <th scope="col" style="width: 250px;">User Visibility</th>
+                        <th scope="col" style="width: 100px;" class="text-center">Expand</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let w of displayedWishlists">
+                        <!-- Primary row -->
+                        <tr [class.table-row-selected]="selectedWishlistId === w.wishlistid"
+                            (click)="selectWishlist(w.wishlistid)" style="cursor: pointer;">
+                            <td>
+                                <div class="form-check select-check">
+                                    <input class="form-check-input" type="radio" name="selectedWishlist"
+                                        [checked]="selectedWishlistId === w.wishlistid"
+                                        (click)="$event.stopPropagation(); selectWishlist(w.wishlistid)" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-id">{{ w.wishlistid }}</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark">User #{{ w.userid }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                                    {{ w.wishlistdetails.length }} Items
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-3 align-items-center" (click)="$event.stopPropagation()">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'active_' + w.wishlistid" 
+                                            [id]="'active_yes_' + w.wishlistid" [checked]="w.active === 1" 
+                                            (change)="toggleWishlistVisibility(w, 1)">
+                                        <label class="form-check-label text-success small fw-semibold" [for]="'active_yes_' + w.wishlistid" style="cursor:pointer;">Active</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" [name]="'active_' + w.wishlistid" 
+                                            [id]="'active_no_' + w.wishlistid" [checked]="w.active === 0" 
+                                            (change)="toggleWishlistVisibility(w, 0)">
+                                        <label class="form-check-label text-danger small fw-semibold" [for]="'active_no_' + w.wishlistid" style="cursor:pointer;">Inactive</label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-link p-0 text-muted btn-expand"
+                                    (click)="toggleExpand(w.wishlistid, $event)">
+                                    <i class="bi" [class.bi-chevron-down]="expandedWishlistId !== w.wishlistid"
+                                        [class.bi-chevron-up]="expandedWishlistId === w.wishlistid"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Expanded details row -->
+                        <tr *ngIf="expandedWishlistId === w.wishlistid">
+                            <td colspan="6" class="p-0 border-0">
+                                <div class="expanded-detail-box p-4 bg-light">
+                                    <div class="ingredients-header mb-3">
+                                        <h5 class="m-0 text-primary-action brand-font">Wishlist Item Details</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-10">
+                                            <div class="table-responsive rounded shadow-sm bg-white border">
+                                                <table class="table table-custom align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" style="width: 120px;">Product ID</th>
+                                                            <th scope="col">Product Name</th>
+                                                            <th scope="col" style="width: 180px;">Added On</th>
+                                                            <th scope="col" style="width: 250px;">Item State</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of w.wishlistdetails">
+                                                            <td>
+                                                                <span class="badge badge-id">{{ item.productid }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <strong class="text-dark fw-semibold">
+                                                                    {{ getProductName(item.productid) }}
+                                                                </strong>
+                                                            </td>
+                                                            <td>
+                                                                <span class="text-muted small">{{ item.createdon | date:'short' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex gap-3 align-items-center">
+                                                                    <div class="form-check form-check-inline m-0">
+                                                                        <input class="form-check-input" type="radio" 
+                                                                            [name]="'item_active_' + w.wishlistid + '_' + item.productid" 
+                                                                            [id]="'item_yes_' + w.wishlistid + '_' + item.productid" 
+                                                                            [checked]="item.active === 1" 
+                                                                            (change)="toggleItemActiveStatus(w, item, 1)">
+                                                                        <label class="form-check-label text-success small fw-semibold" [for]="'item_yes_' + w.wishlistid + '_' + item.productid" style="cursor:pointer;">Active</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline m-0">
+                                                                        <input class="form-check-input" type="radio" 
+                                                                            [name]="'item_active_' + w.wishlistid + '_' + item.productid" 
+                                                                            [id]="'item_no_' + w.wishlistid + '_' + item.productid" 
+                                                                            [checked]="item.active === 0" 
+                                                                            (change)="toggleItemActiveStatus(w, item, 0)">
+                                                                        <label class="form-check-label text-danger small fw-semibold" [for]="'item_no_' + w.wishlistid + '_' + item.productid" style="cursor:pointer;">Inactive</label>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr *ngIf="w.wishlistdetails.length === 0">
+                                                            <td colspan="4" class="text-center py-2 text-muted">
+                                                                No items in this wishlist.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr *ngIf="displayedWishlists.length === 0">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No wishlists found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allWishlists.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>

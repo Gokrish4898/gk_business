@@ -14,6 +14,8 @@ import { Products } from './Admin/master/products/products';
 import { AdminDashboard } from './Admin/admin-dashboard/admin-dashboard';
 import { Recipe } from './Admin/master/recipe/recipe';
 import { Stock } from './Admin/master/stock/stock';
+import { Wishlists } from './Admin/master/wishlists/wishlists';
+import { Ratings } from './Admin/master/ratings/ratings';
 
 export const routes: Routes = [
   {
@@ -41,6 +43,8 @@ export const routes: Routes = [
       { path: 'admin/products', component: Products },
       { path: 'admin/recipes', component: Recipe },
       { path: 'admin/stock', component: Stock },
+      { path: 'admin/wishlists', component: Wishlists },
+      { path: 'admin/ratings', component: Ratings },
       { path: 'admin', component: AdminDashboard },
       { path: '**', component: Landingpage },
     ],

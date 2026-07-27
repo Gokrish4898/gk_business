@@ -1,119 +1,120 @@
-<div class="container" style="padding-top: 10px; margin-bottom: 10px">
+<div class="container" style="padding-top: 15px; margin-bottom: 20px">
   <div class="product_box bg-white p-4 rounded shadow-sm">
-    <div
-      class="header-section d-flex justify-content-between align-items-center mb-4"
-      style="padding-top: 15px; padding-bottom: 15px"
-    >
+    <!-- Header Area -->
+    <div class="header-section d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
       <div>
-        <h3 class="brand-font m-0">Customize Your {{ product[0].title }} Recipe</h3>
-        <p class="text-muted m-0">Adjust ingredients to find your perfect mix</p>
+        <h3 class="brand-font m-0 text-dark">Customize Formulation: {{ productDetail?.name }}</h3>
+        <p class="text-muted m-0">Adjust ingredient amounts to calculate custom cost and place your order</p>
       </div>
-
       <div class="action-area">
         <button class="btn-back" (click)="goBack()">
-          <i class="fa fa-chevron-left me-2"></i> Back
+          <i class="bi bi-chevron-left me-1"></i> Back
         </button>
       </div>
     </div>
 
-    <div class="col-12">
-      <hr class="thick-separator" />
-    </div>
-    <div class="recipe-container container pt-4">
-      <div class="quick-options-bar mb-4">
-        <div
-          class="option-chip"
-          [class.active]="selectedOption === '1 kg'"
-          (click)="selectOption('1 kg')"
-        >
-          1 kg
-        </div>
-
-        <div
-          class="option-chip"
-          [class.active]="selectedOption === '1/2 kg'"
-          (click)="selectOption('1/2 kg')"
-        >
-          1/2 kg
-        </div>
-
-        <div
-          class="option-chip"
-          [class.active]="selectedOption === 'no sugar'"
-          (click)="selectOption('no sugar')"
-        >
-          No Sugar
-        </div>
-
-        <div
-          class="option-chip"
-          [class.active]="selectedOption === 'customize'"
-          (click)="selectOption('customize')"
-        >
-          Customize ✨
+    <!-- 1. Recipe Selection Section (Top) -->
+    <div class="recipe-selector-section mb-4" *ngIf="productRecipes && productRecipes.length > 0">
+      <h5 class="section-heading mb-3 fw-bold text-dark"><i class="bi bi-journal-text me-1 text-primary"></i> Select Base Formulation</h5>
+      <div class="recipe-cards-container d-flex gap-3 overflow-auto pb-2">
+        <div class="recipe-card-tab"
+             #recCard
+             (mousemove)="onMouseMove($event, recCard)"
+             (mouseleave)="onMouseLeave(recCard)"
+             *ngFor="let rec of productRecipes"
+             [class.active]="selectedRecipe?.recipeId === rec.recipeId || selectedRecipe?.recipeid === rec.recipeid"
+             (click)="selectRecipe(rec)">
+          <div class="recipe-card-inner">
+            <i class="bi bi-cake2 icon-card"></i>
+            <span class="name-text">{{ rec.recipeName }}</span>
+          </div>
         </div>
       </div>
+    </div>
 
-      @if (selectedOption === 'customize') {
-        <div class="custom-recipe-grid">
-          <p>Custom sliders go here...</p>
-        </div>
-      }
+    <div *ngIf="!productRecipes || productRecipes.length === 0" class="text-center py-4 text-muted border rounded">
+      <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+      No recipes formulation mapped to this product.
+    </div>
 
-      @if (selectedOption === 'customize') {
-      <div class="recipe-grid">
-        @for (item of recipe; track item.ingredient) {
-          <div class="ingredient-card">
-            <div class="card-info">
-              <span class="ingredient-name">{{ item.ingredient }}</span>
-              <span class="cost-badge">₹{{ item.pergmcost || 0 }}/gm</span>
-            </div>
-
-            <div class="slider-section">
-              <input
-                type="range"
-                [min]="item.min"
-                [max]="item.max"
-                [(ngModel)]="item.quantity"
-                class="custom-slider"
-              />
-
-              <div class="range-labels">
-                <span>Min: {{ item.min }}g</span>
-                <span>Max: {{ item.max }}g</span>
+    <!-- 2. Ingredient Customizer Sliders container -->
+    <div class="customizer-section mb-4" *ngIf="selectedRecipe">
+      <h5 class="section-heading mb-3 fw-bold text-dark"><i class="bi bi-sliders me-1 text-primary"></i> Adjust Ingredient Quantities</h5>
+      <div class="custom-ingredients-container row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        
+        <div class="col" *ngFor="let item of customizedIngredients">
+          <div class="ingredient-slider-row bg-white p-3 rounded shadow-sm border h-100 d-flex flex-column justify-content-between">
+            
+            <!-- Top row info: thumbnail, name, unit price, and subtotal -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="item.image" alt="Ingredient image" class="rounded-circle border" style="width: 40px; height: 40px; object-fit: cover;" />
+                <div>
+                  <h6 class="m-0 text-dark fw-bold" style="font-size: 0.95rem;">{{ item.name }}</h6>
+                  <span class="price-pill mt-1">₹{{ item.unitPrice }} / {{ item.unit }}</span>
+                </div>
+              </div>
+              <div class="text-end">
+                <small class="text-muted d-block" style="font-size: 0.7rem; text-transform: uppercase;">Subtotal</small>
+                <span class="text-dark fw-bold ingredient-subtotal" style="font-size: 0.95rem;">₹{{ (item.quantity * item.unitPrice) | number:'1.2-2' }}</span>
               </div>
             </div>
+            
+            <!-- Middle row: Range Slider control with dynamic track percentage -->
+            <div class="my-2">
+              <input type="range" 
+                     [min]="0" 
+                     [max]="item.availability" 
+                     [(ngModel)]="item.quantity" 
+                     (ngModelChange)="onSliderChange()"
+                     [style.--percent.%]="item.availability ? (item.quantity / item.availability) * 100 : 0"
+                     class="custom-slider w-100" />
+            </div>
 
-            <div class="input-display-area">
-              <div class="input-group">
-                <input
-                  type="number"
-                  [(ngModel)]="item.quantity"
-                  class="form-control quantity-input"
-                />
-                <span class="input-group-text">grams</span>
-              </div>
-              <div class="item-total">
-                <small>Subtotal</small>
-                <p>₹{{ (item.quantity || 0) * (item.pergmcost || 0) }}</p>
+            <!-- Bottom row: Stock limit badge & input field -->
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <span class="text-muted small" style="font-size: 0.75rem;">Limit: {{ item.availability }} {{ item.unit }}</span>
+              
+              <div class="input-group input-group-sm" style="width: 100px;">
+                <input type="number" 
+                       [(ngModel)]="item.quantity" 
+                       (ngModelChange)="onSliderChange()"
+                       [min]="0" 
+                       [max]="item.availability" 
+                       class="form-control text-dark fw-bold text-center px-1 number-input-field" style="font-size: 0.85rem;" />
+                <span class="input-group-text bg-light text-dark fw-semibold px-2" style="font-size: 0.75rem;">{{ item.unit }}</span>
               </div>
             </div>
           </div>
-        }
-      </div>
-    }
-      <div class="total-summary-card mt-5">
-        <div class="summary-content">
-          <span class="total-label">Estimated Recipe Cost:</span>
-          <span class="total-amount">₹{{ calculateTotal() }}</span>
         </div>
-        <button class="btn-primary" (click)="openPaymentModal()">Add Custom Mix to Cart</button>
+
       </div>
     </div>
+
+    <!-- 3. Dynamic Formulation Calculation Summary Box -->
+    <div class="total-summary-card mt-5 p-4 rounded shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-3" 
+         *ngIf="selectedRecipe">
+      <div class="price-details w-100-mobile">
+        <span class="total-label text-dark block fs-5">Estimated Formulation Cost:</span>
+        <h2 class="total-amount text-highlight font-weight-bold m-0">₹{{ customCost | number:'1.2-2' }}</h2>
+        <span class="text-danger small fw-semibold" *ngIf="!isCalculated"><i class="bi bi-exclamation-triangle"></i> Recalculate price!</span>
+        <span class="text-success small fw-semibold" *ngIf="isCalculated"><i class="bi bi-check-circle"></i> Mix ready to order!</span>
+      </div>
+      <div class="d-flex gap-2 w-100-mobile">
+        <button class="btn btn-secondary-action bg-secondary text-white border-0 px-3 py-2 flex-grow-1" (click)="calculateCustomTotal()">
+          <i class="bi bi-calculator"></i> Calculate
+        </button>
+        <button class="btn-primary px-3 py-2 flex-grow-1" [disabled]="!isCalculated" (click)="openPaymentModal()">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<!-- Complete Payment Modal -->
 <ng-template #paymentModal let-modal>
-  
   <div class="modal-header border-0 pb-0 justify-content-center position-relative pt-4">
     <h4 class="clean-title m-0">Complete Order</h4>
     <button type="button" class="btn-close position-absolute end-0 me-3" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
@@ -124,7 +125,6 @@
     <h2 class="clean-total mb-4">₹{{ finalTotal }}</h2>
 
     <div class="payment-list">
-      
       <div class="payment-row-card" (click)="processPayment('UPI', modal)">
         <div class="icon-wrapper gpay-colors"><i class="bi bi-google"></i></div>
         <span class="payment-text">GPay / UPI</span>
@@ -148,8 +148,6 @@
         <span class="payment-text">Cash on Delivery</span>
         <i class="bi bi-chevron-right ms-auto arrow-icon"></i>
       </div>
-
     </div>
   </div>
-  
 </ng-template>

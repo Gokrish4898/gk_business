@@ -14,6 +14,7 @@ export interface StockItem {
   unit: string;
   unitPrice: number;
   availability: number;
+  imagelink?: string;
 }
 
 @Component({
@@ -51,10 +52,12 @@ export class Stock implements OnInit {
   isModalOpen = false;
   modalTitle = 'Add Stock';
   modalStock = {
+    stockId: 0,
     stockName: '',
     unit: 'g',
     unitPrice: 0,
     availability: 0,
+    imagelink: '',
   };
 
   // Predefined list of standard units
@@ -95,10 +98,12 @@ export class Stock implements OnInit {
   addStock() {
     this.modalTitle = 'Add Stock';
     this.modalStock = {
+      stockId: 0,
       stockName: '',
       unit: 'g',
       unitPrice: 0,
       availability: 0,
+      imagelink: '',
     };
     this.isModalOpen = true;
   }
@@ -108,7 +113,14 @@ export class Stock implements OnInit {
       const item = this.allStock.find((s) => s.stockId === this.selectedStockId);
       if (item) {
         this.modalTitle = 'Edit Stock';
-        this.modalStock = { ...item };
+        this.modalStock = {
+          stockId: item.stockId,
+          stockName: item.stockName,
+          unit: item.unit,
+          unitPrice: item.unitPrice,
+          availability: item.availability,
+          imagelink: item.imagelink || '',
+        };
         this.isModalOpen = true;
       }
     }
@@ -123,6 +135,7 @@ export class Stock implements OnInit {
     unit: string;
     unitprice: number;
     availability: number;
+    imagelink?: string;
   }) {
     if (this.modalTitle === 'Add Stock') {
       const nextId =
@@ -133,23 +146,20 @@ export class Stock implements OnInit {
         unit: formValue.unit,
         unitPrice: Number(formValue.unitprice),
         availability: Number(formValue.availability),
+        imagelink: formValue.imagelink || '',
       };
-      // this.allStock.push(newStock);
       this._addstock(newStock);
     } else if (this.modalTitle === 'Edit Stock' && this.selectedStockId !== null) {
-      const index = this.allStock.findIndex((s) => s.stockId === this.selectedStockId);
-      if (index !== -1) {
-        this.allStock[index] = {
-          stockId: this.selectedStockId,
-          stockName: formValue.stockname,
-          unit: formValue.unit,
-          unitPrice: Number(formValue.unitprice),
-          availability: Number(formValue.availability),
-        };
-      }
-
+      const editStock: StockItem = {
+        stockId: this.selectedStockId,
+        stockName: formValue.stockname,
+        unit: formValue.unit,
+        unitPrice: Number(formValue.unitprice),
+        availability: Number(formValue.availability),
+        imagelink: formValue.imagelink || '',
+      };
+      this._editstock(editStock);
     }
-    // this.updateDisplayedStock();
     this.closeModal();
     this.selectedStockId = null; // Clear selection
   }
