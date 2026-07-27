@@ -24,11 +24,12 @@ html, body {
 }
 
 /* =========================================
-   2. PREMIUM GLASS BUBBLE
+   2. PREMIUM GLASS BUBBLE (Commented Out)
    ========================================= */
+/*
 .global-refresh-indicator {
   position: fixed;
-  top: -65px; /* Hidden just above the screen */
+  top: -65px;
   left: 0;
   width: 100vw;
   display: flex;
@@ -37,7 +38,6 @@ html, body {
   z-index: 9999;
   height: 60px;
   pointer-events: none;
-  /* Rubber-band snap-back animation when let go */
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
 
@@ -56,10 +56,9 @@ html, body {
   transform: scale(0.9); 
 }
 
-/* Pops bigger when pulled far enough */
 .refresh-bubble.ready-to-release {
   transform: scale(1.05); 
-  box-shadow: 0 8px 25px rgba(212, 163, 115, 0.3); /* Brand glow */
+  box-shadow: 0 8px 25px rgba(212, 163, 115, 0.3);
 }
 
 .pull-icon {
@@ -72,6 +71,7 @@ html, body {
   transform: rotate(180deg);
   color: var(--accent-gold, #D4A373);
 }
+*/
 
 /* =========================================
    3. CAKE BAKING ANIMATION
@@ -428,3 +428,105 @@ html, body {
 
 .oven-icon-wrapper, .info-icon-wrapper { width: 44px; height: 44px; border-radius: 12px; }
 .recipe-paper { transform: scale(0.8); transform-origin: center center; }
+
+/* =========================================
+   GLOBAL FLOATING SIDE DOODLES (DESKTOP ONLY)
+   ========================================= */
+.side-doodles-container {
+  position: fixed;
+  top: 80px;
+  bottom: 0;
+  width: calc((100vw - 1320px) / 2 - 20px);
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+  display: none;
+  
+  @media (min-width: 1480px) {
+    display: block;
+  }
+}
+
+.container-left {
+  left: 15px;
+}
+
+.container-right {
+  right: 15px;
+}
+
+.dynamic-side-doodle {
+  position: absolute;
+  pointer-events: none;
+  animation-name: doodleEnterExit;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+  opacity: 0;
+  color: rgba(212, 163, 115, 0.75); /* Higher baseline opacity */
+}
+
+.doodle-transform-wrapper {
+  display: inline-block;
+}
+
+/* 
+  Gentle rotation sway (wiggle) animation running in parallel
+*/
+.doodle-wiggle-wrapper {
+  display: inline-block;
+  animation: doodleWiggle 4s ease-in-out infinite alternate;
+}
+
+.doodle-svg {
+  width: 75px;
+  height: 75px;
+  stroke-width: 3.5px !important; /* Bold lines for visibility */
+  filter: drop-shadow(0 6px 12px rgba(212, 163, 115, 0.15));
+}
+
+@keyframes doodleEnterExit {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  15% {
+    opacity: 0.65; /* Highly visible early on */
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.85; /* Strongest visibility at the peak */
+    transform: translateY(-50px);
+  }
+  85% {
+    opacity: 0.55;
+    transform: translateY(-100px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+}
+
+@keyframes doodleWiggle {
+  0% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+/*
+  FUTURE DEVELOPER INSTRUCTIONS:
+  To customize or add a special custom animation for a specific doodle design (e.g. "pie"):
+  1. Target the element using the `data-type` attribute:
+     .dynamic-side-doodle[data-type="pie"] .doodle-wiggle-wrapper {
+       animation-name: pieSpecialAnimation;
+       animation-duration: 3s;
+     }
+  2. Define the keyframes for your new animation:
+     @keyframes pieSpecialAnimation {
+       0% { transform: scale(1) rotate(0deg); }
+       100% { transform: scale(1.1) rotate(360deg); }
+     }
+*/

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Loading } from '../shared/spinner/loading';
@@ -9,13 +8,18 @@ import { ProductService } from '../Admin/master/products/product-service';
 import { WishlistService } from '../Admin/master/wishlists/wishlist-service';
 import { RatingService } from '../Admin/master/ratings/rating-service';
 import { FormsModule } from '@angular/forms';
+import { register } from 'swiper/element/bundle';
+
+// Register Swiper Web Components
+register();
 
 @Component({
   selector: 'app-baking-dashboard',
-  imports: [CommonModule, NgbCarouselModule, MatPaginatorModule, FormsModule],
+  imports: [CommonModule, MatPaginatorModule, FormsModule],
   standalone: true,
   templateUrl: './baking-dashboard.html',
   styleUrl: './baking-dashboard.scss',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class BakingDashboard implements OnInit, OnDestroy {
   slides = [

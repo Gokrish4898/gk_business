@@ -407,7 +407,7 @@
     </div>
   </div>
 }
-<div class="global-refresh-indicator" [style.transform]="'translateY(' + pullDistance + 'px)'">
+<!-- <div class="global-refresh-indicator" [style.transform]="'translateY(' + pullDistance + 'px)'">
   <div class="refresh-bubble" [class.ready-to-release]="pullDistance >= triggerDistance">
     @if (isRefreshing) {
       <div class="baking-loader">
@@ -420,19 +420,136 @@
       <i class="bi bi-arrow-down-short pull-icon"></i>
     }
   </div>
-</div>
+</div> -->
 
 <div
   class="app-container"
   #scrollContainer
-  (touchstart)="onTouchStart($event)"
-  (touchmove)="onTouchMove($event)"
-  (touchend)="onTouchEnd()"
-  (mousedown)="onTouchStart($event)"
-  (mousemove)="onTouchMove($event)"
-  (mouseup)="onTouchEnd()"
-  (mouseleave)="onTouchEnd()"
 >
   <router-outlet></router-outlet>
 </div>
 <app-footer></app-footer>
+
+<!-- Global Floating Side Doodles (Desktop Only) -->
+<div class="side-doodles-container container-left">
+  <ng-container *ngFor="let doodle of activeDoodles">
+    <div 
+      *ngIf="doodle.side === 'left'"
+      class="dynamic-side-doodle"
+      [attr.data-type]="doodle.type"
+      [style.left]="doodle.left"
+      [style.top]="doodle.top"
+      [style.animation-delay]="doodle.delay"
+      [style.animation-duration]="doodle.duration"
+    >
+      <div class="doodle-transform-wrapper" [style.transform]="'scale(' + doodle.scale + ') rotate(' + doodle.rotation + 'deg)'">
+        <div class="doodle-wiggle-wrapper">
+          <ng-container [ngTemplateOutlet]="doodleTemplate" [ngTemplateOutletContext]="{ type: doodle.type }"></ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="side-doodles-container container-right">
+  <ng-container *ngFor="let doodle of activeDoodles">
+    <div 
+      *ngIf="doodle.side === 'right'"
+      class="dynamic-side-doodle"
+      [attr.data-type]="doodle.type"
+      [style.left]="doodle.left"
+      [style.top]="doodle.top"
+      [style.animation-delay]="doodle.delay"
+      [style.animation-duration]="doodle.duration"
+    >
+      <div class="doodle-transform-wrapper" [style.transform]="'scale(' + doodle.scale + ') rotate(' + doodle.rotation + 'deg)'">
+        <div class="doodle-wiggle-wrapper">
+          <ng-container [ngTemplateOutlet]="doodleTemplate" [ngTemplateOutletContext]="{ type: doodle.type }"></ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- 
+  FUTURE DEVELOPER INSTRUCTIONS:
+  To add a new doodle design in the future:
+  1. Add its string name/identifier to the doodleTypes array inside `src/app/app.ts`.
+  2. Add a matching switch case inside the <ng-template #doodleTemplate> switch loop below:
+     <g *ngSwitchCase="'your-new-doodle-name'">
+       <path d="M... Z" />
+     </g>
+-->
+<ng-template #doodleTemplate let-type="type">
+  <svg [ngSwitch]="type" class="doodle-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Chef Hat -->
+    <g *ngSwitchCase="'hat'">
+      <path d="M25,50 C25,30 35,20 50,20 C65,20 75,30 75,50 C75,55 70,55 70,60 L75,70 L25,70 L30,60 C30,55 25,55 25,50 Z" />
+      <path d="M25,70 L75,70 L75,78 C75,81 72,83 69,83 L31,83 C28,83 25,81 25,78 Z" />
+      <line x1="38" y1="70" x2="38" y2="83" />
+      <line x1="50" y1="70" x2="50" y2="83" />
+      <line x1="62" y1="70" x2="62" y2="83" />
+    </g>
+    
+    <!-- Whisk -->
+    <g *ngSwitchCase="'whisk'">
+      <rect x="47" y="55" width="6" height="30" rx="3" fill="none" />
+      <circle cx="50" cy="85" r="2.5" />
+      <path d="M50,55 C38,45 34,25 50,12 C66,25 62,45 50,55 Z" />
+      <path d="M50,55 C43,48 40,30 50,15 C60,30 57,48 50,55 Z" />
+      <path d="M50,55 C47,51 45,35 50,18 C55,35 53,51 50,55 Z" />
+      <line x1="44" y1="52" x2="56" y2="52" />
+    </g>
+
+    <!-- Cupcake -->
+    <g *ngSwitchCase="'cupcake'">
+      <path d="M30,55 L35,80 C35,82 37,84 40,84 L60,84 C63,84 65,82 65,80 L70,55 Z" />
+      <line x1="38" y1="55" x2="42" y2="84" />
+      <line x1="50" y1="55" x2="50" y2="84" />
+      <line x1="62" y1="55" x2="58" y2="84" />
+      <path d="M26,55 C26,45 35,42 40,45 C45,38 55,38 60,45 C65,42 74,45 74,55 C74,57 72,59 70,59 L30,59 C28,59 26,57 26,55 Z" />
+      <circle cx="50" cy="32" r="5" fill="none" />
+      <path d="M52,27 C55,20 62,18 66,20" />
+    </g>
+
+    <!-- Cookie -->
+    <g *ngSwitchCase="'cookie'">
+      <circle cx="50" cy="50" r="32" />
+      <circle cx="38" cy="38" r="3" fill="currentColor" />
+      <circle cx="62" cy="42" r="2.5" fill="currentColor" />
+      <circle cx="45" cy="62" r="3.5" fill="currentColor" />
+      <circle cx="58" cy="64" r="2.5" fill="currentColor" />
+      <circle cx="34" cy="54" r="3" fill="currentColor" />
+    </g>
+
+    <!-- Rolling Pin -->
+    <g *ngSwitchCase="'rollingpin'">
+      <rect x="25" y="42" width="50" height="16" rx="2" fill="none" />
+      <rect x="10" y="47" width="15" height="6" rx="2" />
+      <path d="M25,47 L25,53" />
+      <rect x="75" y="47" width="15" height="6" rx="2" />
+      <path d="M75,47 L75,53" />
+    </g>
+
+    <!-- Croissant -->
+    <g *ngSwitchCase="'croissant'">
+      <path d="M15,60 C20,40 35,30 50,30 C65,30 80,40 85,60 C75,58 65,52 50,52 C35,52 25,58 15,60 Z" />
+      <path d="M32,44 C36,36 43,33 50,33 C57,33 64,36 68,44" fill="none" />
+      <path d="M42,52 C45,40 55,40 58,52" fill="none" />
+      <path d="M24,56 C28,48 35,45 42,47" fill="none" />
+      <path d="M76,56 C72,48 65,45 58,47" fill="none" />
+    </g>
+
+    <!-- Pretzel -->
+    <g *ngSwitchCase="'pretzel'">
+      <path d="M50,75 C30,75 22,60 22,46 C22,32 34,22 48,24 C55,25 61,32 64,40 L65,48 L50,60 L35,48 L36,40 C39,32 45,25 52,24 C66,22 78,32 78,46 C78,60 70,75 50,75 Z" />
+    </g>
+
+    <!-- Pie -->
+    <g *ngSwitchCase="'pie'">
+      <path d="M20,55 L25,72 C25,75 28,78 32,78 L68,78 C72,78 75,75 75,72 L80,55 Z" />
+      <path d="M16,55 C20,50 24,50 28,55 C32,50 36,50 40,55 C44,50 48,50 52,55 C56,50 60,50 64,55 C68,50 72,50 76,55 C80,50 84,50 88,55" fill="none" />
+      <path d="M20,55 C20,38 35,32 50,32 C65,32 80,38 80,55 Z" />
+      <line x1="50" y1="40" x2="50" y2="48" />
+    </g>
+  </svg>
+</ng-template>
