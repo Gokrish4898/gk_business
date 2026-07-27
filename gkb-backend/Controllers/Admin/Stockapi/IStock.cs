@@ -1,4 +1,4 @@
-﻿using gkb_service.Models;
+using gkb_service.Models;
 using snapdough_api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,6 +36,7 @@ namespace gkb_service.Controllers.Admin
             availableStock.UnitPrice = stock.UnitPrice;
             availableStock.Unit = stock.Unit;
             availableStock.Availability = stock.Availability;
+            availableStock.ImageLink = stock.ImageLink;
             availableStock.UpdatedBy = stock.UpdatedBy;
             availableStock.UpdatedOn = DateTime.UtcNow;
             _db.Update(availableStock);

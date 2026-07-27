@@ -67,6 +67,9 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<gkb_service.Controllers.Mail_service.EmailOtpService>();
 builder.Services.AddTransient<IRecipe,RecipeService>();
 builder.Services.AddTransient<IStock,StockService>();
+builder.Services.AddTransient<IProduct,ProductService>();
+builder.Services.AddTransient<IWishlist,WishlistService>();
+builder.Services.AddTransient<IRating,RatingService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

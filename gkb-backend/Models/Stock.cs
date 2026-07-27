@@ -1,4 +1,4 @@
-﻿using StackExchange.Redis;
+using StackExchange.Redis;
 
 namespace gkb_service.Models
 {
@@ -9,5 +9,6 @@ namespace gkb_service.Models
         public string? Unit { get; set; }
         public float? UnitPrice { get; set; }
         public int? Availability { get; set; }
+        public string? ImageLink { get; set; }
     }
 }

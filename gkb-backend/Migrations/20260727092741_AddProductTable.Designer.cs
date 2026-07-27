@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using snapdough_api.Data;
@@ -11,9 +12,11 @@ using snapdough_api.Data;
 namespace gkb_service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727092741_AddProductTable")]
+    partial class AddProductTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,21 +50,9 @@ namespace gkb_service.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("delivery");
 
-                    b.Property<string>("ImageLink")
-                        .HasColumnType("text")
-                        .HasColumnName("imagelink");
-
-                    b.Property<bool?>("InStock")
-                        .HasColumnType("boolean")
-                        .HasColumnName("instock");
-
                     b.Property<string>("Name")
                         .HasColumnType("text")
                         .HasColumnName("name");
-
-                    b.Property<float?>("Price")
-                        .HasColumnType("real")
-                        .HasColumnName("price");
 
                     b.Property<string>("ReceipeId")
                         .HasColumnType("jsonb")
@@ -78,48 +69,6 @@ namespace gkb_service.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("product", (string)null);
-                });
-
-            modelBuilder.Entity("gkb_service.Models.Rating", b =>
-                {
-                    b.Property<int>("RatingId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("ratingid");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RatingId"));
-
-                    b.Property<int?>("Active")
-                        .HasColumnType("integer")
-                        .HasColumnName("active");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("createdby");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("createdon");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer")
-                        .HasColumnName("productid");
-
-                    b.Property<string>("RatingDetails")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("ratingdetails");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("updatedby");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updatedon");
-
-                    b.HasKey("RatingId");
-
-                    b.ToTable("rating", (string)null);
                 });
 
             modelBuilder.Entity("gkb_service.Models.Recipe", b =>
@@ -189,10 +138,6 @@ namespace gkb_service.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdon");
 
-                    b.Property<string>("ImageLink")
-                        .HasColumnType("text")
-                        .HasColumnName("imagelink");
-
                     b.Property<string>("StockName")
                         .HasColumnType("text")
                         .HasColumnName("stock_name");
@@ -216,48 +161,6 @@ namespace gkb_service.Migrations
                     b.HasKey("StockId");
 
                     b.ToTable("stock", (string)null);
-                });
-
-            modelBuilder.Entity("gkb_service.Models.Wishlist", b =>
-                {
-                    b.Property<int>("WishlistId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("wishlistid");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WishlistId"));
-
-                    b.Property<int?>("Active")
-                        .HasColumnType("integer")
-                        .HasColumnName("active");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("createdby");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("createdon");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("updatedby");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updatedon");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("userid");
-
-                    b.Property<string>("WishlistDetails")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("wishlistdetails");
-
-                    b.HasKey("WishlistId");
-
-                    b.ToTable("wishlist", (string)null);
                 });
 #pragma warning restore 612, 618
         }
