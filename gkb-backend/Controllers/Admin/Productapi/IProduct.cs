@@ -46,6 +46,8 @@ namespace gkb_service.Controllers.Admin
             availableproduct.InStock = product.InStock;
             availableproduct.ImageLink = product.ImageLink;
             availableproduct.ReceipeId = product.ReceipeId;
+            availableproduct.HandlingCharge = product.HandlingCharge;
+            availableproduct.Active = product.Active;
             availableproduct.UpdatedBy = product.UpdatedBy;
             availableproduct.UpdatedOn = DateTime.UtcNow;
             _db.Update(availableproduct);

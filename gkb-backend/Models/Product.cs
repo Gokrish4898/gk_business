@@ -14,5 +14,8 @@ namespace gkb_service.Models
 
         [Column("receipeid", TypeName = "jsonb")]
         public List<ProductRecipeMapping>? ReceipeId { get; set; }
+
+        [Column("handlingcharge", TypeName = "jsonb")]
+        public List<ProductHandlingChargeMapping>? HandlingCharge { get; set; }
     }
 }

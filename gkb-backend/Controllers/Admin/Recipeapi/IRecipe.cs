@@ -1,4 +1,4 @@
-﻿using gkb_service.Models;
+using gkb_service.Models;
 using snapdough_api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +41,7 @@ namespace gkb_service.Controllers.Admin
             }
             availablerecipe.RecipeName = recipe.RecipeName;
             availablerecipe.Ingredients = recipe.Ingredients;
+            availablerecipe.Active = recipe.Active;
             availablerecipe.UpdatedBy = recipe.UpdatedBy;
             availablerecipe.UpdatedOn = DateTime.UtcNow;
             _db.Update(availablerecipe);

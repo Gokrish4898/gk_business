@@ -16,6 +16,12 @@ import { Recipe } from './Admin/master/recipe/recipe';
 import { Stock } from './Admin/master/stock/stock';
 import { Wishlists } from './Admin/master/wishlists/wishlists';
 import { Ratings } from './Admin/master/ratings/ratings';
+import { Role } from './Admin/master/role/role';
+import { Deliverycharge } from './Admin/master/deliverycharge/deliverycharge';
+import { Additionalcharge } from './Admin/master/additionalcharge/additionalcharge';
+import { Usermaster } from './Admin/master/usermaster/usermaster';
+import { PaymentMasterComponent } from './Admin/master/payment/payment';
+import { AdminOrdersComponent } from './Admin/orders/orders';
 
 export const routes: Routes = [
   {
@@ -45,6 +51,12 @@ export const routes: Routes = [
       { path: 'admin/stock', component: Stock },
       { path: 'admin/wishlists', component: Wishlists },
       { path: 'admin/ratings', component: Ratings },
+      { path: 'admin/roles', component: Role },
+      { path: 'admin/deliverycharges', component: Deliverycharge },
+      { path: 'admin/additionalcharges', component: Additionalcharge },
+      { path: 'admin/users', component: Usermaster },
+      { path: 'admin/payments', component: PaymentMasterComponent },
+      { path: 'admin/orders', component: AdminOrdersComponent },
       { path: 'admin', component: AdminDashboard },
       { path: '**', component: Landingpage },
     ],

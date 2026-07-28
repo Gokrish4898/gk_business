@@ -6,10 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { Loading } from '../../../shared/spinner/loading';
 import { ProductService } from './product-service';
 import { RecipeService } from '../recipe/recipe-service';
+import { AdditionalChargeService } from '../additionalcharge/additionalcharge-service';
 import { ToastService } from '../../../shared/toaster/toast-service';
 
 export interface ProductRecipe {
   recipeid: number;
+}
+
+export interface ProductHandlingCharge {
+  charged: number;
 }
 
 export interface Product {
@@ -19,6 +24,8 @@ export interface Product {
   price: number;
   instock: boolean;
   receipeid: ProductRecipe[];
+  handlingcharge: ProductHandlingCharge[];
+  active?: number;
   imagelink?: string;
 }
 
@@ -32,7 +39,9 @@ export interface Product {
 export class Products implements OnInit {
   allProducts: Product[] = [];
   allRecipes: any[] = [];
+  allAdditionalCharges: any[] = [];
   recipeLookupMap: Map<number, string> = new Map();
+  chargeLookupMap: Map<number, any> = new Map();
 
   // Pagination state
   pageSize = 5;
@@ -44,7 +53,20 @@ export class Products implements OnInit {
   expandedProductId: number | null = null;
 
   // Modal Dialog states
-  isModalOpen = false;
+  private _isModalOpen = false;
+  get isModalOpen(): boolean {
+    return this._isModalOpen;
+  }
+  set isModalOpen(value: boolean) {
+    this._isModalOpen = value;
+    if (typeof document !== 'undefined') {
+      if (value) {
+        document.body.classList.add('modal-open');
+      } else {
+        document.body.classList.remove('modal-open');
+      }
+    }
+  }
   modalTitle = 'Add Product';
   modalProduct: {
     productid?: number;
@@ -53,25 +75,55 @@ export class Products implements OnInit {
     price: number;
     instock: boolean;
     receipeid: ProductRecipe[];
+    handlingcharge: ProductHandlingCharge[];
     imagelink: string;
+    active: number;
   } = {
     name: '',
     delivery: 1,
     price: 0,
     instock: true,
     receipeid: [{ recipeid: 0 }],
-    imagelink: ''
+    handlingcharge: [{ charged: 0 }],
+    imagelink: '',
+    active: 1
   };
 
   constructor(
     private loading: Loading,
     private productservice: ProductService,
     private recipeservice: RecipeService,
+    private additionalchargeservice: AdditionalChargeService,
     private toastr: ToastService
   ) {}
 
   ngOnInit() {
-    this._getrecipes();
+    this._getadditionalcharges();
+  }
+
+  _getadditionalcharges() {
+    this.loading.show();
+    this.additionalchargeservice.getcharge().subscribe({
+      next: (res) => {
+        if (res.body != null && res.body.stocklst != null) {
+          this.allAdditionalCharges = res.body.stocklst.map((c: any) => ({
+            chargeId: c.chargeId ?? c.chargeid ?? c.ChargeId,
+            chargeName: c.chargeName ?? c.charge_name ?? c.ChargeName,
+            amount: c.amount ?? c.Amount
+          }));
+          this.chargeLookupMap.clear();
+          this.allAdditionalCharges.forEach(ch => {
+            this.chargeLookupMap.set(ch.chargeId, ch);
+          });
+        }
+        this._getrecipes();
+      },
+      error: (err) => {
+        this.loading.hide();
+        this.toastr.show('Failed to load handling charges', 'error');
+        this._getrecipes();
+      }
+    });
   }
 
   _getrecipes() {
@@ -122,6 +174,22 @@ export class Products implements OnInit {
               recipeid: Number(r.recipeid ?? r.recipeId ?? r.RecipeId ?? r)
             }));
 
+            let hcRaw = p.handlingCharge ?? p.handlingcharge ?? p.HandlingCharge;
+            let hcList: any[] = [];
+            if (typeof hcRaw === 'string') {
+              try {
+                hcList = JSON.parse(hcRaw);
+              } catch (e) {
+                hcList = [];
+              }
+            } else if (Array.isArray(hcRaw)) {
+              hcList = hcRaw;
+            }
+
+            const normalizedCharges = hcList.map((h: any) => ({
+              charged: Number(h.charged ?? h.Charged ?? h)
+            }));
+
             return {
               productid: p.productId ?? p.productid ?? p.ProductId,
               name: p.name ?? p.Name,
@@ -129,6 +197,8 @@ export class Products implements OnInit {
               price: p.price ?? p.Price ?? 0,
               instock: p.inStock ?? p.instock ?? p.InStock ?? false,
               receipeid: normalizedRecipes,
+              handlingcharge: normalizedCharges,
+              active: p.active ?? p.Active ?? 1,
               imagelink: p.imageLink ?? p.imagelink ?? p.ImageLink ?? ''
             };
           });
@@ -186,7 +256,9 @@ export class Products implements OnInit {
       price: 0,
       instock: true,
       receipeid: [{ recipeid: 0 }],
-      imagelink: ''
+      handlingcharge: [{ charged: 0 }],
+      imagelink: '',
+      active: 1
     };
     this.isModalOpen = true;
   }
@@ -203,10 +275,15 @@ export class Products implements OnInit {
           price: prod.price,
           instock: prod.instock,
           receipeid: prod.receipeid.map(r => ({ ...r })),
-          imagelink: prod.imagelink || ''
+          handlingcharge: prod.handlingcharge.map(h => ({ ...h })),
+          imagelink: prod.imagelink || '',
+          active: prod.active ?? 1
         };
         if (this.modalProduct.receipeid.length === 0) {
           this.modalProduct.receipeid.push({ recipeid: 0 });
+        }
+        if (this.modalProduct.handlingcharge.length === 0) {
+          this.modalProduct.handlingcharge.push({ charged: 0 });
         }
         this.isModalOpen = true;
       }
@@ -253,6 +330,26 @@ export class Products implements OnInit {
     }
   }
 
+  addHandlingChargeRow() {
+    this.modalProduct.handlingcharge.push({ charged: 0 });
+  }
+
+  removeHandlingChargeRow(index: number) {
+    if (this.modalProduct.handlingcharge.length > 1) {
+      this.modalProduct.handlingcharge.splice(index, 1);
+    } else {
+      this.modalProduct.handlingcharge[0] = { charged: 0 };
+    }
+  }
+
+  getHandlingChargeName(chargeid: number): string {
+    return this.chargeLookupMap.get(chargeid)?.chargeName || 'Unknown Charge';
+  }
+
+  getHandlingChargeAmount(chargeid: number): number {
+    return this.chargeLookupMap.get(chargeid)?.amount || 0;
+  }
+
   closeModal() {
     this.isModalOpen = false;
   }
@@ -266,6 +363,12 @@ export class Products implements OnInit {
         recipeid: Number(r.recipeid)
       }));
 
+    const validCharges = this.modalProduct.handlingcharge
+      .filter(h => h.charged > 0)
+      .map(h => ({
+        charged: Number(h.charged)
+      }));
+
     const payload = {
       productId: this.modalTitle === 'Edit Product' ? this.selectedProductId : 0,
       name: this.modalProduct.name.trim(),
@@ -273,7 +376,9 @@ export class Products implements OnInit {
       price: Number(this.modalProduct.price),
       inStock: this.modalProduct.instock,
       imageLink: this.modalProduct.imagelink.trim(),
-      receipeId: validRecipes
+      receipeId: validRecipes,
+      handlingCharge: validCharges,
+      active: Number(this.modalProduct.active)
     };
 
     this.loading.show();

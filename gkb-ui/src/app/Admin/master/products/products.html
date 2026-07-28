@@ -43,6 +43,7 @@
                         <th scope="col">Delivery (Days)</th>
                         <th scope="col" style="width: 220px;">Availability</th>
                         <th scope="col" style="width: 180px;">Total Recipes</th>
+                        <th scope="col" style="width: 120px;">Status</th>
                         <th scope="col" style="width: 100px;" class="text-center">Expand</th>
                     </tr>
                 </thead>
@@ -97,6 +98,13 @@
                                     {{ p.receipeid.length }} Recipes Mapped
                                 </span>
                             </td>
+                            <td>
+                                <span class="status-pill" 
+                                    [class.in-stock]="p.active === 1"
+                                    [class.out-of-stock]="p.active !== 1">
+                                    {{ p.active === 1 ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
                             <td class="text-center">
                                 <button class="btn btn-link p-0 text-muted btn-expand"
                                     (click)="toggleExpand(p.productid, $event)">
@@ -108,7 +116,7 @@
  
                         <!-- Expanded details row -->
                         <tr *ngIf="expandedProductId === p.productid">
-                            <td colspan="9" class="p-0 border-0">
+                            <td colspan="10" class="p-0 border-0">
                                 <div class="expanded-detail-box p-4 bg-light">
                                     <div class="ingredients-header mb-3 d-flex justify-content-between align-items-center">
                                         <h5 class="m-0 text-primary-action brand-font">Mapped Recipes Formulation</h5>
@@ -145,12 +153,51 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-10 col-lg-8">
+                                            <div class="ingredients-header mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="m-0 text-primary-action brand-font">Mapped Handling Charges</h5>
+                                            </div>
+                                            <div class="table-responsive rounded shadow-sm bg-white border">
+                                                <table class="table table-custom align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" style="width: 150px;">Charge ID</th>
+                                                            <th scope="col">Charge Name</th>
+                                                            <th scope="col" class="text-end">Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let hc of p.handlingcharge">
+                                                            <td>
+                                                                <span class="badge badge-id">{{ hc.charged }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <strong class="recipe-name text-dark fw-semibold">
+                                                                    {{ getHandlingChargeName(hc.charged) }}
+                                                                </strong>
+                                                            </td>
+                                                            <td class="text-end text-highlight font-weight-bold">
+                                                                ₹{{ getHandlingChargeAmount(hc.charged) | number:'1.2-2' }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr *ngIf="!p.handlingcharge || p.handlingcharge.length === 0">
+                                                            <td colspan="3" class="text-center py-2 text-muted">
+                                                                No handling charges mapped.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                     </ng-container>
                     <tr *ngIf="displayedProducts.length === 0">
-                        <td colspan="8" class="text-center py-4 text-muted">
+                        <td colspan="9" class="text-center py-4 text-muted">
                             No products found.
                         </td>
                     </tr>
@@ -220,7 +267,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                     <div class="mb-3">
                         <label class="form-label text-white d-block">Stock Status</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="modalInstock" id="modalInStockYes" 
@@ -231,6 +278,20 @@
                             <input class="form-check-input" type="radio" name="modalInstock" id="modalInStockNo" 
                                 [value]="false" [(ngModel)]="modalProduct.instock">
                             <label class="form-check-label text-white" for="modalInStockNo" style="cursor:pointer;">Out of Stock</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white d-block">Status</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="modalActive" id="modalActiveYes" 
+                                [value]="1" [(ngModel)]="modalProduct.active">
+                            <label class="form-check-label text-white" for="modalActiveYes" style="cursor:pointer;">Active</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="modalActive" id="modalActiveNo" 
+                                [value]="0" [(ngModel)]="modalProduct.active">
+                            <label class="form-check-label text-white" for="modalActiveNo" style="cursor:pointer;">Inactive</label>
                         </div>
                     </div>
 
@@ -274,6 +335,52 @@
                                 <button type="button"
                                     class="btn btn-sm btn-link text-danger border-0 p-0 fs-5 btn-remove-row"
                                     (click)="removeRecipeRow(i)">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Handling Charges Mapping Editor Title -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label text-white mb-0">Mapped Handling Charges</label>
+                        <button type="button"
+                            class="btn btn-sm btn-secondary-action py-1 px-3 d-flex align-items-center gap-1"
+                            (click)="addHandlingChargeRow()">
+                            <i class="bi bi-plus-circle"></i> Add Handling Charge
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Handling Charges Editor List -->
+                    <div class="ingredients-editor-container rounded p-3 mb-4"
+                        style="background: rgba(255, 255, 255, 0.05); max-height: 250px; overflow-y: auto;">
+
+                        <!-- Header Row for Editor -->
+                        <div class="row g-2 mb-2 d-none d-md-flex text-muted small fw-bold">
+                            <div class="col-md-10 text-white">Charge Name</div>
+                            <div class="col-md-2 text-center text-white">Remove</div>
+                        </div>
+
+                        <!-- Editor Rows -->
+                        <div class="row g-2 align-items-center mb-3 mb-md-2 editor-row"
+                            *ngFor="let h of modalProduct.handlingcharge; let i = index">
+                            <!-- Charge Dropdown -->
+                            <div class="col-10 col-md-10">
+                                <label class="d-block d-md-none text-muted small mb-1">Charge Name</label>
+                                <select class="form-select text-dark" [name]="'handlingcharge_' + i"
+                                    [(ngModel)]="h.charged" required>
+                                    <option value="0" disabled>Select a charge...</option>
+                                    <option *ngFor="let ch of allAdditionalCharges" [value]="ch.chargeId">
+                                        {{ ch.chargeName }} (₹{{ ch.amount | number:'1.2-2' }})
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Delete Action -->
+                            <div class="col-2 col-md-2 text-center pt-3 pt-md-0">
+                                <button type="button"
+                                    class="btn btn-sm btn-link text-danger border-0 p-0 fs-5 btn-remove-row"
+                                    (click)="removeHandlingChargeRow(i)">
                                     <i class="bi bi-trash3-fill"></i>
                                 </button>
                             </div>

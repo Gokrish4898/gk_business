@@ -69,16 +69,18 @@
                             <td>
                                 <div class="d-flex gap-3 align-items-center" (click)="$event.stopPropagation()">
                                     <div class="form-check form-check-inline m-0">
-                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid" 
-                                            [id]="'active_yes_' + r.ratingid" [checked]="r.active === 1" 
+                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid"
+                                            [id]="'active_yes_' + r.ratingid" [checked]="r.active === 1"
                                             (change)="toggleRatingVisibility(r, 1)">
-                                        <label class="form-check-label text-success small fw-semibold" [for]="'active_yes_' + r.ratingid" style="cursor:pointer;">Active</label>
+                                        <label class="form-check-label text-success small fw-semibold"
+                                            [for]="'active_yes_' + r.ratingid" style="cursor:pointer;">Active</label>
                                     </div>
                                     <div class="form-check form-check-inline m-0">
-                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid" 
-                                            [id]="'active_no_' + r.ratingid" [checked]="r.active === 0" 
+                                        <input class="form-check-input" type="radio" [name]="'active_' + r.ratingid"
+                                            [id]="'active_no_' + r.ratingid" [checked]="r.active === 0"
                                             (change)="toggleRatingVisibility(r, 0)">
-                                        <label class="form-check-label text-danger small fw-semibold" [for]="'active_no_' + r.ratingid" style="cursor:pointer;">Inactive</label>
+                                        <label class="form-check-label text-danger small fw-semibold"
+                                            [for]="'active_no_' + r.ratingid" style="cursor:pointer;">Inactive</label>
                                     </div>
                                 </div>
                             </td>
@@ -105,6 +107,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th scope="col" style="width: 120px;">User ID</th>
+                                                            <th scope="col" style="width: 120px;">Username</th>
                                                             <th scope="col" style="width: 150px;">Rating Stars</th>
                                                             <th scope="col">Review Comment</th>
                                                             <th scope="col" style="width: 180px;">Created On</th>
@@ -112,39 +115,54 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr *ngFor="let item of r.ratingdetails">
+                                                        <tr *ngFor="let item of r.ratingdetails; let idx = index">
                                                             <td>
-                                                                <span class="badge badge-id">User #{{ item.userid }}</span>
+                                                                <span class="badge badge-id">User #{{ item.userid
+                                                                    }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge badge-id">{{ item.username
+                                                                    }}</span>
                                                             </td>
                                                             <td>
                                                                 <div class="text-warning">
-                                                                    <i class="bi bi-star-fill me-1" *ngFor="let star of getArray(item.ratingstar)"></i>
-                                                                    <i class="bi bi-star me-1" *ngFor="let star of getEmptyStarsArray(item.ratingstar)"></i>
+                                                                    <i class="bi bi-star-fill me-1"
+                                                                        *ngFor="let star of getArray(item.ratingstar)"></i>
+                                                                    <i class="bi bi-star me-1"
+                                                                        *ngFor="let star of getEmptyStarsArray(item.ratingstar)"></i>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <span class="text-dark">{{ item.ratingcomment || 'No comment provided.' }}</span>
+                                                                <span class="text-dark">{{ item.ratingcomment || 'No
+                                                                    comment provided.' }}</span>
                                                             </td>
                                                             <td>
-                                                                <span class="text-muted small">{{ item.createdon | date:'short' }}</span>
+                                                                <span class="text-muted small">{{ item.createdon |
+                                                                    date:'short' }}</span>
                                                             </td>
                                                             <td>
                                                                 <div class="d-flex gap-3 align-items-center">
                                                                     <div class="form-check form-check-inline m-0">
-                                                                        <input class="form-check-input" type="radio" 
-                                                                            [name]="'item_active_' + r.ratingid + '_' + item.userid" 
-                                                                            [id]="'item_yes_' + r.ratingid + '_' + item.userid" 
-                                                                            [checked]="item.active === 1" 
+                                                                        <input class="form-check-input" type="radio"
+                                                                            [name]="'item_active_' + r.ratingid + '_' + idx"
+                                                                            [id]="'item_yes_' + r.ratingid + '_' + idx"
+                                                                            [checked]="item.active === 1"
                                                                             (change)="toggleReviewActiveStatus(r, item, 1)">
-                                                                        <label class="form-check-label text-success small fw-semibold" [for]="'item_yes_' + r.ratingid + '_' + item.userid" style="cursor:pointer;">Visible</label>
+                                                                        <label
+                                                                            class="form-check-label text-success small fw-semibold"
+                                                                            [for]="'item_yes_' + r.ratingid + '_' + idx"
+                                                                            style="cursor:pointer;">Visible</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline m-0">
-                                                                        <input class="form-check-input" type="radio" 
-                                                                            [name]="'item_active_' + r.ratingid + '_' + item.userid" 
-                                                                            [id]="'item_no_' + r.ratingid + '_' + item.userid" 
-                                                                            [checked]="item.active === 0" 
+                                                                        <input class="form-check-input" type="radio"
+                                                                            [name]="'item_active_' + r.ratingid + '_' + idx"
+                                                                            [id]="'item_no_' + r.ratingid + '_' + idx"
+                                                                            [checked]="item.active === 0"
                                                                             (change)="toggleReviewActiveStatus(r, item, 0)">
-                                                                        <label class="form-check-label text-danger small fw-semibold" [for]="'item_no_' + r.ratingid + '_' + item.userid" style="cursor:pointer;">Hidden</label>
+                                                                        <label
+                                                                            class="form-check-label text-danger small fw-semibold"
+                                                                            [for]="'item_no_' + r.ratingid + '_' + idx"
+                                                                            style="cursor:pointer;">Hidden</label>
                                                                     </div>
                                                                 </div>
                                                             </td>

@@ -113,12 +113,52 @@ export class AdminDashboard implements OnInit, OnDestroy {
       disabled: false
     },
     {
-      title: 'Extra Toppings',
-      desc: 'Configure premium topping additions and pricing',
-      icon: 'bi bi-sparkles',
-      route: '/admin',
-      color: '#7f8c8d',
-      disabled: true
+      title: 'Roles Master',
+      desc: 'Define and maintain user roles (e.g., admin, customer)',
+      icon: 'bi bi-person-badge-fill',
+      route: '/admin/roles',
+      color: '#9b59b6',
+      disabled: false
+    },
+    {
+      title: 'Delivery Charges',
+      desc: 'Configure delivery charges for Pondicherry regions by pincode',
+      icon: 'bi bi-truck',
+      route: '/admin/deliverycharges',
+      color: '#1abc9c',
+      disabled: false
+    },
+    {
+      title: 'Additional Charges',
+      desc: 'Manage electric, labour charge, and packing charge amounts',
+      icon: 'bi bi-cash-coin',
+      route: '/admin/additionalcharges',
+      color: '#2ecc71',
+      disabled: false
+    },
+    {
+      title: 'User Master',
+      desc: 'Manage user profiles, login credentials, and status toggles',
+      icon: 'bi bi-people-fill',
+      route: '/admin/users',
+      color: '#e74c3c',
+      disabled: false
+    },
+    {
+      title: 'Payment Master',
+      desc: 'Configure and enable active checkout payment methods',
+      icon: 'bi bi-credit-card-2-back-fill',
+      route: '/admin/payments',
+      color: '#2ecc71',
+      disabled: false
+    },
+    {
+      title: 'Order Management',
+      desc: 'Inspect user orders, track shipments, and update tracking statuses',
+      icon: 'bi bi-receipt',
+      route: '/admin/orders',
+      color: '#3498db',
+      disabled: false
     }
   ];
 

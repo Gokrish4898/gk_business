@@ -70,6 +70,10 @@ builder.Services.AddTransient<IStock,StockService>();
 builder.Services.AddTransient<IProduct,ProductService>();
 builder.Services.AddTransient<IWishlist,WishlistService>();
 builder.Services.AddTransient<IRating,RatingService>();
+builder.Services.AddTransient<IRole,RoleService>();
+builder.Services.AddTransient<IAdditionalCharge,AdditionalChargeService>();
+builder.Services.AddTransient<IDeliveryCharge,DeliveryChargeService>();
+builder.Services.AddTransient<IUserMaster,UserMasterService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -94,13 +98,48 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 
-// --- 3. auto-migrate ---
+// --- 3. auto-migrate & seed ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        // Seed PaymentMaster
+        if (!db.PaymentMasters.Any())
+        {
+            db.PaymentMasters.AddRange(
+                new PaymentMaster { PaymentName = "Cash On Delivery", Description = "Pay in cash upon delivery of your order", DisplayOrder = 1, CreatedOn = DateTime.UtcNow, Active = 1 },
+                new PaymentMaster { PaymentName = "UPI", Description = "Google Pay, PhonePe, Paytm or any BHIM UPI app", DisplayOrder = 2, CreatedOn = DateTime.UtcNow, Active = 1 },
+                new PaymentMaster { PaymentName = "Credit Card", Description = "Pay securely using your Visa, Mastercard or RuPay Credit Card", DisplayOrder = 3, CreatedOn = DateTime.UtcNow, Active = 1 },
+                new PaymentMaster { PaymentName = "Debit Card", Description = "Pay securely using your Debit Card", DisplayOrder = 4, CreatedOn = DateTime.UtcNow, Active = 1 }
+            );
+            db.SaveChanges();
+        }
 
-//using(var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.Migrate();
-//}
+        // Seed OrderStatusMaster
+        if (!db.OrderStatusMasters.Any())
+        {
+            var statuses = new string[] {
+                "Pending", "Confirmed", "Preparing", "Packed", "Shipped", "Out For Delivery", "Delivered", "Cancelled", "Rejected", "Returned", "Refunded"
+            };
+            foreach (var status in statuses)
+            {
+                db.OrderStatusMasters.Add(new OrderStatusMaster
+                {
+                    StatusName = status,
+                    Description = $"Order has been marked as {status}",
+                    CreatedOn = DateTime.UtcNow,
+                    Active = 1
+                });
+            }
+            db.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error seeding data: {ex.Message}");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

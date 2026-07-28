@@ -9,103 +9,137 @@ import { ReversePipe } from '../custom-pipe/reverse-pipe';
 
 @Component({
   selector: 'app-login',
-  standalone:true,
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login implements OnInit{
+export class Login implements OnInit {
 
   // UI State
-  isLoginMode: boolean = true; 
-  
+  isLoginMode: boolean = true;
 
-  // OTP State
-  mobileNumber: string = '';
-  otpCode: string = '';
-  otpSent: boolean = false;
-  otpVerified: boolean = false;
+  // Login Form Binding
+  loginEmail = '';
+  loginPassword = '';
 
-  private router = inject(Router)
+  // Registration Form Binding
+  regUsername = '';
+  regEmail = '';
+  regHouseNo = '';
+  regAddressLine1 = '';
+  regAddressLine2 = '';
+  regArea = '';
+  regState = '';
+  regMobile = '';
+  regPassword = '';
 
-  constructor(private toastr : ToastService,
-    private loginservice : LoginService
-  ){
+  private router = inject(Router);
 
-  }
-  ngOnInit(): void {
-       
-  }
+  constructor(
+    private toastr: ToastService,
+    private loginservice: LoginService
+  ) { }
 
-  
-  login(){
-    //     this.loginservice.login().subscribe(
-    //   res=>{
-    //     console.log(res,"fdssdhfkj")
-    // this.router.navigate(['/landingpage']);
+  ngOnInit(): void { }
 
-    //   }
-    // )
-    let postdata = "asdfg";
-    let result = new ReversePipe().transform(postdata);
-
-    console.log(result,"result")
-    var formdata = {
-      Email : "mohamedshamir988@gmail.com"
-    }
-    this.loginservice.generateotp(formdata).subscribe({
-  // 1. The 'next' block handles a successful response
-  next: (res) => {
-    console.log(res);
-  },
-  
-  // 2. The 'error' block handles the failure
-  error: (error: any) => {
-    console.log(error, "generateotp");
-  }
-});
-  }
-
-  toggleMode(mode:'login'|'register'){
-    this.isLoginMode =mode === 'login';
-
-    this.otpSent =false;
-    this.otpSent = false;
-    this.mobileNumber = ''
-    this.otpCode = '';
-  }
-
-  sendOtp(){
-    if(this.mobileNumber && this.mobileNumber.length >= 10){
-      this.otpSent =true;
-    }
-  }
-
-  verifyOtp(){
-    /* The `debugger;` statement in JavaScript is a breakpoint that can be used for debugging purposes.
-    When the browser encounters this statement while executing the code, it will pause the execution
-    at that point, allowing you to inspect variables, check the call stack, and step through the
-    code using developer tools. It is commonly used during development to pause the execution flow
-    and analyze the state of the application at that particular point in the code. */
-    // debugger;
-    if(this.otpCode.length == 4){
-      this.otpVerified = true;
-      this.toastr.show("OTP Verified","success","top-right");
-    }
-  }
-
-  // login(){
-  //   console.log("logging in..")
-  // }
-
-  register(){
-    if(!this.otpVerified){
-      this.toastr.show("Please verify your mobile number first!","error","top-center");
+  login() {
+    if (!this.loginEmail.trim() || !this.loginPassword.trim()) {
+      this.toastr.show('Please fill in all mandatory fields', 'error');
       return;
     }
-    this.toastr.show("Successfully Register","success","top-right");
-    console.log('Registering user..')
-    this.router.navigate(["/landingpage"])
+
+    const payload = {
+      Email: this.loginEmail.trim(),
+      Password: this.loginPassword.trim()
+    };
+
+    this.loginservice.loginUser(payload).subscribe({
+      next: (res) => {
+        if (res.body != null) {
+          const body = res.body;
+          // Store token and user details in localStorage
+          localStorage.setItem('token', body.token);
+          localStorage.setItem('userId', body.userId.toString());
+          localStorage.setItem('roleId', body.roleId.toString());
+          localStorage.setItem('username', body.username || '');
+          localStorage.setItem('email', body.email || '');
+
+          // Update signals
+          this.loginservice.userid.set(Number(body.userId));
+          this.loginservice.roleid.set(Number(body.roleId));
+          this.loginservice.username.set(body.username || '');
+          this.loginservice.useremail.set(body.email || '');
+
+          this.toastr.show(`Welcome back, ${body.username || 'Chef'}!`, 'success');
+
+          // Redirect based on role: Admin (1) to Admin Dashboard, Customer (2) to Landing Page
+          if (Number(body.roleId) === 1) {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/landingpage']);
+          }
+        }
+      },
+      error: (err) => {
+        const errorMsg = err.error?.error || 'Invalid credentials or login failed';
+        this.toastr.show(errorMsg, 'error');
+      }
+    });
   }
 
+  toggleMode(mode: 'login' | 'register') {
+    this.isLoginMode = mode === 'login';
+    // Clear values
+    this.loginEmail = '';
+    this.loginPassword = '';
+    this.regUsername = '';
+    this.regEmail = '';
+    this.regHouseNo = '';
+    this.regAddressLine1 = '';
+    this.regAddressLine2 = '';
+    this.regArea = '';
+    this.regState = '';
+    this.regMobile = '';
+    this.regPassword = '';
+  }
+
+  register() {
+    if (
+      !this.regUsername.trim() ||
+      !this.regEmail.trim() ||
+      !this.regPassword.trim() ||
+      !this.regHouseNo.trim() ||
+      !this.regAddressLine1.trim() ||
+      !this.regArea.trim() ||
+      !this.regState.trim() ||
+      !this.regMobile.trim()
+    ) {
+      this.toastr.show('All fields are mandatory', 'error');
+      return;
+    }
+
+    const payload = {
+      Email: this.regEmail.trim(),
+      Password: this.regPassword.trim(),
+      Username: this.regUsername.trim(),
+      HouseNo: this.regHouseNo.trim(),
+      AddressLine1: this.regAddressLine1.trim(),
+      AddressLine2: this.regAddressLine2.trim(),
+      Area: this.regArea.trim(),
+      State: this.regState.trim(),
+      Mobile: this.regMobile.trim()
+    };
+
+    this.loginservice.registerUser(payload).subscribe({
+      next: (res) => {
+        this.toastr.show('Registration successful! Please login.', 'success');
+        this.toggleMode('login');
+      },
+      error: (err) => {
+        const errorMsg = err.error?.error || 'Registration failed';
+        this.toastr.show(errorMsg, 'error');
+      }
+    });
+  }
 }

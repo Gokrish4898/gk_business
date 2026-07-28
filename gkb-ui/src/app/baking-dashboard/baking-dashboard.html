@@ -1,28 +1,19 @@
 <div class="container pt-3 pb-5">
   <div class="carousel-container mb-4" *ngIf="slides && slides.length > 0">
-    <swiper-container 
-      loop="true" 
-      autoplay-delay="4000" 
-      autoplay-disable-on-interaction="false"
-      pagination="true" 
-      pagination-clickable="true"
-      navigation="true"
-      class="mySwiper"
-    >
-      <swiper-slide *ngFor="let slide of slides; let i = index">
+    <swiper-container navigation="true" pagination="true" loop="true" autoplay-delay="3000"
+      autoplay-disable-on-interaction="false" class="mySwiper">
+
+      <swiper-slide *ngFor="let slide of slides">
         <div class="picsum-img-wrapper">
-          <img
-            [src]="slide.url"
-            [alt]="slide.title"
-            class="slide-image w-100"
-            style="object-fit: cover; border-radius: 12px; height: 300px"
-          />
+          <img [src]="slide.url" [alt]="slide.title" class="slide-image">
         </div>
+
         <div class="carousel-caption">
           <h3>{{ slide.title }}</h3>
           <p>{{ slide.description }}</p>
         </div>
       </swiper-slide>
+
     </swiper-container>
   </div>
 
@@ -71,11 +62,8 @@
     <hr class="thick-separator mb-4" />
 
     <div class="modern-product-grid">
-      <div class="product-card" 
-           #prodCard
-           (mousemove)="onMouseMove($event, prodCard)"
-           (mouseleave)="onMouseLeave(prodCard)"
-           *ngFor="let item of product">
+      <div class="product-card" #prodCard (mousemove)="onMouseMove($event, prodCard)"
+        (mouseleave)="onMouseLeave(prodCard)" *ngFor="let item of product">
         <div (click)="product_page(item)">
           <div class="img-wrapper">
             <img [src]="item.image" alt="Product Image" class="card-image" />
@@ -90,9 +78,9 @@
 
           <div class="wishlist-icon" (click)="$event.stopPropagation(); addwhishlist(item)">
             @if (item.wishlist == true) {
-              <i class="bi bi-heart-fill text-danger fs-5"></i>
+            <i class="bi bi-heart-fill text-danger fs-5"></i>
             } @else {
-              <i class="bi bi-heart fs-5"></i>
+            <i class="bi bi-heart fs-5"></i>
             }
           </div>
         </div>
@@ -110,85 +98,88 @@
 </div>
 
 @if (isReviewsOpen) {
-  <div class="custom-backdrop" (click)="closeReviewsModal()"></div>
+<div class="custom-backdrop" (click)="closeReviewsModal()"></div>
 
-  <div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content glass-content fade-in-up">
-        <div class="modal-header border-bottom-0 pb-0">
-          <div>
-            <h5 class="modal-title brand-text mb-0">Customer Reviews</h5>
-            <div class="d-flex align-items-center mt-1">
-              <i class="bi bi-star-fill text-warning fs-5 me-2"></i>
-              <span class="fs-5 fw-bold text-white">{{ selectedProduct?.rating }}</span>
-              <span class="text-muted ms-2">Based on {{ selectedProduct?.totalrating }} reviews</span>
-            </div>
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content glass-content fade-in-up">
+      <div class="modal-header border-bottom-0 pb-0">
+        <div>
+          <h5 class="modal-title brand-text mb-0">Customer Reviews</h5>
+          <div class="d-flex align-items-center mt-1">
+            <i class="bi bi-star-fill text-warning fs-5 me-2"></i>
+            <span class="fs-5 fw-bold text-white">{{ selectedProduct?.rating }}</span>
+            <span class="text ms-2">Based on {{ selectedProduct?.totalrating }} reviews</span>
           </div>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            aria-label="Close"
-            (click)="closeReviewsModal()"
-          ></button>
         </div>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close"
+          (click)="closeReviewsModal()"></button>
+      </div>
 
-        <div class="modal-body custom-scrollbar mt-3">
-          @for (review of activeReviews; track review.id) {
-            <div class="review-card">
-              <div class="review-avatar-col">
-                @if (review.image) {
-                  <img [src]="review.image" alt="User" class="review-avatar-img" />
-                } @else {
-                  <div class="review-avatar-icon"><i class="bi bi-person-fill"></i></div>
-                }
-              </div>
-
-              <div class="review-content-col">
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                  <h6 class="review-name mb-0">{{ review.name }}</h6>
-                  <span class="review-date">{{ review.date }}</span>
-                </div>
-
-                <div class="review-stars mb-2">
-                  @for (star of getArray(review.rating); track $index) {
-                    <i class="bi bi-star-fill text-warning small me-1"></i>
-                  }
-                  @for (star of getArray(5 - review.rating); track $index) {
-                    <i class="bi bi-star-fill text-muted small opacity-50 me-1"></i>
-                  }
-                </div>
-
-                <p class="review-comment mb-0">{{ review.comment }}</p>
-              </div>
-            </div>
-          }
-          @if (activeReviews.length === 0) {
-            <p class="text-muted text-center my-4">No reviews yet for this product. Be the first!</p>
-          }
-
-          <!-- Write Review Section -->
-          <div class="write-review-section border-top pt-3 mt-4">
-            <h6 class="text-white mb-2 fw-semibold">Write a Review</h6>
-            <div class="mb-2">
-              <span class="text-muted small d-block mb-1">Select Rating</span>
-              <div class="rating-input d-flex gap-2 text-warning fs-5">
-                <i class="bi" [class.bi-star-fill]="newRatingStar >= 1" [class.bi-star]="newRatingStar < 1" (click)="newRatingStar = 1" style="cursor: pointer;"></i>
-                <i class="bi" [class.bi-star-fill]="newRatingStar >= 2" [class.bi-star]="newRatingStar < 2" (click)="newRatingStar = 2" style="cursor: pointer;"></i>
-                <i class="bi" [class.bi-star-fill]="newRatingStar >= 3" [class.bi-star]="newRatingStar < 3" (click)="newRatingStar = 3" style="cursor: pointer;"></i>
-                <i class="bi" [class.bi-star-fill]="newRatingStar >= 4" [class.bi-star]="newRatingStar < 4" (click)="newRatingStar = 4" style="cursor: pointer;"></i>
-                <i class="bi" [class.bi-star-fill]="newRatingStar >= 5" [class.bi-star]="newRatingStar < 5" (click)="newRatingStar = 5" style="cursor: pointer;"></i>
-              </div>
-            </div>
-            <div class="mb-3">
-              <span class="text-muted small d-block mb-1">Comment</span>
-              <textarea class="form-control text-dark bg-white" rows="2" [(ngModel)]="newRatingComment" placeholder="Share your experience with this item..."></textarea>
-            </div>
-            <button class="btn btn-warning btn-sm w-100 text-dark fw-bold py-2" (click)="submitNewReview()">Submit Review</button>
+      <div class="modal-body custom-scrollbar mt-3" style="max-height: 70vh;">
+        @for (review of activeReviews; track review.id) {
+        <div class="review-card">
+          <div class="review-avatar-col">
+            @if (review.image) {
+            <img [src]="review.image" alt="User" class="review-avatar-img" />
+            } @else {
+            <div class="review-avatar-icon"><i class="bi bi-person-fill"></i></div>
+            }
           </div>
+
+          <div class="review-content-col">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <h6 class="review-name mb-0">{{ review.name }}</h6>
+              <span class="review-date">{{ review.date }}</span>
+            </div>
+
+            <div class="review-stars mb-2">
+              @for (star of getArray(review.rating); track $index) {
+              <i class="bi bi-star-fill text-warning small me-1"></i>
+              }
+              @for (star of getArray(5 - review.rating); track $index) {
+              <i class="bi bi-star-fill text-muted small opacity-50 me-1"></i>
+              }
+            </div>
+
+            <p class="review-comment mb-0">{{ review.comment }}</p>
+          </div>
+        </div>
+        }
+        @if (activeReviews.length === 0) {
+        <p class="text-muted text-center my-4">No reviews yet for this product. Be the first!</p>
+        }
+
+        <!-- Write Review Section -->
+        <div class="write-review-section border-top pt-3 mt-4">
+          <h6 class="text-white mb-2 fw-semibold">Write a Review</h6>
+          <div class="mb-2">
+            <span class="text-muted small d-block mb-1">Select Rating</span>
+            <div class="rating-input d-flex gap-2 text-warning fs-5">
+              <i class="bi" [class.bi-star-fill]="newRatingStar >= 1" [class.bi-star]="newRatingStar < 1"
+                (click)="newRatingStar = 1" style="cursor: pointer;"></i>
+              <i class="bi" [class.bi-star-fill]="newRatingStar >= 2" [class.bi-star]="newRatingStar < 2"
+                (click)="newRatingStar = 2" style="cursor: pointer;"></i>
+              <i class="bi" [class.bi-star-fill]="newRatingStar >= 3" [class.bi-star]="newRatingStar < 3"
+                (click)="newRatingStar = 3" style="cursor: pointer;"></i>
+              <i class="bi" [class.bi-star-fill]="newRatingStar >= 4" [class.bi-star]="newRatingStar < 4"
+                (click)="newRatingStar = 4" style="cursor: pointer;"></i>
+              <i class="bi" [class.bi-star-fill]="newRatingStar >= 5" [class.bi-star]="newRatingStar < 5"
+                (click)="newRatingStar = 5" style="cursor: pointer;"></i>
+            </div>
+          </div>
+          <div class="mb-3">
+            <span class="text-muted small d-block mb-1">Comment</span>
+            <textarea class="form-control text-dark bg-white" rows="2" [(ngModel)]="newRatingComment"
+              placeholder="Share your experience with this item..."></textarea>
+          </div>
+          <button class="btn btn-warning btn-sm w-100 text-dark fw-bold py-2" (click)="submitNewReview()">Submit
+            Review</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 }
 
 <!-- Big Heart Wink Overlay Animation -->
@@ -205,5 +196,3 @@
     <div class="overlay-text">Added to Wishlist!</div>
   </div>
 </div>
-
-

@@ -1,1 +1,234 @@
-<p>deliverycharge works!</p>
+<div class="container pt-4 pb-5">
+    <div class="master-card bg-white p-4 rounded shadow-sm">
+        <!-- Header with top actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <!-- Left Top Actions -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary-action d-flex align-items-center gap-2" (click)="addConfig()">
+                    <i class="bi bi-plus-lg"></i> Add Config
+                </button>
+                <button class="btn btn-secondary-action d-flex align-items-center gap-2" [disabled]="!selectedDeliveryId"
+                    (click)="editConfig()">
+                    <i class="bi bi-pencil-square"></i> Edit Config
+                </button>
+            </div>
+
+            <!-- Right Top Action -->
+            <div>
+                <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin">
+                    <i class="bi bi-speedometer2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="separator mb-4" />
+
+        <!-- Title Area -->
+        <div class="mb-4">
+            <h3 class="brand-font m-0 text-dark">Delivery Charges Master (Pondicherry)</h3>
+            <p class="text-muted m-0">Configure delivery charges for Pondicherry regions based on city and pincodes</p>
+        </div>
+
+        <!-- Delivery Charge Config Table -->
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">Select</th>
+                        <th scope="col" style="width: 50px;">Details</th>
+                        <th scope="col">Delivery ID</th>
+                        <th scope="col">Cities Configured</th>
+                        <th scope="col">Created On</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let d of displayedCharges">
+                        <!-- Main Row -->
+                        <tr [class.table-row-selected]="selectedDeliveryId === d.deliveryId"
+                            (click)="selectDelivery(d.deliveryId)" style="cursor: pointer;">
+                            <td>
+                                <div class="form-check select-check">
+                                    <input class="form-check-input" type="radio" name="selectedDelivery"
+                                        [checked]="selectedDeliveryId === d.deliveryId"
+                                        (click)="$event.stopPropagation(); selectDelivery(d.deliveryId)" />
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-link p-0 text-dark" 
+                                    (click)="toggleExpand(d.deliveryId, $event)">
+                                    <i class="bi" [class.bi-chevron-down]="expandedDeliveryId === d.deliveryId"
+                                        [class.bi-chevron-right]="expandedDeliveryId !== d.deliveryId"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <span class="badge badge-id">{{ d.deliveryId }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span *ngFor="let c of d.city" class="badge bg-light text-dark border">
+                                        {{ c.city }} ({{ c.pincodes.length }})
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ (d.createdOn | date:'mediumDate') || '-' }}</span>
+                            </td>
+                            <td>
+                                <span class="status-pill" 
+                                    [class.in-stock]="d.active === 1"
+                                    [class.out-of-stock]="d.active !== 1">
+                                    {{ d.active === 1 ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- Expanded Detail Row -->
+                        <tr *ngIf="expandedDeliveryId === d.deliveryId">
+                            <td colspan="6" class="p-0 border-0">
+                                <div class="nested-details bg-light p-4 rounded-b border-start border-end">
+                                    <div class="row g-4">
+                                        <div class="col-md-6 col-lg-4" *ngFor="let c of d.city">
+                                            <div class="card shadow-sm border border-200">
+                                                <div class="card-header bg-white border-bottom fw-bold d-flex justify-content-between">
+                                                    <span>{{ c.city }}</span>
+                                                    <span class="badge bg-primary text-white rounded-pill">{{ c.pincodes.length }} pins</span>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <table class="table table-sm m-0">
+                                                        <thead>
+                                                            <tr class="table-light">
+                                                                <th class="ps-3 py-2">Pincode</th>
+                                                                <th class="pe-3 py-2 text-end">Charge</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let pin of c.pincodes">
+                                                                <td class="ps-3 py-2 text-muted font-monospace">{{ pin.pincode }}</td>
+                                                                <td class="pe-3 py-2 text-end text-highlight font-weight-bold">₹{{ pin.charge }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr *ngIf="displayedCharges.length === 0">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No delivery configs found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="paginator-wrapper mt-4 d-flex justify-content-center border-top pt-3">
+            <mat-paginator [length]="allCharges.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>
+
+@if (isModalOpen) {
+<div class="custom-backdrop" (click)="closeModal()"></div>
+
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-content">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title brand-text">{{ modalTitle }}</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+
+            <div class="modal-body mt-3" style="max-height: 70vh; overflow-y: auto;">
+                <form #deliveryForm="ngForm" (ngSubmit)="submitConfig()">
+                    
+                    <div *ngFor="let c of modalDelivery.city; let cIndex = index" class="card bg-dark border-secondary text-white mb-4 p-3 position-relative">
+                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+                            (click)="removeCityBlock(cIndex)" aria-label="Delete City"></button>
+                        
+                        <div class="mb-3 me-5">
+                            <label [for]="'city_' + cIndex" class="form-label text-light">City Name</label>
+                            <input type="text" class="form-control" [id]="'city_' + cIndex" [name]="'city_' + cIndex"
+                                [(ngModel)]="c.city" required placeholder="e.g. Pondicherry" />
+                        </div>
+
+                        <!-- Pincode rows inside this city -->
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <h6 class="text-info m-0"><i class="bi bi-geo-alt-fill"></i> Pincodes & Charges</h6>
+                            <button type="button" class="btn btn-outline-info btn-sm" (click)="addPincodeRow(cIndex)">
+                                <i class="bi bi-plus-circle"></i> Add Pincode Row
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark align-middle m-0">
+                                <thead>
+                                    <tr>
+                                        <th>Pincode</th>
+                                        <th>Charge (₹)</th>
+                                        <th style="width: 50px;">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of c.pincodes; let pIndex = index">
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm text-dark" 
+                                                [name]="'pin_' + cIndex + '_' + pIndex"
+                                                [(ngModel)]="p.pincode" required placeholder="605001" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm text-dark" 
+                                                [name]="'charge_' + cIndex + '_' + pIndex"
+                                                [(ngModel)]="p.charge" required min="0" placeholder="0" />
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-outline-danger btn-sm p-1 d-inline-flex" 
+                                                (click)="removePincodeRow(cIndex, pIndex)">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-start mb-4">
+                        <button type="button" class="btn btn-outline-info" (click)="addCityBlock()">
+                            <i class="bi bi-plus-square"></i> Add Another City Block
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white d-block">Status</label>
+                        <div class="form-check form-check-inline text-white">
+                            <input class="form-check-input" type="radio" id="deliveryActive" name="active" [value]="1" [(ngModel)]="modalDelivery.active" />
+                            <label class="form-check-label" for="deliveryActive" style="cursor: pointer;">Active</label>
+                        </div>
+                        <div class="form-check form-check-inline text-white ms-3">
+                            <input class="form-check-input" type="radio" id="deliveryInactive" name="active" [value]="0" [(ngModel)]="modalDelivery.active" />
+                            <label class="form-check-label" for="deliveryInactive" style="cursor: pointer;">Inactive</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top border-secondary">
+                        <button type="button" class="btn btn-outline-light" (click)="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-secondary-action" [disabled]="deliveryForm.invalid">
+                            Save Configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+}

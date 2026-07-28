@@ -1,0 +1,182 @@
+<div class="payment-master-container p-4">
+  <!-- Stats Header -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="stats-card d-flex align-items-center p-3 rounded shadow-sm">
+        <div class="icon-box bg-gold-light text-gold rounded-circle d-flex align-items-center justify-content-center me-3">
+          <i class="bi bi-credit-card-2-back fs-4"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold m-0 text-slate">{{ allPayments.length }}</h4>
+          <span class="text-muted small uppercase">Total Methods</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card d-flex align-items-center p-3 rounded shadow-sm">
+        <div class="icon-box bg-success-light text-success rounded-circle d-flex align-items-center justify-content-center me-3">
+          <i class="bi bi-shield-check fs-4"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold m-0 text-slate">{{ activePaymentsCount }}</h4>
+          <span class="text-muted small uppercase">Active Methods</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card d-flex align-items-center p-3 rounded shadow-sm">
+        <div class="icon-box bg-danger-light text-danger rounded-circle d-flex align-items-center justify-content-center me-3">
+          <i class="bi bi-shield-x fs-4"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold m-0 text-slate">{{ inactivePaymentsCount }}</h4>
+          <span class="text-muted small uppercase">Inactive Methods</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Actions -->
+  <div class="table-card p-4 rounded shadow-sm">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+      <h3 class="brand-font m-0 text-slate"><i class="bi bi-wallet2 text-gold me-2"></i>Payment Master</h3>
+
+      <div class="d-flex align-items-center gap-2 search-container">
+        <i class="bi bi-search search-icon text-muted"></i>
+        <input type="text" class="form-control custom-search" placeholder="Search payment name..."
+          [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" />
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-premium d-flex align-items-center gap-2 small px-3 py-2" (click)="openAddPayment()">
+          <i class="bi bi-plus-circle"></i> Add
+        </button>
+        <button class="btn btn-premium d-flex align-items-center gap-2 small px-3 py-2"
+          [disabled]="!selectedPaymentId" (click)="openEditPayment()">
+          <i class="bi bi-pencil-square"></i> Modify
+        </button>
+        <button class="btn btn-danger-premium d-flex align-items-center gap-2 small px-3 py-2"
+          [disabled]="!selectedPaymentId" (click)="deletePayment()">
+          <i class="bi bi-trash"></i> Disable
+        </button>
+        <a class="btn btn-dashboard d-flex align-items-center gap-2 small px-3 py-2" routerLink="/admin">
+          <i class="bi bi-speedometer2"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+      <table class="table custom-table align-middle">
+        <thead>
+          <tr>
+            <th style="width: 50px"></th>
+            <th>ID</th>
+            <th>Payment Method</th>
+            <th>Description</th>
+            <th class="text-center">Display Order</th>
+            <th class="text-center">Status</th>
+            <th>Created Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of displayedPayments" (click)="selectPayment(p.paymentId)"
+            [class.row-selected]="selectedPaymentId === p.paymentId">
+            <td class="text-center" (click)="$event.stopPropagation()">
+              <input class="form-check-input custom-radio" type="radio" name="selectedPayment"
+                [checked]="selectedPaymentId === p.paymentId" (change)="selectPayment(p.paymentId)" />
+            </td>
+            <td><strong>#{{ p.paymentId }}</strong></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-wallet2 text-gold"></i>
+                <span class="fw-bold text-slate">{{ p.paymentName }}</span>
+              </div>
+            </td>
+            <td class="text-wrap-description text-secondary">{{ p.description || '--' }}</td>
+            <td class="text-center">
+              <span class="badge bg-slate-light text-slate px-3 py-1">{{ p.displayOrder }}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge" [class.bg-success-badge]="p.active === 1" [class.bg-danger-badge]="p.active !== 1">
+                {{ p.active === 1 ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="text-muted small">{{ p.createdOn | date:'shortDate' }}</td>
+          </tr>
+          <tr *ngIf="filteredPayments.length === 0">
+            <td colspan="7" class="text-center py-5 text-muted">
+              <i class="bi bi-credit-card-2-back fs-1 opacity-20 d-block mb-3"></i>
+              No payment configurations found matching criteria.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator [length]="filteredPayments.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+      [pageIndex]="pageIndex" (page)="onPageChange($event)" class="custom-paginator mt-3">
+    </mat-paginator>
+  </div>
+</div>
+
+<!-- Modal Form Dialog -->
+<div *ngIf="isModalOpen" class="custom-backdrop" (click)="closeModal()"></div>
+
+<div *ngIf="isModalOpen" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-content shadow-2xl">
+      <div class="modal-header pb-3">
+        <h5 class="modal-title brand-text text-gold"><i class="bi bi-wallet2 me-2"></i>{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3">
+        <form #payForm="ngForm" (ngSubmit)="submitPayment()">
+          <div class="mb-3">
+            <label for="pName" class="form-label text-muted small uppercase">Payment Method Name</label>
+            <input type="text" class="form-control custom-modal-input" id="pName" name="paymentName"
+              [(ngModel)]="modalPayment.paymentName" required placeholder="e.g. Cash On Delivery, UPI, Credit Card" />
+          </div>
+
+          <div class="mb-3">
+            <label for="pDesc" class="form-label text-muted small uppercase">Description</label>
+            <textarea class="form-control custom-modal-input" id="pDesc" name="description"
+              [(ngModel)]="modalPayment.description" rows="3" placeholder="Display message for checkout details"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="pOrder" class="form-label text-muted small uppercase">Display Order</label>
+              <input type="number" class="form-control custom-modal-input" id="pOrder" name="displayOrder"
+                [(ngModel)]="modalPayment.displayOrder" required min="1" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small uppercase d-block mb-3">Status Option</label>
+              <div class="d-flex align-items-center gap-3">
+                <div class="form-check d-flex align-items-center">
+                  <input class="form-check-input custom-radio mt-0" type="radio" id="statusActive" name="active"
+                    [value]="1" [(ngModel)]="modalPayment.active" />
+                  <label class="form-check-label ms-2 small" for="statusActive">Active</label>
+                </div>
+                <div class="form-check d-flex align-items-center">
+                  <input class="form-check-input custom-radio mt-0" type="radio" id="statusInactive" name="active"
+                    [value]="0" [(ngModel)]="modalPayment.active" />
+                  <label class="form-check-label ms-2 small" for="statusInactive">Inactive</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top border-secondary border-opacity-10">
+            <button type="button" class="btn btn-outline-secondary px-4 text-dark border-secondary border-opacity-30" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-premium px-4" [disabled]="payForm.invalid">
+              Save Configuration
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

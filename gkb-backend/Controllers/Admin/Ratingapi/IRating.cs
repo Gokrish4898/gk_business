@@ -20,7 +20,7 @@ namespace gkb_service.Controllers.Admin
         private readonly AppDbContext _db;
         public RatingService(AppDbContext db)
         {
-            _db = db;
+            _db = db;   
         }
 
         public async Task<Rating> AddRating(Rating rating)

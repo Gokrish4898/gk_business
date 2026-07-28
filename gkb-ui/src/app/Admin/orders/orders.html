@@ -1,0 +1,281 @@
+<div class="admin-orders-container p-4">
+  <!-- Filters Card -->
+  <div class="table-card p-4 rounded shadow-sm">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+      <h3 class="brand-font m-0 text-slate"><i class="bi bi-receipt text-gold me-2"></i>Order Management</h3>
+
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <!-- Search -->
+        <div class="d-flex align-items-center gap-2 search-container">
+          <i class="bi bi-search search-icon text-muted"></i>
+          <input type="text" class="form-control custom-search" placeholder="Search order number or client..."
+            [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" />
+        </div>
+
+        <!-- Status Filter -->
+        <select class="form-select custom-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="all">All Statuses</option>
+          <option *ngFor="let s of allStatuses" [value]="s">{{ s }}</option>
+        </select>
+
+        <!-- Sort By -->
+        <select class="form-select custom-select" [(ngModel)]="sortBy" (change)="onFilterChange()">
+          <option value="createdOn">Order Date</option>
+          <option value="grandTotal">Order Amount</option>
+          <option value="orderNumber">Order Number</option>
+        </select>
+
+        <!-- Sort Order -->
+        <select class="form-select custom-select" [(ngModel)]="sortOrder" (change)="onFilterChange()">
+          <option value="desc">Newest First</option>
+          <option value="asc">Oldest First</option>
+        </select>
+
+        <a class="btn btn-dashboard d-flex align-items-center gap-2 small px-3 py-2" routerLink="/admin">
+          <i class="bi bi-speedometer2"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+      <table class="table custom-table align-middle">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Grand Total</th>
+            <th class="text-center">Status</th>
+            <th>Date Placed</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of orders" (click)="viewOrderDetails(o.orderId)">
+            <td><strong>{{ o.orderNumber }}</strong></td>
+            <td><span class="fw-bold text-slate">{{ o.username }}</span></td>
+            <td><span class="text-secondary small">{{ o.email }}</span></td>
+            <td><strong>₹{{ o.grandTotal | number:'1.2-2' }}</strong></td>
+            <td class="text-center">
+              <span class="badge px-3 py-2"
+                [class.bg-status-pending]="o.orderStatus === 'Pending'"
+                [class.bg-status-confirmed]="o.orderStatus === 'Confirmed'"
+                [class.bg-status-preparing]="o.orderStatus === 'Preparing' || o.orderStatus === 'Packed'"
+                [class.bg-status-shipped]="o.orderStatus === 'Shipped' || o.orderStatus === 'Out For Delivery'"
+                [class.bg-status-delivered]="o.orderStatus === 'Delivered'"
+                [class.bg-status-cancelled]="isCancelledStatus(o.orderStatus)">
+                {{ o.orderStatus }}
+              </span>
+            </td>
+            <td class="text-muted small">{{ o.createdOn | date:'medium' }}</td>
+            <td class="text-center" (click)="$event.stopPropagation()">
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-premium btn-sm px-3" (click)="viewOrderDetails(o.orderId)">
+                  Details
+                </button>
+                <button class="btn btn-outline-premium btn-sm px-3" (click)="openStatusModal(o, $event)">
+                  Status
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="orders.length === 0">
+            <td colspan="7" class="text-center py-5 text-muted">
+              <i class="bi bi-receipt fs-1 opacity-20 d-block mb-3"></i>
+              No orders found matching search criteria.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+      [pageIndex]="pageIndex" (page)="onPageChange($event)" class="custom-paginator mt-3">
+    </mat-paginator>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div *ngIf="isModalOpen" class="custom-backdrop" (click)="closeModal()"></div>
+
+<div *ngIf="isModalOpen && selectedOrder" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content glass-content shadow-2xl" style="max-height: 90vh;">
+      
+      <div class="modal-header pb-3 border-bottom border-secondary border-opacity-10">
+        <div>
+          <h5 class="modal-title brand-text text-gold mb-1"><i class="bi bi-receipt me-2"></i>Order Details: {{ selectedOrder.orderNumber }}</h5>
+          <span class="text-muted small">Placed on: {{ selectedOrder.createdOn | date:'medium' }}</span>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3" style="max-height: 65vh; overflow-y: auto;">
+        
+        <!-- Tracking Timeline Tracker -->
+        <div class="timeline-stepper mb-4 p-3 bg-light rounded border border-secondary border-opacity-10" *ngIf="!isCancelledStatus(selectedOrder.orderStatus)">
+          <h6 class="fw-bold text-slate mb-3 uppercase small"><i class="bi bi-truck me-1 text-gold"></i>Delivery Pipeline</h6>
+          
+          <div class="stepper-row d-flex justify-content-between position-relative">
+            <div class="stepper-line position-absolute"></div>
+            
+            <div class="step-point text-center z-index-2" *ngFor="let step of statusSteps"
+              [class.step-finished]="selectedOrder.orderStatus === step || selectedOrder.orderStatus === 'Delivered' || (statusSteps.indexOf(selectedOrder.orderStatus) >= statusSteps.indexOf(step))"
+              [class.step-active]="selectedOrder.orderStatus === step">
+              <div class="circle mx-auto d-flex align-items-center justify-content-center text-white fw-bold mb-2">
+                <i class="bi"
+                  [class.bi-clock]="step === 'Pending'"
+                  [class.bi-check-circle]="step === 'Confirmed'"
+                  [class.bi-egg-fried]="step === 'Preparing'"
+                  [class.bi-box-seam]="step === 'Packed'"
+                  [class.bi-truck]="step === 'Shipped'"
+                  [class.bi-geo-alt]="step === 'Out For Delivery'"
+                  [class.bi-house-check]="step === 'Delivered'">
+                </i>
+              </div>
+              <span class="step-label text-muted uppercase">{{ step }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancelled/Rejected state -->
+        <div class="alert alert-danger d-flex align-items-center gap-3" *ngIf="isCancelledStatus(selectedOrder.orderStatus)">
+          <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
+          <div>
+            <h6 class="alert-heading fw-bold m-0">Order status: {{ selectedOrder.orderStatus }}</h6>
+            <p class="m-0 small">{{ selectedOrder.statusMessage }}</p>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Left side: Items details -->
+          <div class="col-md-7">
+            <h6 class="fw-bold text-slate uppercase small mb-3 border-bottom pb-2">Purchased Items</h6>
+            <div class="details-item-row p-2 border-bottom d-flex gap-2 align-items-center justify-content-between" *ngFor="let item of selectedOrder.items">
+              <img [src]="item.productImage || 'assets/placeholder-cake.png'" alt="Product" class="item-thumb rounded" />
+              <div class="flex-grow-1 ms-2">
+                <span class="fw-bold text-slate small d-block">{{ item.productName }}</span>
+                <span class="text-muted small">Qty: {{ item.quantity }} x ₹{{ item.productPrice | number:'1.2-2' }}</span>
+
+                <!-- Recipe specs -->
+                <div class="recipe-notes-box mt-1" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
+                  <details class="recipe-details-toggle">
+                    <summary class="text-secondary small cursor-pointer fw-semibold uppercase" style="outline: none; font-size:0.65rem;">
+                      Recipe details
+                    </summary>
+                    <ul class="recipe-ingredient-list mt-1 p-1 rounded bg-light border small m-0 list-unstyled d-flex flex-column gap-1">
+                      <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between" style="font-size:0.65rem;">
+                        <span>{{ ing.name }}</span>
+                        <strong class="text-dark">{{ ing.quantity }} units</strong>
+                      </li>
+                    </ul>
+                  </details>
+                </div>
+              </div>
+              <span class="fw-bold text-slate small">₹{{ item.itemTotal | number:'1.2-2' }}</span>
+            </div>
+
+            <h6 class="fw-bold text-slate uppercase small mt-4 mb-2 border-bottom pb-2">Client Shipping Address</h6>
+            <div class="shipping-info p-2 rounded bg-light border text-secondary small">
+              <strong class="text-dark">{{ selectedOrder.address?.fullName }}</strong><br />
+              <i class="bi bi-telephone"></i> +91 {{ selectedOrder.address?.mobileNumber }}<br />
+              {{ selectedOrder.address?.addressLine1 }}, {{ selectedOrder.address?.addressLine2 }}<br />
+              {{ selectedOrder.address?.city }}, {{ selectedOrder.address?.state }} - <strong>{{ selectedOrder.address?.pincode }}</strong>
+            </div>
+          </div>
+
+          <!-- Right side: Financials & History timeline -->
+          <div class="col-md-5">
+            <h6 class="fw-bold text-slate uppercase small mb-3 border-bottom pb-2">Invoice Summary</h6>
+            <div class="d-flex justify-content-between small text-secondary mb-2">
+              <span>Subtotal</span>
+              <span>₹{{ selectedOrder.subtotal | number:'1.2-2' }}</span>
+            </div>
+            <div class="d-flex justify-content-between small text-secondary mb-2">
+              <span>GST / Taxes (5%)</span>
+              <span>₹{{ selectedOrder.taxAmount | number:'1.2-2' }}</span>
+            </div>
+            <div class="d-flex justify-content-between small text-secondary mb-2">
+              <span>Delivery Charge</span>
+              <span>₹{{ selectedOrder.deliveryCharge | number:'1.2-2' }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
+              <strong class="text-slate uppercase">Grand Total</strong>
+              <strong class="fs-4 text-slate">₹{{ selectedOrder.grandTotal | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="payment-method-box p-2 mb-4 rounded border bg-light d-flex align-items-center gap-2 small">
+              <i class="bi bi-wallet2 text-gold fs-5"></i>
+              <div>
+                <span class="text-muted d-block" style="font-size:0.65rem;">Payment Method</span>
+                <strong class="text-slate">{{ selectedOrder.payment?.paymentName || 'Cash On Delivery' }}</strong>
+              </div>
+            </div>
+
+            <h6 class="fw-bold text-slate uppercase small mb-2 border-bottom pb-2">Audit Status Timeline Logs</h6>
+            <div class="status-timeline-history px-2">
+              <div class="timeline-history-item mb-2 pb-2 border-bottom position-relative" *ngFor="let log of selectedOrder.timeline">
+                <span class="badge bg-gold-light text-gold py-1 uppercase small d-inline-block mb-1">{{ log.status }}</span>
+                <p class="text-secondary small m-0">{{ log.statusMessage }}</p>
+                <span class="text-muted extra-small d-block mt-1">{{ log.createdOn | date:'medium' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer d-flex gap-2 border-top border-secondary border-opacity-10">
+        <button class="btn btn-premium px-4" (click)="openStatusModal(selectedOrder, $event)">Update Status</button>
+        <button type="button" class="btn btn-secondary px-4" (click)="closeModal()">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Status Update Modal -->
+<div *ngIf="isStatusModalOpen" class="custom-backdrop" (click)="closeStatusModal()"></div>
+
+<div *ngIf="isStatusModalOpen" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-content shadow-2xl">
+      
+      <div class="modal-header pb-3 border-bottom border-secondary border-opacity-10">
+        <h5 class="modal-title brand-text text-gold"><i class="bi bi-pencil-square me-2"></i>Update Order Pipeline Status</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeStatusModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3">
+        <form #statusForm="ngForm" (ngSubmit)="submitStatusUpdate()">
+          
+          <div class="mb-3">
+            <label for="statusSelect" class="form-label text-muted small uppercase">New Pipeline Status</label>
+            <select class="form-select custom-modal-input" id="statusSelect" name="status"
+              [(ngModel)]="statusUpdate.status" required>
+              <option value="" disabled>Select next step</option>
+              <option *ngFor="let s of allStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="statusMsg" class="form-label text-muted small uppercase">Timeline Description Message</label>
+            <textarea class="form-control custom-modal-input" id="statusMsg" name="statusMessage"
+              [(ngModel)]="statusUpdate.statusMessage" rows="3"
+              placeholder="e.g. Chef Gordon has started preparing the fresh baking dough."></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top border-secondary border-opacity-10">
+            <button type="button" class="btn btn-outline-secondary px-4 text-dark border-secondary border-opacity-30" (click)="closeStatusModal()">Cancel</button>
+            <button type="submit" class="btn btn-premium px-4" [disabled]="statusForm.invalid">
+              Update Pipeline Status
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

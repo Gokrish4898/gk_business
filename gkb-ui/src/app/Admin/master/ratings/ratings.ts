@@ -10,6 +10,7 @@ import { ToastService } from '../../../shared/toaster/toast-service';
 
 export interface RatingItem {
   userid: number;
+  username: string;
   ratingstar: number;
   ratingcomment: string;
   createdon: string;
@@ -49,7 +50,7 @@ export class Ratings implements OnInit {
     private ratingService: RatingService,
     private productService: ProductService,
     private toastr: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this._getproducts();
@@ -82,6 +83,7 @@ export class Ratings implements OnInit {
       next: (res) => {
         this.loading.hide();
         if (res.body != null && res.body.stocklst != null) {
+          console.log('rating', res.body);
           this.allRatings = res.body.stocklst.map((r: any) => {
             let detailsRaw = r.ratingdetails ?? r.ratingDetails ?? r.RatingDetails;
             let detailsList: any[] = [];
@@ -97,6 +99,7 @@ export class Ratings implements OnInit {
 
             const normalizedDetails = detailsList.map((d: any) => ({
               userid: Number(d.userid ?? d.userId ?? d.UserId ?? 1),
+              username: d.username ?? d.UserName ?? d.Username ?? 'Guest',
               ratingstar: Number(d.ratingstar ?? d.ratingStar ?? d.RatingStar ?? 5),
               ratingcomment: d.ratingcomment ?? d.ratingComment ?? d.RatingComment ?? '',
               createdon: d.createdon ?? d.createdOn ?? d.CreatedOn ?? new Date().toISOString(),

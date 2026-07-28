@@ -15,6 +15,7 @@ export interface StockItem {
   unitPrice: number;
   availability: number;
   imagelink?: string;
+  active?: number;
 }
 
 @Component({
@@ -49,7 +50,20 @@ export class Stock implements OnInit {
   selectedStockId: number | null = null;
 
   // Modal Dialog states
-  isModalOpen = false;
+  private _isModalOpen = false;
+  get isModalOpen(): boolean {
+    return this._isModalOpen;
+  }
+  set isModalOpen(value: boolean) {
+    this._isModalOpen = value;
+    if (typeof document !== 'undefined') {
+      if (value) {
+        document.body.classList.add('modal-open');
+      } else {
+        document.body.classList.remove('modal-open');
+      }
+    }
+  }
   modalTitle = 'Add Stock';
   modalStock = {
     stockId: 0,
@@ -58,6 +72,7 @@ export class Stock implements OnInit {
     unitPrice: 0,
     availability: 0,
     imagelink: '',
+    active: 1,
   };
 
   // Predefined list of standard units
@@ -104,6 +119,7 @@ export class Stock implements OnInit {
       unitPrice: 0,
       availability: 0,
       imagelink: '',
+      active: 1,
     };
     this.isModalOpen = true;
   }
@@ -120,6 +136,7 @@ export class Stock implements OnInit {
           unitPrice: item.unitPrice,
           availability: item.availability,
           imagelink: item.imagelink || '',
+          active: item.active ?? 1,
         };
         this.isModalOpen = true;
       }
@@ -136,6 +153,7 @@ export class Stock implements OnInit {
     unitprice: number;
     availability: number;
     imagelink?: string;
+    active: number;
   }) {
     if (this.modalTitle === 'Add Stock') {
       const nextId =
@@ -147,6 +165,7 @@ export class Stock implements OnInit {
         unitPrice: Number(formValue.unitprice),
         availability: Number(formValue.availability),
         imagelink: formValue.imagelink || '',
+        active: Number(formValue.active),
       };
       this._addstock(newStock);
     } else if (this.modalTitle === 'Edit Stock' && this.selectedStockId !== null) {
@@ -157,6 +176,7 @@ export class Stock implements OnInit {
         unitPrice: Number(formValue.unitprice),
         availability: Number(formValue.availability),
         imagelink: formValue.imagelink || '',
+        active: Number(formValue.active),
       };
       this._editstock(editStock);
     }

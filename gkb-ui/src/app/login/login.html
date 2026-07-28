@@ -19,17 +19,17 @@
     </div>
 
     @if (isLoginMode) {
-      <form class="fade-in-form">
+      <form class="fade-in-form" #logForm="ngForm" (ngSubmit)="login()">
         <div class="mb-4">
           <label class="form-label text-gradient">Email Address</label>
-          <input type="email" class="form-control custom-input" placeholder="chef@snapdough.com">
+          <input type="email" class="form-control custom-input" name="loginEmail" [(ngModel)]="loginEmail" placeholder="chef@snapdough.com" required>
         </div>
         <div class="mb-4">
           <label class="form-label text-gradient">Password</label>
-          <input type="password" class="form-control custom-input" placeholder="••••••••">
+          <input type="password" class="form-control custom-input" name="loginPassword" [(ngModel)]="loginPassword" placeholder="••••••••" required>
         </div>
         <div class="d-grid gap-2 mt-4">
-          <button type="button" (click)="login()" class="btn btn-primary custom-btn">
+          <button type="submit" class="btn btn-primary custom-btn" [disabled]="logForm.invalid">
             Enter Kitchen
           </button>
         </div>
@@ -37,85 +37,73 @@
     }
 
     @else {
-      <form class="fade-in-form">
+      <form class="fade-in-form" #regForm="ngForm" (ngSubmit)="register()">
         
         <div class="address-grid">
           <div class="input-group-custom full-width">
             <label class="form-label">Username</label>
-            <input type="text" class="form-control custom-input" placeholder="Chef Name">
+            <input type="text" class="form-control custom-input" name="username" [(ngModel)]="regUsername" placeholder="Chef Name" required>
           </div>
 
           <div class="input-group-custom full-width">
             <label class="form-label">Email Address</label>
-            <input type="email" class="form-control custom-input" placeholder="hello@example.com">
+            <input type="email" class="form-control custom-input" name="email" [(ngModel)]="regEmail" placeholder="hello@example.com" required>
+          </div>
+
+          <div class="input-group-custom full-width">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control custom-input" name="password" [(ngModel)]="regPassword" placeholder="••••••••" required>
           </div>
 
           <div class="input-group-custom col-small">
             <label class="form-label">House No.</label>
-            <input type="text" class="form-control custom-input" placeholder="42B">
+            <input type="text" class="form-control custom-input" name="houseNo" [(ngModel)]="regHouseNo" placeholder="42B" required>
           </div>
           <div class="input-group-custom col-large">
             <label class="form-label">Address Line 1</label>
-            <input type="text" class="form-control custom-input" placeholder="Street Name">
+            <input type="text" class="form-control custom-input" name="addressLine1" [(ngModel)]="regAddressLine1" placeholder="Street Name" required>
           </div>
 
           <div class="input-group-custom full-width">
             <label class="form-label">Address Line 2 (Optional)</label>
-            <input type="text" class="form-control custom-input" placeholder="Apartment, suite, etc.">
+            <input type="text" class="form-control custom-input" name="addressLine2" [(ngModel)]="regAddressLine2" placeholder="Apartment, suite, etc.">
           </div>
 
           <div class="input-group-custom half-width">
             <label class="form-label">Area</label>
-            <input type="text" class="form-control custom-input" placeholder="Downtown">
+            <input type="text" class="form-control custom-input" name="area" [(ngModel)]="regArea" placeholder="Downtown" required>
           </div>
           <div class="input-group-custom half-width">
             <label class="form-label">State</label>
-            <input type="text" class="form-control custom-input" placeholder="NY">
+            <input type="text" class="form-control custom-input" name="state" [(ngModel)]="regState" placeholder="NY" required>
           </div>
         </div>
 
         <hr class="form-divider">
 
         <div class="mb-4">
-          <label class="form-label text-gradient">Mobile Number Verification</label>
+          <label class="form-label text-gradient">Mobile Number</label>
+          <input 
+            type="tel" 
+            class="form-control custom-input" 
+            placeholder="(555) 000-0000"
+            [(ngModel)]="regMobile"
+            name="mobile"
+            required>
           
-          <div class="otp-group">
-            <input 
-              type="tel" 
-              class="form-control custom-input" 
-              placeholder="(555) 000-0000"
-              [(ngModel)]="mobileNumber"
-              name="mobile"
-              [disabled]="otpVerified">
-            
-            @if (!otpSent && !otpVerified) {
-              <button type="button" class="btn custom-btn outline" (click)="sendOtp()">Send OTP</button>
-            }
-            @if (otpVerified) {
-              <div class="verified-badge"><i class="bi bi-check-circle-fill"></i> Verified</div>
-            }
+          <!-- Commented OTP section as requested -->
+          <!--
+          <div class="otp-group mt-2">
+            <button type="button" class="btn custom-btn outline" (click)="sendOtp()">Send OTP</button>
           </div>
-
-          @if (otpSent && !otpVerified) {
-            <div class="otp-group mt-2 fade-in">
-              <input 
-                type="text" 
-                class="form-control custom-input text-center letter-spacing" 
-                placeholder="0000"
-                maxlength="4"
-                [(ngModel)]="otpCode"
-                name="otp">
-              <button type="button" class="btn custom-btn success" (click)="verifyOtp()">Verify</button>
-            </div>
-          }
+          -->
         </div>
 
         <div class="d-grid gap-2 mt-4">
           <button 
-            type="button" 
-            (click)="register()" 
+            type="submit" 
             class="btn btn-primary custom-btn"
-            [disabled]="!otpVerified">
+            [disabled]="regForm.invalid">
             Create Account
           </button>
         </div>

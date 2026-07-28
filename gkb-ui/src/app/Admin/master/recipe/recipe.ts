@@ -19,6 +19,7 @@ export interface RecipeData {
   recipeid: number;
   recipename: string;
   ingredients: Ingredient[];
+  active?: number;
 }
 
 @Component({
@@ -76,10 +77,24 @@ export class Recipe implements OnInit {
   expandedRecipeId: number | null = null;
 
   // Modal Dialog states
-  isModalOpen = false;
+  private _isModalOpen = false;
+  get isModalOpen(): boolean {
+    return this._isModalOpen;
+  }
+  set isModalOpen(value: boolean) {
+    this._isModalOpen = value;
+    if (typeof document !== 'undefined') {
+      if (value) {
+        document.body.classList.add('modal-open');
+      } else {
+        document.body.classList.remove('modal-open');
+      }
+    }
+  }
   modalTitle = 'Add Recipe';
   modalRecipeName = '';
   modalIngredients: Ingredient[] = [];
+  modalRecipeActive = 1;
   availableStocks: any = [];
 
   // Predefined lists of standard units
@@ -134,6 +149,7 @@ export class Recipe implements OnInit {
     this.modalIngredients = [
       { StockId: 0, Quantity: 1, UnitOfMeasure: 'g' }
     ];
+    this.modalRecipeActive = 1;
     this.isModalOpen = true;
   }
 
@@ -143,6 +159,7 @@ export class Recipe implements OnInit {
       if (recipe) {
         this.modalTitle = 'Edit Recipe';
         this.modalRecipeName = recipe.recipename;
+        this.modalRecipeActive = recipe.active ?? 1;
         // Deep copy ingredients
         this.modalIngredients = recipe.ingredients.map(ing => ({ ...ing }));
         this.isModalOpen = true;
@@ -192,14 +209,16 @@ export class Recipe implements OnInit {
       const newRecipe = {
         recipeid: 0,
         recipename: this.modalRecipeName.trim(),
-        ingredients: validIngredients
+        ingredients: validIngredients,
+        active: Number(this.modalRecipeActive)
       };
       this._addrecipe(newRecipe);
     } else if (this.modalTitle === 'Edit Recipe' && this.selectedRecipeId !== null) {
       const editedRecipe = {
         recipeid: this.selectedRecipeId,
         recipename: this.modalRecipeName.trim(),
-        ingredients: validIngredients
+        ingredients: validIngredients,
+        active: Number(this.modalRecipeActive)
       };
       this._editrecipe(editedRecipe);
     }
@@ -278,7 +297,8 @@ export class Recipe implements OnInit {
             return {
               recipeid,
               recipename,
-              ingredients: normalizedIngredients
+              ingredients: normalizedIngredients,
+              active: r.active ?? r.Active ?? 1
             };
           });
           console.log("⚡ [recipe.ts] this.allRecipes normalized:", this.allRecipes);

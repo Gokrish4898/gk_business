@@ -1,84 +1,281 @@
-<div class="cart-page-wrapper">
-  <div class="container py-5">
-    
-    <div class="main-cart-box fade-in-up">
-      
-      <div class="cart-header border-bottom border-secondary pb-3 mb-4 d-flex justify-content-between align-items-end">
-        <h1 class="cart-title mb-0">Your Cart</h1>
-        <span class="text-muted">{{ cartItems.length }} Items</span>
-      </div>
-
-      <div class="row">
-        
-        <div class="col-lg-8">
-          
-          @if (cartItems.length === 0) {
-            <div class="empty-cart-state text-center py-5">
-              <i class="bi bi-cart-x fs-1 text-muted mb-3"></i>
-              <h4>Your kitchen is empty!</h4>
-              <p class="text-muted">Looks like you haven't added any SnapDough items yet.</p>
-              <a class="btn custom-btn mt-3" routerLink="/menu">Browse Menu</a>
-            </div>
-          } @else {
-            
-            <div class="cart-items-container">
-              @for (item of cartItems; track item.id) {
-                
-                <div class="cart-item-card">
-                  
-                  <div class="item-image-wrapper">
-                    <img [src]="item.image" [alt]="item.title" class="item-image" onerror="this.src='assets/fallback.png'">
-                  </div>
-
-                  <div class="item-details">
-                    <h4 class="item-title">{{ item.title }}</h4>
-                    <p class="item-recipe text-muted">{{ item.recipeNote }}</p>
-                    <div class="address-badge mt-2">
-                      <i class="bi bi-geo-alt-fill"></i>
-                      <span>{{ item.deliveryAddress }}</span>
-                    </div>
-                  </div>
-
-                  <div class="item-actions">
-                    <div class="item-price">${{ item.price | number:'1.2-2' }}</div>
-                    <button class="remove-btn" (click)="removeItem(item.id)" title="Remove from Cart">
-                      <i class="bi bi-trash3"></i> Remove
-                    </button>
-                  </div>
-
-                </div>
-
-              }
-            </div>
-          }
+<div class="cart-page-wrapper p-4">
+  <div class="row g-4" *ngIf="checkoutStep === 'cart'">
+    <!-- Shopping Cart List -->
+    <div class="col-lg-8">
+      <div class="cart-card p-4 rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+          <h3 class="brand-font m-0 text-dark"><i class="bi bi-cart3 text-gold me-2"></i>Shopping Cart</h3>
+          <button *ngIf="cartItems.length > 0" class="btn btn-outline-danger btn-sm" (click)="clearCart()">
+            <i class="bi bi-trash"></i> Clear Cart
+          </button>
         </div>
 
-        <div class="col-lg-4 mt-4 mt-lg-0">
-          <div class="summary-box">
-            <h4 class="mb-4">Order Summary</h4>
-            
-            <div class="d-flex justify-content-between mb-2 text-muted">
-              <span>Subtotal</span>
-              <span>${{ subtotal | number:'1.2-2' }}</span>
-            </div>
-            
-            <div class="d-flex justify-content-between mb-3 text-muted">
-              <span>Delivery Fee</span>
-              <span>${{ deliveryFee | number:'1.2-2' }}</span>
-            </div>
-            
-            <hr class="border-secondary">
-            
-            <div class="d-flex justify-content-between mb-4 mt-3">
-              <span class="fs-5 fw-bold">Total</span>
-              <span class="fs-5 fw-bold gold-text">${{ grandTotal | number:'1.2-2' }}</span>
+        <!-- Items Listing -->
+        <div class="cart-items-container" *ngIf="cartItems.length > 0">
+          <div class="cart-item-row p-3 rounded mb-3 border d-flex gap-3 position-relative" *ngFor="let item of cartItems">
+            <div class="item-img-box rounded overflow-hidden flex-shrink-0">
+              <img [src]="item.productImage || 'assets/placeholder-cake.png'" alt="Product Image"
+                class="w-100 h-100 object-fit-cover" />
             </div>
 
-            <button class="btn custom-btn w-100 py-3 fs-5" [disabled]="cartItems.length === 0">
-              Checkout Now
-            </button>
+            <div class="item-info-box flex-grow-1">
+              <h5 class="fw-bold text-dark m-0">{{ item.productName }}</h5>
+              <span class="text-gold fw-semibold fs-6 d-block mt-1">₹{{ getItemUnitPrice(item) | number:'1.2-2' }}</span>
+
+              <!-- Collapsible Customized Recipe Details -->
+              <div class="recipe-notes-box mt-2" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
+                <details class="recipe-details-toggle">
+                  <summary class="text-secondary small cursor-pointer fw-semibold uppercase" style="outline: none;">
+                    Custom Recipe Details ({{ item.recipeDetails.length }} items)
+                  </summary>
+                  <ul class="recipe-ingredient-list mt-2 p-2 rounded bg-light border small m-0 list-unstyled d-flex flex-column gap-1">
+                    <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between">
+                      <span>{{ ing.name }}</span>
+                      <strong class="text-dark">{{ ing.quantity }} units</strong>
+                    </li>
+                  </ul>
+                </details>
+              </div>
+            </div>
+
+            <!-- Quantity Selectors & Totals -->
+            <div class="qty-totals-box d-flex flex-column align-items-end justify-content-between flex-shrink-0">
+              <button class="btn btn-link text-danger p-0 mb-2" (click)="removeItem(item.cartItemId)">
+                <i class="bi bi-trash fs-5"></i>
+              </button>
+
+              <div class="d-flex align-items-center gap-2 mt-auto">
+                <div class="qty-controls d-flex align-items-center rounded border bg-light">
+                  <button class="btn btn-sm px-2 py-1 text-secondary" (click)="decreaseQty(item)">-</button>
+                  <span class="px-3 fw-bold text-slate">{{ item.quantity }}</span>
+                  <button class="btn btn-sm px-2 py-1 text-secondary" (click)="increaseQty(item)">+</button>
+                </div>
+                <span class="fw-bold text-slate ms-2">₹{{ (getItemUnitPrice(item) * item.quantity) | number:'1.2-2' }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-      </div> </div> </div>
+        <div *ngIf="cartItems.length === 0" class="text-center py-5 text-muted">
+          <i class="bi bi-cart-x fs-1 opacity-20 d-block mb-3"></i>
+          Your shopping cart is empty. Add products from the dashboard!
+          <button class="btn btn-premium mt-4 d-block mx-auto px-5" routerLink="/bdashboard">Go to Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="col-lg-4" *ngIf="cartItems.length > 0">
+      <div class="summary-card p-4 rounded shadow-sm">
+        <h4 class="brand-font mb-4 text-dark">Order Summary</h4>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Subtotal</span>
+          <span class="fw-semibold text-dark">₹{{ subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">GST / Taxes (5%)</span>
+          <span class="fw-semibold text-dark">₹{{ taxAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+          <span class="text-secondary">Delivery Charge</span>
+          <span class="fw-semibold text-success">Calculated next</span>
+        </div>
+
+        <!-- Collapsible Handling Charges Breakdown Container -->
+        <div class="handling-charges-collapse-box mb-3 rounded border bg-light p-2">
+          <div class="d-flex justify-content-between align-items-center cursor-pointer" (click)="toggleHandlingCollapse($event)" style="cursor: pointer;">
+            <span class="text-secondary small fw-semibold uppercase"><i class="bi bi-info-circle me-1"></i>Handling Details</span>
+            <i class="bi" [class.bi-chevron-down]="isHandlingCollapsed" [class.bi-chevron-up]="!isHandlingCollapsed"></i>
+          </div>
+          <div *ngIf="!isHandlingCollapsed" class="mt-2 pt-2 border-top small text-secondary">
+            Handling charges (such as packing charges, electric toppings, or labour charges) are dynamically computed and already integrated directly inside each product's unit price configuration.
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <span class="fw-bold text-slate">Subtotal + GST</span>
+          <span class="fs-4 fw-bold text-slate">₹{{ (subtotal + taxAmount) | number:'1.2-2' }}</span>
+        </div>
+
+        <button class="btn btn-premium w-100" (click)="goToCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT STEP -->
+  <div class="row g-4" *ngIf="checkoutStep === 'checkout'">
+    <div class="col-lg-8">
+      <!-- Shipping Address Panel -->
+      <div class="checkout-card p-4 rounded shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="brand-font m-0 text-dark"><i class="bi bi-geo-alt text-gold me-2"></i>Select Shipping Address</h4>
+          <button class="btn btn-outline-premium btn-sm" (click)="openAddAddress()">
+            <i class="bi bi-plus-circle"></i> Quick Add
+          </button>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6" *ngFor="let addr of addresses">
+            <div class="address-select-box p-3 rounded border cursor-pointer position-relative"
+              [class.active-box]="selectedAddressId === addr.addressId" (click)="selectAddress(addr.addressId)">
+              <div class="position-absolute top-2 right-2 form-check">
+                <input class="form-check-input custom-radio" type="radio" name="selectedAddr"
+                  [checked]="selectedAddressId === addr.addressId" (change)="selectAddress(addr.addressId)" />
+              </div>
+              <span class="badge bg-slate-light text-slate mb-2">{{ addr.addressType }}</span>
+              <h6 class="fw-bold text-dark m-0">{{ addr.fullName }}</h6>
+              <p class="text-secondary small m-0 mt-2 line-clamp-3">
+                {{ addr.addressLine1 }}, {{ addr.addressLine2 }}<br />
+                {{ addr.city }}, {{ addr.state }} - <strong>{{ addr.pincode }}</strong>
+              </p>
+            </div>
+          </div>
+
+          <div *ngIf="addresses.length === 0" class="col-12 text-center py-4 text-muted">
+            <i class="bi bi-geo-alt-fill fs-3 opacity-20 d-block mb-2"></i>
+            No addresses found. Add a shipping address to place order!
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Methods Panel -->
+      <div class="checkout-card p-4 rounded shadow-sm mb-4">
+        <h4 class="brand-font mb-3 text-dark"><i class="bi bi-wallet2 text-gold me-2"></i>Payment Method</h4>
+        <div class="row g-3">
+          <div class="col-md-6" *ngFor="let pm of paymentMethods">
+            <div class="payment-select-box p-3 rounded border cursor-pointer d-flex align-items-center gap-3"
+              [class.active-box]="selectedPaymentId === pm.paymentId" (click)="selectedPaymentId = pm.paymentId">
+              <input class="form-check-input custom-radio" type="radio" name="selectedPay"
+                [checked]="selectedPaymentId === pm.paymentId" (change)="selectedPaymentId = pm.paymentId" />
+              <div>
+                <h6 class="fw-bold text-dark m-0">{{ pm.paymentName }}</h6>
+                <span class="text-muted small">{{ pm.description || 'Secure transaction' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Notes Panel -->
+      <div class="checkout-card p-4 rounded shadow-sm">
+        <h4 class="brand-font mb-3 text-dark"><i class="bi bi-sticky text-gold me-2"></i>Delivery Instructions (Optional)</h4>
+        <textarea class="form-control custom-input" rows="3" name="deliveryNotes" [(ngModel)]="deliveryNotes"
+          placeholder="Leave packages at gate, ring the bell, custom cake messages, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- Right Summary Box -->
+    <div class="col-lg-4">
+      <div class="summary-card p-4 rounded shadow-sm">
+        <h4 class="brand-font mb-4 text-dark">Checkout Review</h4>
+
+        <div class="checkout-review-items mb-3 border-bottom pb-3">
+          <div class="d-flex justify-content-between small text-secondary mb-1" *ngFor="let item of cartItems">
+            <span class="text-wrap-name">{{ item.productName }} x {{ item.quantity }}</span>
+            <span>₹{{ (getItemUnitPrice(item) * item.quantity) | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Subtotal</span>
+          <span class="fw-semibold text-dark">₹{{ subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">GST / Taxes (5%)</span>
+          <span class="fw-semibold text-dark">₹{{ taxAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <span class="text-secondary">Delivery Charge</span>
+          <span class="fw-semibold text-success">₹{{ deliveryFee | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top">
+          <span class="fw-bold text-slate">Grand Total</span>
+          <span class="fs-3 fw-bold text-slate">₹{{ grandTotal | number:'1.2-2' }}</span>
+        </div>
+
+        <button class="btn btn-premium w-100 mb-2" (click)="placeOrder()">Place Order</button>
+        <button class="btn btn-outline-secondary w-100 text-dark border-secondary border-opacity-30" (click)="backToCart()">Modify Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Add Address Dialog Modal -->
+<div *ngIf="isModalOpen" class="custom-backdrop" (click)="closeModal()"></div>
+
+<div *ngIf="isModalOpen" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content glass-content shadow-2xl" style="max-height: 85vh;">
+      <div class="modal-header pb-3">
+        <h5 class="modal-title brand-text text-gold"><i class="bi bi-geo-alt-fill me-2"></i>Add Shipping Address</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3" style="max-height: 60vh; overflow-y: auto;">
+        <form #quickAddrForm="ngForm" (ngSubmit)="submitAddress()">
+          <div class="mb-3">
+            <label for="qAddrFullName" class="form-label text-muted small uppercase">Full Name</label>
+            <input type="text" class="form-control custom-modal-input" id="qAddrFullName" name="fullName"
+              [(ngModel)]="modalAddress.fullName" required placeholder="Receiver name" />
+          </div>
+
+          <div class="mb-3">
+            <label for="qAddrMobile" class="form-label text-muted small uppercase">Mobile Number</label>
+            <input type="text" class="form-control custom-modal-input" id="qAddrMobile" name="mobileNumber"
+              [(ngModel)]="modalAddress.mobileNumber" required placeholder="Mobile number" />
+          </div>
+
+          <div class="mb-3">
+            <label for="qAddrLine1" class="form-label text-muted small uppercase">Address Line 1</label>
+            <input type="text" class="form-control custom-modal-input" id="qAddrLine1" name="addressLine1"
+              [(ngModel)]="modalAddress.addressLine1" required placeholder="Flat / House / Street details" />
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="qAddrLandmark" class="form-label text-muted small uppercase">Landmark (Optional)</label>
+              <input type="text" class="form-control custom-modal-input" id="qAddrLandmark" name="landmark"
+                [(ngModel)]="modalAddress.landmark" placeholder="Nearby reference landmark" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="qAddrPincode" class="form-label text-muted small uppercase">Pincode</label>
+              <input type="text" class="form-control custom-modal-input" id="qAddrPincode" name="pincode"
+                [(ngModel)]="modalAddress.pincode" required placeholder="605001" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="qAddrCity" class="form-label text-muted small uppercase">City</label>
+              <input type="text" class="form-control custom-modal-input" id="qAddrCity" name="city"
+                [(ngModel)]="modalAddress.city" required placeholder="City name" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="qAddrState" class="form-label text-muted small uppercase">State</label>
+              <input type="text" class="form-control custom-modal-input" id="qAddrState" name="state"
+                [(ngModel)]="modalAddress.state" required placeholder="State name" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="qAddrType" class="form-label text-muted small uppercase">Address Type</label>
+            <select class="form-select custom-modal-input" id="qAddrType" name="addressType"
+              [(ngModel)]="modalAddress.addressType">
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top border-secondary border-opacity-10">
+            <button type="button" class="btn btn-outline-secondary px-4 text-dark border-secondary border-opacity-30" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-premium px-4" [disabled]="quickAddrForm.invalid">
+              Save Address
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

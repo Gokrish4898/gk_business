@@ -9,6 +9,7 @@ import { WishlistService } from '../Admin/master/wishlists/wishlist-service';
 import { RatingService } from '../Admin/master/ratings/rating-service';
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
+import { LoginService } from '../login/login-service';
 
 // Register Swiper Web Components
 register();
@@ -22,16 +23,39 @@ register();
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class BakingDashboard implements OnInit, OnDestroy {
+  // slides = [
+  //   {
+  //     url: 'https://www.dreamstime.com/baking-fresh-bread-artisan-bakery-food-photography-rustic-kitchen-close-up-shot-culinary-craft-explore-art-making-image373053044',
+  //     title: 'Fresh Croissants',
+  //     description: 'Buttery layers of perfection.',
+  //   },
+  //   {
+  //     url: 'https://www.vecteezy.com/photo/59279096-decadent-brownies-with-nuts-gourmet-kitchen-dessert-photography-nature-inspired-background-close-up-view',
+  //     title: 'Artisan Bread',
+  //     description: 'Sourdough starters aged to perfection.',
+  //   },
+  //   {
+  //     url: 'https://www.shutterstock.com/image-photo/chocolate-cake-slice-white-background-600nw-2469474317.jpg',
+  //     title: 'Artisan Bread',
+  //     description: 'Sourdough starters aged to perfection.',
+  //   },
+  // ];
+
   slides = [
     {
-      url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200',
       title: 'Fresh Croissants',
       description: 'Buttery layers of perfection.',
     },
     {
-      url: 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      url: 'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=1200',
       title: 'Artisan Bread',
-      description: 'Sourdough starters aged to perfection.',
+      description: 'Freshly baked every morning.',
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1200',
+      title: 'Chocolate Cake',
+      description: 'Rich chocolate delight.',
     },
   ];
 
@@ -66,8 +90,9 @@ export class BakingDashboard implements OnInit, OnDestroy {
     private toaster: ToastService,
     private productService: ProductService,
     private wishlistService: WishlistService,
-    private ratingService: RatingService
-  ) {}
+    private ratingService: RatingService,
+    private loginservice: LoginService
+  ) { }
 
   ngOnInit() {
     this.loading.show();
@@ -75,7 +100,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
     this._loadDashboardData();
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   _loadDashboardData() {
     // 1. Fetch ratings first to compute stars & reviews
@@ -90,7 +115,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
             let details = r.ratingdetails ?? r.ratingDetails ?? r.RatingDetails;
             let list: any[] = [];
             if (typeof details === 'string') {
-              try { list = JSON.parse(details); } catch (e) {}
+              try { list = JSON.parse(details); } catch (e) { }
             } else if (Array.isArray(details)) {
               list = details;
             }
@@ -104,8 +129,8 @@ export class BakingDashboard implements OnInit, OnDestroy {
                 avg: avg,
                 count: activeReviews.length,
                 reviews: activeReviews.map((rev: any) => ({
-                  id: rev.userid ?? 1,
-                  name: `User #${rev.userid ?? 1}`,
+                  id: rev.userid ?? rev.userId ?? rev.UserId ?? 0,
+                  name: rev.username ?? rev.userName ?? rev.UserName ?? `User #${rev.userid ?? rev.userId ?? rev.UserId ?? 'Anonymous'}`,
                   rating: Number(rev.ratingstar ?? rev.ratingStar ?? 5),
                   comment: rev.ratingcomment ?? rev.ratingComment ?? '',
                   date: new Date(rev.createdon ?? rev.createdOn ?? new Date()).toLocaleDateString()
@@ -126,7 +151,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
       next: (resWish) => {
         if (resWish.body != null && resWish.body.stocklst != null) {
           // Find wishlist for default User ID = 1
-          this.userWishlist = resWish.body.stocklst.find((w: any) => Number(w.userId ?? w.userid ?? w.UserId) === 1);
+          this.userWishlist = resWish.body.stocklst.find((w: any) => Number(w.userId ?? w.userid ?? w.UserId) === this.loginservice.userid());
         }
         this._loadProducts();
       },
@@ -144,14 +169,14 @@ export class BakingDashboard implements OnInit, OnDestroy {
           this.allProducts = list.map((p: any) => {
             const pid = Number(p.productId ?? p.productid ?? p.ProductId);
             const inStock = p.inStock ?? p.instock ?? p.InStock ?? false;
-            
+
             // Check if product is in wishlist
             let inWish = false;
             if (this.userWishlist) {
               let details = this.userWishlist.wishlistdetails ?? this.userWishlist.wishlistDetails ?? this.userWishlist.WishlistDetails;
               let items: any[] = [];
               if (typeof details === 'string') {
-                try { items = JSON.parse(details); } catch(e){}
+                try { items = JSON.parse(details); } catch (e) { }
               } else if (Array.isArray(details)) {
                 items = details;
               }
@@ -221,14 +246,14 @@ export class BakingDashboard implements OnInit, OnDestroy {
   addwhishlist(data: any) {
     // Toggle locally
     data['wishlist'] = !data['wishlist'];
-    
+
     this.loading.show();
     if (this.userWishlist) {
       // Modify existing wishlist details
       let details = this.userWishlist.wishlistdetails ?? this.userWishlist.wishlistDetails ?? this.userWishlist.WishlistDetails;
       let items: any[] = [];
       if (typeof details === 'string') {
-        try { items = JSON.parse(details); } catch(e){}
+        try { items = JSON.parse(details); } catch (e) { }
       } else if (Array.isArray(details)) {
         items = details;
       }
@@ -246,7 +271,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
 
       const payload = {
         wishlistId: this.userWishlist.wishlistId ?? this.userWishlist.wishlistid ?? this.userWishlist.WishlistId,
-        userId: 1,
+        userId: this.loginservice.userid(),
         wishlistDetails: items,
         active: 1
       };
@@ -277,7 +302,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
 
       const payload = {
         wishlistId: 0,
-        userId: 1,
+        userId: this.loginservice.userid(),
         wishlistDetails: newItems,
         active: 1
       };
@@ -324,8 +349,18 @@ export class BakingDashboard implements OnInit, OnDestroy {
     // Check if there is already a rating object for this product
     const existingRating = this.ratingsList.find((r: any) => Number(r.productId ?? r.productid ?? r.ProductId) === this.selectedProduct.id);
 
+    const currentUserId = this.loginservice.userid() || Number(localStorage.getItem('userId') ?? 0);
+    if (!currentUserId) {
+      this.loading.hide();
+      this.toaster.show('Please log in to submit a review!', 'warning');
+      return;
+    }
+
+    const currentUsername = this.loginservice.username() || localStorage.getItem('username') || 'Anonymous';
+
     const newReviewItem = {
-      userid: 1, // Default user
+      userid: currentUserId,
+      username: currentUsername,
       ratingstar: this.newRatingStar,
       ratingcomment: this.newRatingComment.trim(),
       createdon: new Date().toISOString(),
@@ -336,7 +371,7 @@ export class BakingDashboard implements OnInit, OnDestroy {
       let details = existingRating.ratingdetails ?? existingRating.ratingDetails ?? existingRating.RatingDetails;
       let reviewsList: any[] = [];
       if (typeof details === 'string') {
-        try { reviewsList = JSON.parse(details); } catch(e){}
+        try { reviewsList = JSON.parse(details); } catch (e) { }
       } else if (Array.isArray(details)) {
         reviewsList = details;
       }

@@ -22,6 +22,452 @@ namespace gkb_service.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("gkb_service.Models.AdditionalCharge", b =>
+                {
+                    b.Property<int>("ChargeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("chargeid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChargeId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<float?>("Amount")
+                        .HasColumnType("real")
+                        .HasColumnName("amount");
+
+                    b.Property<string>("ChargeName")
+                        .HasColumnType("text")
+                        .HasColumnName("charge_name");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("ChargeId");
+
+                    b.ToTable("additionalcharge", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.Cart", b =>
+                {
+                    b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("cartid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
+
+                    b.HasKey("CartId");
+
+                    b.ToTable("cart", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.CartItem", b =>
+                {
+                    b.Property<int>("CartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("cartitemid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartItemId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<string>("CartDetails")
+                        .HasColumnType("text")
+                        .HasColumnName("cartdetails");
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("integer")
+                        .HasColumnName("cartid");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer")
+                        .HasColumnName("productid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("RecipeDetails")
+                        .HasColumnType("text")
+                        .HasColumnName("recipedetails");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("CartItemId");
+
+                    b.ToTable("cartitem", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.DeliveryCharge", b =>
+                {
+                    b.Property<int>("DeliveryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("deliveryid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DeliveryId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<string>("City")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("city");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("DeliveryId");
+
+                    b.ToTable("deliverycharge", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("orderid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer")
+                        .HasColumnName("addressid");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<decimal>("DeliveryCharge")
+                        .HasColumnType("numeric")
+                        .HasColumnName("deliverycharge");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("discountamount");
+
+                    b.Property<decimal>("GrandTotal")
+                        .HasColumnType("numeric")
+                        .HasColumnName("grandtotal");
+
+                    b.Property<string>("OrderNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("ordernumber");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("text")
+                        .HasColumnName("orderstatus");
+
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("paymentid");
+
+                    b.Property<string>("StatusMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("statusmessage");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("numeric")
+                        .HasColumnName("subtotal");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("taxamount");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
+
+                    b.HasKey("OrderId");
+
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("orderitemid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderItemId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<decimal>("ItemTotal")
+                        .HasColumnType("numeric")
+                        .HasColumnName("itemtotal");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("orderid");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer")
+                        .HasColumnName("productid");
+
+                    b.Property<string>("ProductNameSnapshot")
+                        .HasColumnType("text")
+                        .HasColumnName("productnamesnapshot");
+
+                    b.Property<decimal>("ProductPriceSnapshot")
+                        .HasColumnType("numeric")
+                        .HasColumnName("productpricesnapshot");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("RecipeDetails")
+                        .HasColumnType("text")
+                        .HasColumnName("recipedetails");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("OrderItemId");
+
+                    b.ToTable("orderitem", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.OrderStatusHistory", b =>
+                {
+                    b.Property<int>("StatusHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("statushistoryid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusHistoryId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("orderid");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<string>("StatusMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("statusmessage");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("StatusHistoryId");
+
+                    b.ToTable("orderstatushistory", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.OrderStatusMaster", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("statusid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("StatusName")
+                        .HasColumnType("text")
+                        .HasColumnName("statusname");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("orderstatusmaster", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.PaymentMaster", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("paymentid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("displayorder");
+
+                    b.Property<string>("PaymentName")
+                        .HasColumnType("text")
+                        .HasColumnName("paymentname");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("PaymentId");
+
+                    b.ToTable("paymentmaster", (string)null);
+                });
+
             modelBuilder.Entity("gkb_service.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -46,6 +492,10 @@ namespace gkb_service.Migrations
                     b.Property<int?>("Delivery")
                         .HasColumnType("integer")
                         .HasColumnName("delivery");
+
+                    b.Property<string>("HandlingCharge")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("handlingcharge");
 
                     b.Property<string>("ImageLink")
                         .HasColumnType("text")
@@ -164,6 +614,44 @@ namespace gkb_service.Migrations
                     b.ToTable("recipe", (string)null);
                 });
 
+            modelBuilder.Entity("gkb_service.Models.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("roleid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text")
+                        .HasColumnName("rolename");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("role", (string)null);
+                });
+
             modelBuilder.Entity("gkb_service.Models.Stock", b =>
                 {
                     b.Property<int>("StockId")
@@ -216,6 +704,196 @@ namespace gkb_service.Migrations
                     b.HasKey("StockId");
 
                     b.ToTable("stock", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.UserAddress", b =>
+                {
+                    b.Property<int>("AddressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("addressid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AddressId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("text")
+                        .HasColumnName("addressline1");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text")
+                        .HasColumnName("addressline2");
+
+                    b.Property<string>("AddressType")
+                        .HasColumnType("text")
+                        .HasColumnName("addresstype");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text")
+                        .HasColumnName("city");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("text")
+                        .HasColumnName("country");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text")
+                        .HasColumnName("fullname");
+
+                    b.Property<int>("IsDefault")
+                        .HasColumnType("integer")
+                        .HasColumnName("isdefault");
+
+                    b.Property<string>("Landmark")
+                        .HasColumnType("text")
+                        .HasColumnName("landmark");
+
+                    b.Property<string>("MobileNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("mobilenumber");
+
+                    b.Property<string>("Pincode")
+                        .HasColumnType("text")
+                        .HasColumnName("pincode");
+
+                    b.Property<string>("State")
+                        .HasColumnType("text")
+                        .HasColumnName("state");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
+
+                    b.HasKey("AddressId");
+
+                    b.ToTable("useraddress", (string)null);
+                });
+
+            modelBuilder.Entity("gkb_service.Models.UserMaster", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+
+                    b.Property<int?>("Active")
+                        .HasColumnType("integer")
+                        .HasColumnName("active");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("text")
+                        .HasColumnName("addressline1");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text")
+                        .HasColumnName("addressline2");
+
+                    b.Property<string>("Area")
+                        .HasColumnType("text")
+                        .HasColumnName("area");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("createdby");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdon");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dateofbirth");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text")
+                        .HasColumnName("displayname");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text")
+                        .HasColumnName("firstname");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("text")
+                        .HasColumnName("gender");
+
+                    b.Property<string>("HashValue")
+                        .HasColumnType("text")
+                        .HasColumnName("hashvalue");
+
+                    b.Property<string>("HouseNo")
+                        .HasColumnType("text")
+                        .HasColumnName("houseno");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text")
+                        .HasColumnName("lastname");
+
+                    b.Property<string>("Mobile")
+                        .HasColumnType("text")
+                        .HasColumnName("mobile");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("text")
+                        .HasColumnName("password");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("text")
+                        .HasColumnName("profilepicture");
+
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(2)
+                        .HasColumnName("roleid");
+
+                    b.Property<string>("SaltValue")
+                        .HasColumnType("text")
+                        .HasColumnName("saltvalue");
+
+                    b.Property<string>("State")
+                        .HasColumnType("text")
+                        .HasColumnName("state");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("updatedby");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedon");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text")
+                        .HasColumnName("username");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("usermaster", (string)null);
                 });
 
             modelBuilder.Entity("gkb_service.Models.Wishlist", b =>

@@ -1,0 +1,297 @@
+<div class="master-container p-4">
+    <!-- Header Block -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-10">
+        <div>
+            <h2 class="brand-font m-0 text-dark"><i class="bi bi-people-fill me-2 text-gold"></i>User Master Panel</h2>
+            <p class="text-muted m-0 small">Audit system credentials, switch administrative roles, update address cards,
+                and toggle active status.</p>
+        </div>
+        <div class="action-buttons d-flex gap-2">
+            <button class="btn btn-premium-action px-4 d-flex align-items-center gap-2" [disabled]="!selectedUserId"
+                (click)="editUser()">
+                <i class="bi bi-pencil-square"></i> Modify Account
+            </button>
+            <a class="btn btn-dashboard d-flex align-items-center gap-2" routerLink="/admin" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <i class="bi bi-speedometer2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Counters Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stats-glass-card p-3 rounded shadow-sm d-flex align-items-center gap-3">
+                <div class="stats-icon bg-info-light text-info">
+                    <i class="bi bi-person-lines-fill fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small d-block">Total Accounts</span>
+                    <h4 class="m-0 fw-bold text-dark">{{ getTotalUsers() }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stats-glass-card p-3 rounded shadow-sm d-flex align-items-center gap-3">
+                <div class="stats-icon bg-success-light text-success">
+                    <i class="bi bi-shield-check fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small d-block">Active Users</span>
+                    <h4 class="m-0 fw-bold text-dark">{{ getActiveUsers() }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stats-glass-card p-3 rounded shadow-sm d-flex align-items-center gap-3">
+                <div class="stats-icon bg-warning-light text-warning">
+                    <i class="bi bi-shield-lock-fill fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small d-block">Administrators</span>
+                    <h4 class="m-0 fw-bold text-dark">{{ getAdminUsers() }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stats-glass-card p-3 rounded shadow-sm d-flex align-items-center gap-3">
+                <div class="stats-icon bg-primary-light text-gold">
+                    <i class="bi bi-person-heart fs-4"></i>
+                </div>
+                <div>
+                    <span class="text-muted small d-block">Customers</span>
+                    <h4 class="m-0 fw-bold text-dark">{{ getCustomerUsers() }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filters Panel -->
+    <div class="glass-panel p-3 mb-4 rounded d-flex flex-column flex-md-row gap-3 align-items-center">
+        <div class="input-group-custom flex-grow-1 w-100">
+            <div class="search-box-wrapper position-relative">
+                <i class="bi bi-search search-icon text-muted position-absolute"></i>
+                <input type="text"
+                    class="form-control search-input text-dark ps-5 bg-transparent border-secondary border-opacity-10"
+                    placeholder="Search users by name, email, or phone..." [(ngModel)]="searchTerm"
+                    (input)="onFilterChange()">
+            </div>
+        </div>
+        <div class="d-flex gap-2 w-100 w-md-auto align-self-stretch align-self-md-center">
+            <select class="form-select filter-select bg-transparent text-dark border-secondary border-opacity-10"
+                [(ngModel)]="roleFilter" (change)="onFilterChange()" style="min-width: 180px;">
+                <option value="all">All Roles</option>
+                <option *ngFor="let r of allRoles" [value]="r.roleId">{{ r.roleName }}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Data Grid Panel -->
+    <div class="glass-panel p-4 rounded shadow-lg">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;" class="text-center">Select</th>
+                        <th scope="col">Profile User</th>
+                        <th scope="col">Email Address</th>
+                        <th scope="col">Mobile</th>
+                        <th scope="col">System Role</th>
+                        <th scope="col" class="text-center" style="width: 120px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let u of displayedUsers" [class.table-row-selected]="selectedUserId === u.userId"
+                        (click)="selectUser(u.userId)" style="cursor: pointer;">
+                        <td class="text-center">
+                            <div class="form-check select-check d-flex justify-content-center">
+                                <input class="form-check-input" type="radio" name="selectedUser"
+                                    [checked]="selectedUserId === u.userId"
+                                    (click)="$event.stopPropagation(); selectUser(u.userId)" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div
+                                    class="avatar-circle d-flex align-items-center justify-content-center text-white fw-bold">
+                                    {{ u.username ? u.username.substring(0, 2).toUpperCase() : 'US' }}
+                                </div>
+                                <div>
+                                    <strong class="profile-username text-dark d-block">{{ u.username }}</strong>
+                                    <span class="text-muted small">ID: {{ u.userId }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-dark opacity-90">{{ u.email }}</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ u.mobile || '-' }}</span>
+                        </td>
+                        <td>
+                            <span class="badge role-pill px-3 py-2 border font-weight-bold"
+                                [class.bg-admin]="u.roleId === 1" [class.bg-customer]="u.roleId !== 1">
+                                <i class="bi" [class.bi-shield-lock-fill]="u.roleId === 1"
+                                    [class.bi-person-fill]="u.roleId !== 1"></i>
+                                {{ getRoleName(u.roleId) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge" [class.badge-active]="u.active === 1"
+                                [class.badge-inactive]="u.active !== 1">
+                                <span class="dot"></span>
+                                {{ u.active === 1 ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="displayedUsers.length === 0">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-1 d-block mb-3 text-secondary opacity-40"></i>
+                            No registered users found matching the filter criteria.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div
+            class="paginator-wrapper mt-4 d-flex justify-content-center border-top border-secondary border-opacity-10 pt-3">
+            <mat-paginator [length]="filteredUsers.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+@if (isModalOpen) {
+<div class="custom-backdrop" (click)="closeModal()"></div>
+
+<div class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-content shadow-2xl" style="max-height: 80vh;">
+            <div class="modal-header pb-3">
+                <h5 class="modal-title brand-text text-gold"><i class="bi bi-pencil-square me-2"></i>{{ modalTitle }}
+                </h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+
+
+            <div class="modal-body mt-3" style="max-height: 55vh; overflow-y: auto;">
+                <form #userForm="ngForm" (ngSubmit)="submitUser(userForm.value)">
+
+                    <!-- Section 1: Account Credentials -->
+                    <h6 class="form-section-title mb-3"><i class="bi bi-person-badge-fill me-2"></i>Account Profile</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label text-muted small uppercase">Username</label>
+                            <input type="text" class="form-control custom-modal-input" id="username" name="username"
+                                [ngModel]="modalUser.username" required placeholder="User name" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label text-muted small uppercase">Email Address</label>
+                            <input type="email" class="form-control custom-modal-input" id="email" name="email"
+                                [ngModel]="modalUser.email" required placeholder="Email" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label text-muted small uppercase">Change Password</label>
+                            <input type="text" class="form-control custom-modal-input" id="password" name="password"
+                                [ngModel]="modalUser.password" placeholder="Leave empty to keep current password" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="mobile" class="form-label text-muted small uppercase">Mobile Number</label>
+                            <input type="text" class="form-control custom-modal-input" id="mobile" name="mobile"
+                                [ngModel]="modalUser.mobile" required placeholder="Mobile number" />
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Address Information -->
+                    <h6 class="form-section-title mb-3 mt-2"><i class="bi bi-geo-alt-fill me-2"></i>Address Directory
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="houseNo" class="form-label text-muted small uppercase">House No.</label>
+                            <input type="text" class="form-control custom-modal-input" id="houseNo" name="houseNo"
+                                [ngModel]="modalUser.houseNo" required placeholder="e.g. 42B" />
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="addressLine1" class="form-label text-muted small uppercase">Address Line
+                                1</label>
+                            <input type="text" class="form-control custom-modal-input" id="addressLine1"
+                                name="addressLine1" [ngModel]="modalUser.addressLine1" required
+                                placeholder="Street address, P.O. box" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addressLine2" class="form-label text-muted small uppercase">Address Line 2
+                            (Optional)</label>
+                        <input type="text" class="form-control custom-modal-input" id="addressLine2" name="addressLine2"
+                            [ngModel]="modalUser.addressLine2" placeholder="Apartment, suite, unit, building" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="area" class="form-label text-muted small uppercase">Area / City</label>
+                            <input type="text" class="form-control custom-modal-input" id="area" name="area"
+                                [ngModel]="modalUser.area" required placeholder="Area" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="state" class="form-label text-muted small uppercase">State</label>
+                            <input type="text" class="form-control custom-modal-input" id="state" name="state"
+                                [ngModel]="modalUser.state" required placeholder="State" />
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Privileges & Status -->
+                    <h6 class="form-section-title mb-3 mt-2"><i class="bi bi-shield-lock-fill me-2"></i>Privileges &
+                        Policy</h6>
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-3">
+                            <label for="roleId" class="form-label text-muted small uppercase">User Role</label>
+                            <select class="form-select custom-modal-input" id="roleId" name="roleId"
+                                [ngModel]="modalUser.roleId" required>
+                                <option *ngFor="let r of allRoles" [value]="r.roleId">{{ r.roleName }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small uppercase d-block mb-2">Account Status</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div
+                                    class="form-check form-check-inline custom-radio text-dark m-0 d-flex align-items-center">
+                                    <input class="form-check-input" type="radio" id="userActive" name="active"
+                                        [value]="1" [ngModel]="modalUser.active" />
+                                    <label class="form-check-label ms-2" for="userActive"
+                                        style="cursor: pointer;">Active</label>
+                                </div>
+                                <div
+                                    class="form-check form-check-inline custom-radio text-dark m-0 d-flex align-items-center">
+                                    <input class="form-check-input" type="radio" id="userInactive" name="active"
+                                        [value]="0" [ngModel]="modalUser.active" />
+                                    <label class="form-check-label ms-2" for="userInactive"
+                                        style="cursor: pointer;">Inactive</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top border-secondary border-opacity-10">
+                        <button type="button"
+                            class="btn btn-outline-secondary px-4 text-dark border-secondary border-opacity-30"
+                            (click)="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-premium-save px-4" [disabled]="userForm.invalid">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+}

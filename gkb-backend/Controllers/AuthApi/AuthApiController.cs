@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -35,10 +35,12 @@ namespace gkb_service.Controllers.AuthApi
         private readonly IMemoryCache _cache;
         private readonly EmailOtpService _emailOtpService;
         private readonly AppDbContext _context;
-        private readonly IDistributedCache _rediscache;
+        //private readonly IDistributedCache _rediscache;
         public AuthApiController(IConfiguration config,
             //UserManager<IdentityUser> usermanager, SignInManager<IdentityUser> signmanager, 
-            IConfiguration configuration, IMemoryCache cache, EmailOtpService emailOtpService, AppDbContext context,IDistributedCache rediscache)
+            IConfiguration configuration, IMemoryCache cache, EmailOtpService emailOtpService, AppDbContext context
+            //IDistributedCache rediscache
+            )
         {
             _config = config;
             //_signmanager = signmanager;
@@ -47,7 +49,7 @@ namespace gkb_service.Controllers.AuthApi
             _cache = cache;
             _emailOtpService = emailOtpService;
             _context = context;
-            _rediscache = rediscache;
+            //_rediscache = rediscache;
         }
 
 
@@ -56,22 +58,22 @@ namespace gkb_service.Controllers.AuthApi
         public async Task<IEnumerable<string>> Get()
         {
             string cache_key = "testing";
-            var check_cache = _rediscache.GetString(cache_key);
-            if (check_cache == null)
-            {
-                var result = await _context.Database.SqlQueryRaw<int>("SELECT 1").ToListAsync();
-                int myNumber = result.FirstOrDefault();
-                _rediscache.SetString("testing", JsonConvert.SerializeObject(new { value1 = "value1", value2 = myNumber.ToString() }));
-                return new string[] { "value1", myNumber.ToString() };
+            //var check_cache = _rediscache.GetString(cache_key);
+            //if (check_cache == null)
+            //{
+            //    var result = await _context.Database.SqlQueryRaw<int>("SELECT 1").ToListAsync();
+            //    int myNumber = result.FirstOrDefault();
+            //    _rediscache.SetString("testing", JsonConvert.SerializeObject(new { value1 = "value1", value2 = myNumber.ToString() }));
+            //    return new string[] { "value1", myNumber.ToString() };
 
-            }
-            else
-            {
-                return new string[] { "value1", JsonConvert.DeserializeObject<object>(check_cache)?.ToString().Split(',')?.LastOrDefault() ?? "1" };
-            }
+            //}
+            //else
+            //{
+            //    return new string[] { "value1", JsonConvert.DeserializeObject<object>(check_cache)?.ToString().Split(',')?.LastOrDefault() ?? "1" };
+            //}
             // This will actually return the number 1!
 
-
+            return null;
         }
 
         // GET api/<AuthApiController>/5
@@ -122,29 +124,47 @@ namespace gkb_service.Controllers.AuthApi
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login([FromBody] LoginModel Data)
         {
             try
             {
-                var token = Gjwttoken("Gokul");
+                if (string.IsNullOrEmpty(Data.Email) || string.IsNullOrEmpty(Data.Password))
+                {
+                    return BadRequest(new { error = "Email and password are required" });
+                }
 
-                var obj_jwt = new JwtSecurityTokenHandler();
-                var result = await _context.Database.SqlQueryRaw<int>("SELECT 1").ToListAsync();
-                int myNumber = result.FirstOrDefault();
+                var user = await _context.UserMasters.FirstOrDefaultAsync(u => u.Email == Data.Email);
+                if (user == null)
+                {
+                    return Unauthorized(new { error = "Invalid email or password" });
+                }
 
+                if (user.Active != 1)
+                {
+                    return Unauthorized(new { error = "User account is inactive" });
+                }
+
+                // Verify hash
+                string computedHash = gkb_service.Helpers.PasswordHasher.HashPassword(Data.Password, user.SaltValue);
+                if (computedHash != user.HashValue)
+                {
+                    return Unauthorized(new { error = "Invalid email or password" });
+                }
+
+                var token = Gjwttoken(user.Username ?? user.Email, user.UserId, user.RoleId);
 
                 return Ok(new
                 {
-                    token = token
+                    token = token,
+                    userId = user.UserId,
+                    roleId = user.RoleId,
+                    username = user.Username,
+                    email = user.Email
                 });
             }
             catch (Exception ex)
             {
-                string errorMessage = ex.Message.ToString();
-                return Ok(new
-                {
-                    error = errorMessage
-                });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
             }
         }
 
@@ -180,49 +200,78 @@ namespace gkb_service.Controllers.AuthApi
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel Data)
         {
-            string msg = "Failed";
             try
             {
-                //var user = new IdentityUser { UserName = Data.Email, Email = Data.Email };
+                if (string.IsNullOrEmpty(Data.Email) || string.IsNullOrEmpty(Data.Password) || string.IsNullOrEmpty(Data.Username))
+                {
+                    return BadRequest(new { error = "Username, email, and password are required" });
+                }
 
-                //var result = await _usermanager.CreateAsync(user, Data.Password);
+                var existing = await _context.UserMasters.FirstOrDefaultAsync(u => u.Email == Data.Email);
+                if (existing != null)
+                {
+                    return BadRequest(new { error = "Email is already registered" });
+                }
 
-                //if (result.Succeeded)
-                //{
-                //    msg = "succed";
-                //}
+                string salt = gkb_service.Helpers.PasswordHasher.GenerateSalt();
+                string hash = gkb_service.Helpers.PasswordHasher.HashPassword(Data.Password, salt);
+
+                var user = new UserMaster
+                {
+                    Username = Data.Username,
+                    Email = Data.Email,
+                    SaltValue = salt,
+                    HashValue = hash,
+                    HouseNo = Data.HouseNo,
+                    AddressLine1 = Data.AddressLine1,
+                    AddressLine2 = Data.AddressLine2,
+                    Area = Data.Area,
+                    State = Data.State,
+                    Mobile = Data.Mobile,
+                    RoleId = 2, // Customer
+                    Active = 1,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                _context.UserMasters.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Now that we have UserId, encrypt the password column using the UserId as a symmetric key
+                user.Password = gkb_service.Helpers.PasswordHasher.EncryptPasswordByUserId(Data.Password, user.UserId);
+                _context.UserMasters.Update(user);
+                await _context.SaveChangesAsync();
 
                 return Ok(new
                 {
-                    message = msg
+                    message = "succed",
+                    userId = user.UserId
                 });
-
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                return Ok(new
-                {
-                    error = ex.Message.ToString()
-                });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
             }
         }
 
 
-    private string Gjwttoken(string username)
+        private string Gjwttoken(string username, int userId, int roleId)
         {
             var skey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]));
             var cr = new SigningCredentials(skey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
                 new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, username),
-                new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role,"Admin")
+                new Claim("userId", userId.ToString()),
+                new Claim("roleId", roleId.ToString()),
+                new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, roleId == 1 ? "Admin" : "Customer")
             };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(10),
+                expires: DateTime.Now.AddHours(2), // Extended to 2 hours
                 signingCredentials: cr);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -230,6 +279,19 @@ namespace gkb_service.Controllers.AuthApi
     }
 
     public class RegisterModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Username { get; set; }
+        public string HouseNo { get; set; }
+        public string AddressLine1 { get; set; }
+        public string AddressLine2 { get; set; }
+        public string Area { get; set; }
+        public string State { get; set; }
+        public string Mobile { get; set; }
+    }
+
+    public class LoginModel
     {
         public string Email { get; set; }
         public string Password { get; set; }

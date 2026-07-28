@@ -7,7 +7,9 @@ import { Loading } from '../shared/spinner/loading';
 import { ProductService } from '../Admin/master/products/product-service';
 import { RecipeService } from '../Admin/master/recipe/recipe-service';
 import { StockService } from '../Admin/master/stock/stock-service';
+import { AdditionalChargeService } from '../Admin/master/additionalcharge/additionalcharge-service';
 import { ToastService } from '../shared/toaster/toast-service';
+import { CartService } from '../cart/cart-service';
 
 @Component({
   selector: 'app-product-details',
@@ -28,6 +30,11 @@ export class ProductDetails implements OnInit {
   customCost: number = 0;
   finalTotal: number = 0;
 
+  allCharges: any[] = [];
+  mappedCharges: any[] = [];
+  totalHandlingCharges: number = 0;
+  showHandlingCharges: boolean = false;
+
   @ViewChild('paymentModal') paymentModal!: TemplateRef<any>;
 
   constructor(
@@ -38,7 +45,9 @@ export class ProductDetails implements OnInit {
     private productService: ProductService,
     private recipeService: RecipeService,
     private stockService: StockService,
-    private toastr: ToastService
+    private additionalChargeService: AdditionalChargeService,
+    private toastr: ToastService,
+    private cartService: CartService
   ) {
     this.route.paramMap.subscribe((params) => {
       this.productid = Number(params.get('id'));
@@ -61,56 +70,91 @@ export class ProductDetails implements OnInit {
           });
         }
 
-        // 2. Get recipes list
-        this.recipeService.getrecipe().subscribe({
-          next: (resRecipe) => {
-            let allRecipes: any[] = [];
-            if (resRecipe.body != null && resRecipe.body.stocklst != null) {
-              allRecipes = resRecipe.body.stocklst;
+        // 1.5 Get additional charges
+        this.additionalChargeService.getcharge().subscribe({
+          next: (resCharges) => {
+            if (resCharges.body != null && resCharges.body.stocklst != null) {
+              this.allCharges = resCharges.body.stocklst.map((c: any) => ({
+                chargeId: c.chargeId ?? c.chargeid ?? c.ChargeId,
+                chargeName: c.chargeName ?? c.charge_name ?? c.ChargeName,
+                amount: c.amount ?? c.Amount,
+                active: c.active ?? c.Active ?? 1
+              }));
             }
 
-            // 3. Get product details
-            this.productService.getproduct().subscribe({
-              next: (resProd) => {
-                this.loading.hide();
-                if (resProd.body != null && resProd.body.stocklst != null) {
-                  this.productDetail = resProd.body.stocklst.find((p: any) => 
-                    Number(p.productId ?? p.productid ?? p.ProductId) === this.productid
-                  );
-
-                  if (this.productDetail) {
-                    // Extract mapped recipes for this product
-                    let mappedIds: any[] = [];
-                    let receipeidRaw = this.productDetail.receipeId ?? this.productDetail.receipeid ?? this.productDetail.ReceipeId;
-                    if (typeof receipeidRaw === 'string') {
-                      try { mappedIds = JSON.parse(receipeidRaw); } catch(e){}
-                    } else if (Array.isArray(receipeidRaw)) {
-                      mappedIds = receipeidRaw;
-                    }
-
-                    const recipeIds = mappedIds.map(r => Number(r.recipeid ?? r.recipeId ?? r));
-                    
-                    // Match full recipes details
-                    this.productRecipes = allRecipes.filter(r => 
-                      recipeIds.includes(Number(r.recipeId ?? r.recipeid ?? r.RecipeId))
-                    );
-
-                    // Select first recipe by default if available
-                    if (this.productRecipes.length > 0) {
-                      this.selectRecipe(this.productRecipes[0]);
-                    }
-                  }
+            // 2. Get recipes list
+            this.recipeService.getrecipe().subscribe({
+              next: (resRecipe) => {
+                let allRecipes: any[] = [];
+                if (resRecipe.body != null && resRecipe.body.stocklst != null) {
+                  allRecipes = resRecipe.body.stocklst;
                 }
+
+                // 3. Get product details
+                this.productService.getproduct().subscribe({
+                  next: (resProd) => {
+                    this.loading.hide();
+                    if (resProd.body != null && resProd.body.stocklst != null) {
+                      this.productDetail = resProd.body.stocklst.find((p: any) => 
+                        Number(p.productId ?? p.productid ?? p.ProductId) === this.productid
+                      );
+
+                      if (this.productDetail) {
+                        // Extract mapped recipes for this product
+                        let mappedIds: any[] = [];
+                        let receipeidRaw = this.productDetail.receipeId ?? this.productDetail.receipeid ?? this.productDetail.ReceipeId;
+                        if (typeof receipeidRaw === 'string') {
+                          try { mappedIds = JSON.parse(receipeidRaw); } catch(e){}
+                        } else if (Array.isArray(receipeidRaw)) {
+                          mappedIds = receipeidRaw;
+                        }
+
+                        const recipeIds = mappedIds.map(r => Number(r.recipeid ?? r.recipeId ?? r));
+                        
+                        // Match full recipes details
+                        this.productRecipes = allRecipes.filter(r => 
+                          recipeIds.includes(Number(r.recipeId ?? r.recipeid ?? r.RecipeId))
+                        );
+
+                        // Extract mapped handling charges for this product
+                        let mappedChargesRaw = this.productDetail.handlingCharge ?? this.productDetail.handlingcharge ?? this.productDetail.HandlingCharge;
+                        let mappedChargesList: any[] = [];
+                        if (typeof mappedChargesRaw === 'string') {
+                          try { mappedChargesList = JSON.parse(mappedChargesRaw); } catch(e){}
+                        } else if (Array.isArray(mappedChargesRaw)) {
+                          mappedChargesList = mappedChargesRaw;
+                        }
+
+                        const handlingIds = mappedChargesList.map((h: any) => Number(h.charged ?? h.Charged ?? h));
+                        this.mappedCharges = this.allCharges.filter(c => 
+                          c.active === 1 && handlingIds.includes(Number(c.chargeId))
+                        );
+
+                        this.totalHandlingCharges = this.mappedCharges.reduce((acc, curr) => acc + Number(curr.amount), 0);
+                        this.totalHandlingCharges = Math.round(this.totalHandlingCharges * 100) / 100;
+
+                        // Select first recipe by default if available
+                        if (this.productRecipes.length > 0) {
+                          this.selectRecipe(this.productRecipes[0]);
+                        }
+                      }
+                    }
+                  },
+                  error: () => {
+                    this.loading.hide();
+                    this.toastr.show('Failed to load product details', 'error');
+                  }
+                });
               },
               error: () => {
                 this.loading.hide();
-                this.toastr.show('Failed to load product details', 'error');
+                this.toastr.show('Failed to load recipes details', 'error');
               }
             });
           },
           error: () => {
             this.loading.hide();
-            this.toastr.show('Failed to load recipes details', 'error');
+            this.toastr.show('Failed to load additional charges info', 'error');
           }
         });
       },
@@ -170,8 +214,50 @@ export class ProductDetails implements OnInit {
 
     // Apply decimal format
     this.customCost = Math.round(this.customCost * 100) / 100;
+    this.finalTotal = Math.round((this.customCost + this.totalHandlingCharges) * 100) / 100;
     this.isCalculated = true;
     this.toastr.show('Formulation price calculated successfully!', 'success');
+  }
+
+  addToCart() {
+    if (!this.isCalculated) {
+      this.toastr.show('Please calculate formulation price first!', 'error');
+      return;
+    }
+
+    this.loading.show();
+
+    // Map customized ingredients to the backend schema
+    const details = this.customizedIngredients.map(ing => ({
+      stockId: ing.stockId,
+      name: ing.name,
+      quantity: ing.quantity
+    }));
+
+    const priceDetails = {
+      customCost: this.customCost,
+      handlingCharges: this.totalHandlingCharges,
+      totalPrice: this.finalTotal
+    };
+
+    const payload = {
+      productId: this.productid,
+      quantity: 1,
+      recipeDetails: details,
+      cartDetails: JSON.stringify(priceDetails)
+    };
+
+    this.cartService.addItemToCart(payload).subscribe({
+      next: (res) => {
+        this.loading.hide();
+        this.toastr.show('Product added to cart successfully!', 'success');
+        this.router.navigate(['/yourcart']);
+      },
+      error: (err) => {
+        this.loading.hide();
+        this.toastr.show(err.error?.error || 'Failed to add item to cart.', 'error');
+      }
+    });
   }
 
   goBack() {
@@ -184,7 +270,7 @@ export class ProductDetails implements OnInit {
       return;
     }
 
-    this.finalTotal = this.customCost;
+    this.finalTotal = Math.round((this.customCost + this.totalHandlingCharges) * 100) / 100;
     this.modalService.open(this.paymentModal, {
       centered: true,
       windowClass: 'custom-modal-radius',
