@@ -55,7 +55,7 @@ namespace gkb_service.Controllers
             {
                 var res = await _emailEventPublisher.PublishEvent(subject, value);
 
-                return Ok();
+                return Ok(new { status = res,message = "Trigged" });
             }
             catch (Exception ex)
             {
