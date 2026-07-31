@@ -1,6 +1,4 @@
-﻿using gkb_service.Model;
-using gkb_service.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,11 +8,6 @@ namespace gkb_service.Controllers
     [ApiController]
     public class EmailTriggerApiController : ControllerBase
     {
-        readonly IEmailEventPublisher _emailEventPublisher;
-        public EmailTriggerApiController(IEmailEventPublisher emailEventPublisher) 
-        { 
-            _emailEventPublisher = emailEventPublisher;
-        }
         // GET: api/<EmailTriggerApiController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -45,21 +38,6 @@ namespace gkb_service.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-        }
-
-        [HttpPost]
-        [Route("trigger")]
-        public async Task<IActionResult> trigger([FromBody] EmailMessage value,[FromQuery]string subject)
-        {
-            try
-            {
-                var res  = await _emailEventPublisher.PublishEvent(subject,value);
-
-                return Ok();
-            }
-            catch (Exception ex) { 
-            return BadRequest(ex.Message);
-            }
         }
     }
 }
