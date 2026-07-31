@@ -1,7 +1,7 @@
 //using gkb_service.Controllers.DBcontext;
 using gkb_service.Controllers.Admin;
 using gkb_service.Models;
-using gkb_service.Services;
+using gkb_service.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
