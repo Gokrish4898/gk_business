@@ -1,6 +1,7 @@
 //using gkb_service.Controllers.DBcontext;
 using gkb_service.Controllers.Admin;
 using gkb_service.Models;
+using gkb_service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,8 +66,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<gkb_service.Controllers.Mail_service.EmailOtpService>();
-builder.Services.AddTransient<IRecipe,RecipeService>();
-builder.Services.AddTransient<IStock,StockService>();
+builder.Services.AddTransient<IRecipe, RecipeService>();
+builder.Services.AddTransient<IStock, StockService>();
+builder.Services.AddTransient<IEmailEventPublisher, EmailEventPublisher>();
 builder.Services.AddTransient<IProduct,ProductService>();
 builder.Services.AddTransient<IWishlist,WishlistService>();
 builder.Services.AddTransient<IRating,RatingService>();
@@ -77,7 +79,7 @@ builder.Services.AddTransient<IUserMaster,UserMasterService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters= new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -149,7 +151,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
- 
+
 // 2. ADD THIS LINE exactly here
 app.UseCors("AllowAngularUI");
 app.UseRouting();
