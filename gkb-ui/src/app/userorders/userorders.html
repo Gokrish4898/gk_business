@@ -8,7 +8,7 @@
     <div class="orders-list" *ngIf="orders.length > 0">
       <div class="order-row p-3 rounded mb-3 border d-flex flex-wrap align-items-center justify-content-between gap-3"
         *ngFor="let order of orders">
-        
+
         <div>
           <span class="text-secondary small d-block uppercase">Order Number</span>
           <strong class="text-slate fs-6">{{ order.orderNumber }}</strong>
@@ -22,8 +22,7 @@
 
         <div>
           <span class="text-secondary small d-block uppercase text-center">Status</span>
-          <span class="badge px-3 py-2 text-wrap"
-            [class.bg-status-pending]="order.orderStatus === 'Pending'"
+          <span class="badge px-3 py-2 text-wrap" [class.bg-status-pending]="order.orderStatus === 'Pending'"
             [class.bg-status-confirmed]="order.orderStatus === 'Confirmed'"
             [class.bg-status-preparing]="order.orderStatus === 'Preparing' || order.orderStatus === 'Packed'"
             [class.bg-status-shipped]="order.orderStatus === 'Shipped' || order.orderStatus === 'Out For Delivery'"
@@ -37,7 +36,7 @@
           <button class="btn btn-premium btn-sm px-3" (click)="viewOrderDetails(order.orderId)">
             View Details
           </button>
-          <button class="btn btn-outline-premium btn-sm px-3" (click)="printOrder(order)">
+          <button class="btn btn-premium btn-sm px-3" (click)="printOrder(order)">
             Print
           </button>
           <button *ngIf="order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed'"
@@ -65,13 +64,15 @@
 <!-- Order Details Overlay Modal -->
 <div *ngIf="isModalOpen" class="custom-backdrop" (click)="closeModal()"></div>
 
-<div *ngIf="isModalOpen && selectedOrder" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+<div *ngIf="isModalOpen && selectedOrder" class="modal fade show custom-glass-modal" tabindex="-1"
+  style="display: block">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content glass-content shadow-2xl" style="max-height: 90vh;">
-      
+
       <div class="modal-header pb-3 border-bottom border-secondary border-opacity-10">
         <div>
-          <h5 class="modal-title brand-text text-gold mb-1"><i class="bi bi-receipt me-2"></i>Order {{ selectedOrder.orderNumber }}</h5>
+          <h5 class="modal-title brand-text text-gold mb-1"><i class="bi bi-receipt me-2"></i>Order {{
+            selectedOrder.orderNumber }}</h5>
           <span class="text-muted small">Placed on: {{ selectedOrder.createdOn | date:'medium' }}</span>
         </div>
         <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
@@ -79,23 +80,21 @@
 
       <div class="modal-body mt-3" style="max-height: 65vh; overflow-y: auto;">
         <!-- Tracking Timeline Header -->
-        <div class="timeline-stepper mb-4 p-3 bg-light rounded border border-secondary border-opacity-10" *ngIf="!isCancelledStatus(selectedOrder.orderStatus)">
-          <h6 class="fw-bold text-slate mb-3 uppercase small"><i class="bi bi-truck me-1 text-gold"></i>Shipment Tracking</h6>
-          
+        <div class="timeline-stepper mb-4 p-3 bg-light rounded border border-secondary border-opacity-10"
+          *ngIf="!isCancelledStatus(selectedOrder.orderStatus)">
+          <h6 class="fw-bold text-slate mb-3 uppercase small"><i class="bi bi-truck me-1 text-gold"></i>Shipment
+            Tracking</h6>
+
           <div class="stepper-row d-flex justify-content-between position-relative">
             <div class="stepper-line position-absolute"></div>
-            
+
             <div class="step-point text-center z-index-2" *ngFor="let step of statusSteps"
               [class.step-finished]="isStepFinished(step, selectedOrder.orderStatus)"
               [class.step-active]="isStepActive(step, selectedOrder.orderStatus)">
               <div class="circle mx-auto d-flex align-items-center justify-content-center text-white fw-bold mb-2">
-                <i class="bi"
-                  [class.bi-clock]="step === 'Pending'"
-                  [class.bi-check-circle]="step === 'Confirmed'"
-                  [class.bi-egg-fried]="step === 'Preparing'"
-                  [class.bi-box-seam]="step === 'Packed'"
-                  [class.bi-truck]="step === 'Shipped'"
-                  [class.bi-geo-alt]="step === 'Out For Delivery'"
+                <i class="bi" [class.bi-clock]="step === 'Pending'" [class.bi-check-circle]="step === 'Confirmed'"
+                  [class.bi-egg-fried]="step === 'Preparing'" [class.bi-box-seam]="step === 'Packed'"
+                  [class.bi-truck]="step === 'Shipped'" [class.bi-geo-alt]="step === 'Out For Delivery'"
                   [class.bi-house-check]="step === 'Delivered'">
                 </i>
               </div>
@@ -105,7 +104,8 @@
         </div>
 
         <!-- Cancelled State Details -->
-        <div class="alert alert-danger d-flex align-items-center gap-3" *ngIf="isCancelledStatus(selectedOrder.orderStatus)">
+        <div class="alert alert-danger d-flex align-items-center gap-3"
+          *ngIf="isCancelledStatus(selectedOrder.orderStatus)">
           <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
           <div>
             <h6 class="alert-heading fw-bold m-0">This order was {{ selectedOrder.orderStatus }}</h6>
@@ -117,23 +117,30 @@
           <!-- Left side: Items & Shipping -->
           <div class="col-md-7">
             <h6 class="fw-bold text-slate uppercase small mb-3 border-bottom pb-2">Order Items</h6>
-            
-            <div class="details-item-row p-2 border-bottom d-flex gap-2 align-items-center justify-content-between" *ngFor="let item of selectedOrder.items">
-              <img [src]="item.productImage || 'assets/placeholder-cake.png'" alt="Product" class="item-thumb rounded" />
+
+            <div class="details-item-row p-2 border-bottom d-flex gap-2 align-items-center justify-content-between"
+              *ngFor="let item of selectedOrder.items">
+              <img [src]="item.productImage || 'assets/placeholder-cake.png'" alt="Product"
+                class="item-thumb rounded" />
               <div class="flex-grow-1 ms-2">
                 <span class="fw-bold text-slate small d-block">{{ item.productName }}</span>
-                <span class="text-muted small">Qty: {{ item.quantity }} x ₹{{ item.productPrice | number:'1.2-2' }}</span>
+                <span class="text-muted small">Qty: {{ item.quantity }} x ₹{{ item.productPrice | number:'1.2-2'
+                  }}</span>
 
                 <!-- Recipe configurations inside modal details -->
                 <div class="recipe-notes-box mt-1" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
-                  <button class="btn btn-outline-premium btn-xs py-1 px-2 mt-1 small" (click)="item.showRecipe = !item.showRecipe" style="font-size: 0.65rem;">
-                    <i class="bi" [class.bi-chevron-down]="!item.showRecipe" [class.bi-chevron-up]="item.showRecipe"></i>
+                  <button class="btn btn-outline-premium btn-xs py-1 px-2 mt-1 small"
+                    (click)="item.showRecipe = !item.showRecipe" style="font-size: 0.65rem;">
+                    <i class="bi" [class.bi-chevron-down]="!item.showRecipe"
+                      [class.bi-chevron-up]="item.showRecipe"></i>
                     {{ item.showRecipe ? 'Hide Recipe Details' : 'Show Recipe Details' }}
                   </button>
 
-                  <div *ngIf="item.showRecipe" class="mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
+                  <div *ngIf="item.showRecipe"
+                    class="mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
                     <ul class="recipe-ingredient-list m-0 p-0 list-unstyled d-flex flex-column gap-1">
-                      <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between" style="font-size:0.65rem;">
+                      <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between"
+                        style="font-size:0.65rem;">
                         <span>{{ ing.name }}</span>
                         <strong class="text-dark">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
                       </li>
@@ -150,7 +157,8 @@
               <strong class="text-dark">{{ selectedOrder.address?.fullName }}</strong><br />
               <i class="bi bi-telephone"></i> +91 {{ selectedOrder.address?.mobileNumber }}<br />
               {{ selectedOrder.address?.addressLine1 }}, {{ selectedOrder.address?.addressLine2 }}<br />
-              {{ selectedOrder.address?.city }}, {{ selectedOrder.address?.state }} - <strong>{{ selectedOrder.address?.pincode }}</strong>
+              {{ selectedOrder.address?.city }}, {{ selectedOrder.address?.state }} - <strong>{{
+                selectedOrder.address?.pincode }}</strong>
             </div>
           </div>
 
@@ -184,8 +192,10 @@
 
             <h6 class="fw-bold text-slate uppercase small mb-2 border-bottom pb-2">Status Timeline</h6>
             <div class="status-timeline-history px-2">
-              <div class="timeline-history-item mb-2 pb-2 border-bottom position-relative" *ngFor="let log of selectedOrder.timeline">
-                <span class="badge bg-gold-light text-gold py-1 uppercase small d-inline-block mb-1">{{ log.status }}</span>
+              <div class="timeline-history-item mb-2 pb-2 border-bottom position-relative"
+                *ngFor="let log of selectedOrder.timeline">
+                <span class="badge bg-gold-light text-gold py-1 uppercase small d-inline-block mb-1">{{ log.status
+                  }}</span>
                 <p class="text-secondary small m-0">{{ log.statusMessage }}</p>
                 <span class="text-muted extra-small d-block mt-1">{{ log.createdOn | date:'medium' }}</span>
               </div>
