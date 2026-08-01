@@ -38,103 +38,109 @@ namespace gkb_service.Controllers.Admin
             [FromQuery] int pageIndex = 0,
             [FromQuery] int pageSize = 5)
         {
-            var query = _context.Orders.Where(o => o.Active == 1);
-
-            // Searching
-            if (!string.IsNullOrEmpty(searchTerm))
+            try
             {
-                var searchLower = searchTerm.ToLower();
-                
-                // Fetch user IDs matching username/email
-                var matchedUserIds = await _context.UserMasters
-                    .Where(u => u.Username.ToLower().Contains(searchLower) || u.Email.ToLower().Contains(searchLower))
-                    .Select(u => u.UserId)
-                    .ToListAsync();
+                var query = _context.Orders.Where(o => o.Active == 1);
 
-                query = query.Where(o => o.OrderNumber.ToLower().Contains(searchLower) || matchedUserIds.Contains(o.UserId));
-            }
-
-            // Filtering
-            if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
-            {
-                query = query.Where(o => o.OrderStatus.ToLower() == statusFilter.ToLower());
-            }
-
-            // Sorting
-            if (sortBy?.ToLower() == "grandtotal")
-            {
-                query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.GrandTotal) : query.OrderByDescending(o => o.GrandTotal);
-            }
-            else if (sortBy?.ToLower() == "ordernumber")
-            {
-                query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.OrderNumber) : query.OrderByDescending(o => o.OrderNumber);
-            }
-            else
-            {
-                query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.CreatedOn) : query.OrderByDescending(o => o.CreatedOn);
-            }
-
-            int totalCount = await query.CountAsync();
-            var list = await query
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            // Load related user records
-            var userIds = list.Select(o => o.UserId).Distinct().ToList();
-            var users = await _context.UserMasters
-                .Where(u => userIds.Contains(u.UserId))
-                .ToDictionaryAsync(u => u.UserId);
-
-            // Load related addresses
-            var addressIds = list.Select(o => o.AddressId).Distinct().ToList();
-            var addresses = await _context.UserAddresses
-                .Where(a => addressIds.Contains(a.AddressId))
-                .ToDictionaryAsync(a => a.AddressId);
-
-            // Check which orders have customized recipes
-            var orderIds = list.Select(o => o.OrderId).ToList();
-            var orderItemHasRecipe = await _context.OrderItems
-                .Where(oi => orderIds.Contains(oi.OrderId) && oi.Active == 1 && !string.IsNullOrEmpty(oi.RecipeDetails) && oi.RecipeDetails != "[]")
-                .Select(oi => oi.OrderId)
-                .Distinct()
-                .ToListAsync();
-
-            var ordersResult = list.Select(o =>
-            {
-                users.TryGetValue(o.UserId, out var user);
-                addresses.TryGetValue(o.AddressId, out var addr);
-
-                string addressText = "";
-                if (addr != null)
+                // Searching
+                if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    addressText = $"{addr.AddressLine1}, {(string.IsNullOrEmpty(addr.AddressLine2) ? "" : addr.AddressLine2 + ", ")}{addr.City}, {addr.State} - {addr.Pincode}";
+                    var searchLower = searchTerm.ToLower();
+
+                    // Fetch user IDs matching username/email
+                    var matchedUserIds = await _context.UserMasters
+                        .Where(u => u.Username.ToLower().Contains(searchLower) || u.Email.ToLower().Contains(searchLower))
+                        .Select(u => u.UserId)
+                        .ToListAsync();
+
+                    query = query.Where(o => o.OrderNumber.ToLower().Contains(searchLower) || matchedUserIds.Contains(o.UserId));
                 }
 
-                bool hasRecipe = orderItemHasRecipe.Contains(o.OrderId);
-
-                return new
+                // Filtering
+                if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
                 {
-                    orderId = o.OrderId,
-                    orderNumber = o.OrderNumber,
-                    userId = o.UserId,
-                    username = user?.Username ?? "Unknown Customer",
-                    email = user?.Email ?? "",
-                    addressText = addressText,
-                    hasRecipe = hasRecipe,
-                    orderStatus = o.OrderStatus,
-                    statusMessage = o.StatusMessage,
-                    grandTotal = o.GrandTotal,
-                    createdOn = o.CreatedOn
-                };
-            }).ToList();
+                    query = query.Where(o => o.OrderStatus.ToLower() == statusFilter.ToLower());
+                }
 
-            return Ok(new
+                // Sorting
+                if (sortBy?.ToLower() == "grandtotal")
+                {
+                    query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.GrandTotal) : query.OrderByDescending(o => o.GrandTotal);
+                }
+                else if (sortBy?.ToLower() == "ordernumber")
+                {
+                    query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.OrderNumber) : query.OrderByDescending(o => o.OrderNumber);
+                }
+                else
+                {
+                    query = sortOrder?.ToLower() == "asc" ? query.OrderBy(o => o.CreatedOn) : query.OrderByDescending(o => o.CreatedOn);
+                }
+
+                int totalCount = await query.CountAsync();
+                var list = await query
+                    .Skip(pageIndex * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Load related user records
+                var userIds = list.Select(o => o.UserId).Distinct().ToList();
+                var users = await _context.UserMasters
+                    .Where(u => userIds.Contains(u.UserId))
+                    .ToDictionaryAsync(u => u.UserId);
+
+                // Load related addresses
+                var addressIds = list.Select(o => o.AddressId).Distinct().ToList();
+                var addresses = await _context.UserAddresses
+                    .Where(a => addressIds.Contains(a.AddressId))
+                    .ToDictionaryAsync(a => a.AddressId);
+
+                // Check which orders have customized recipes
+                var orderIds = list.Select(o => o.OrderId).ToList();
+                var orderItemHasRecipe = await _context.OrderItems
+                    .Where(oi => orderIds.Contains(oi.OrderId) && oi.Active == 1 && !string.IsNullOrEmpty(oi.RecipeDetails) && oi.RecipeDetails != "[]")
+                    .Select(oi => oi.OrderId)
+                    .Distinct()
+                    .ToListAsync();
+
+                var ordersResult = list.Select(o =>
+                {
+                    users.TryGetValue(o.UserId, out var user);
+                    addresses.TryGetValue(o.AddressId, out var addr);
+
+                    string addressText = "";
+                    if (addr != null)
+                    {
+                        addressText = $"{addr.AddressLine1}, {(string.IsNullOrEmpty(addr.AddressLine2) ? "" : addr.AddressLine2 + ", ")}{addr.City}, {addr.State} - {addr.Pincode}";
+                    }
+
+                    bool hasRecipe = orderItemHasRecipe.Contains(o.OrderId);
+
+                    return new
+                    {
+                        orderId = o.OrderId,
+                        orderNumber = o.OrderNumber,
+                        userId = o.UserId,
+                        username = user?.Username ?? "Unknown Customer",
+                        email = user?.Email ?? "",
+                        addressText = addressText,
+                        hasRecipe = hasRecipe,
+                        orderStatus = o.OrderStatus,
+                        statusMessage = o.StatusMessage,
+                        grandTotal = o.GrandTotal,
+                        createdOn = o.CreatedOn
+                    };
+                }).ToList();
+
+                return Ok(new
+                {
+                    orders = ordersResult,
+                    totalCount = totalCount
+                });
+            }
+            catch (Exception ex)
             {
-                orders = ordersResult,
-                totalCount = totalCount
-            });
-        }
+                return StatusCode(500, new { error = "An error occurred while fetching orders.", details = ex.Message ,stacktrak = ex.StackTrace.ToString()});
+            }
 
         [HttpGet]
         [Route("Details/{id}")]
