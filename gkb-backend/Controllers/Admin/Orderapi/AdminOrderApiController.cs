@@ -139,8 +139,9 @@ namespace gkb_service.Controllers.Admin
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = "An error occurred while fetching orders.", details = ex.Message ,stacktrak = ex.StackTrace.ToString()});
+                return StatusCode(500, new { error = "An error occurred while fetching orders.", details = ex.Message });
             }
+        }
 
         [HttpGet]
         [Route("Details/{id}")]
