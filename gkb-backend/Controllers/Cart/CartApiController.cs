@@ -60,10 +60,48 @@ namespace gkb_service.Controllers.Cart
                 .ToListAsync();
 
             var products = await _context.Products.ToDictionaryAsync(p => p.ProductId);
+            var stocks = await _context.Stocks.ToDictionaryAsync(s => s.StockId);
 
             var cartDetails = items.Select(item =>
             {
                 products.TryGetValue(item.ProductId, out var product);
+
+                var recipeList = new List<object>();
+                if (!string.IsNullOrEmpty(item.RecipeDetails))
+                {
+                    try
+                    {
+                        var parsed = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(item.RecipeDetails);
+                        if (parsed != null)
+                        {
+                            foreach (var ing in parsed)
+                            {
+                                string name = ing.TryGetValue("name", out var nEl) ? nEl.GetString() ?? "" : "";
+                                int qty = ing.TryGetValue("quantity", out var qEl) ? qEl.GetInt32() : 0;
+                                int stockId = ing.TryGetValue("stockId", out var sEl) ? sEl.GetInt32() : 0;
+                                string? unit = ing.TryGetValue("unit", out var uEl) ? uEl.GetString() : null;
+
+                                if (string.IsNullOrEmpty(unit) && stockId > 0 && stocks.TryGetValue(stockId, out var stock))
+                                {
+                                    unit = stock.Unit;
+                                }
+
+                                recipeList.Add(new
+                                {
+                                    stockId,
+                                    name,
+                                    quantity = qty,
+                                    unit = unit ?? "units"
+                                });
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Fallback if parsing fails
+                    }
+                }
+
                 return new
                 {
                     cartItemId = item.CartItemId,
@@ -73,7 +111,7 @@ namespace gkb_service.Controllers.Cart
                     productImage = product?.ImageLink ?? "",
                     inStock = (product?.InStock == true) ? 1 : 0,
                     quantity = item.Quantity,
-                    recipeDetails = string.IsNullOrEmpty(item.RecipeDetails) ? new List<object>() : JsonSerializer.Deserialize<List<object>>(item.RecipeDetails),
+                    recipeDetails = recipeList,
                     cartDetails = string.IsNullOrEmpty(item.CartDetails) ? null : JsonSerializer.Deserialize<object>(item.CartDetails)
                 };
             }).ToList();

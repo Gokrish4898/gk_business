@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using snapdough_api.Data;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace gkb_service.Controllers.Admin
@@ -85,9 +86,33 @@ namespace gkb_service.Controllers.Admin
                 .Where(u => userIds.Contains(u.UserId))
                 .ToDictionaryAsync(u => u.UserId);
 
+            // Load related addresses
+            var addressIds = list.Select(o => o.AddressId).Distinct().ToList();
+            var addresses = await _context.UserAddresses
+                .Where(a => addressIds.Contains(a.AddressId))
+                .ToDictionaryAsync(a => a.AddressId);
+
+            // Check which orders have customized recipes
+            var orderIds = list.Select(o => o.OrderId).ToList();
+            var orderItemHasRecipe = await _context.OrderItems
+                .Where(oi => orderIds.Contains(oi.OrderId) && oi.Active == 1 && !string.IsNullOrEmpty(oi.RecipeDetails) && oi.RecipeDetails != "[]")
+                .Select(oi => oi.OrderId)
+                .Distinct()
+                .ToListAsync();
+
             var ordersResult = list.Select(o =>
             {
                 users.TryGetValue(o.UserId, out var user);
+                addresses.TryGetValue(o.AddressId, out var addr);
+
+                string addressText = "";
+                if (addr != null)
+                {
+                    addressText = $"{addr.AddressLine1}, {(string.IsNullOrEmpty(addr.AddressLine2) ? "" : addr.AddressLine2 + ", ")}{addr.City}, {addr.State} - {addr.Pincode}";
+                }
+
+                bool hasRecipe = orderItemHasRecipe.Contains(o.OrderId);
+
                 return new
                 {
                     orderId = o.OrderId,
@@ -95,6 +120,8 @@ namespace gkb_service.Controllers.Admin
                     userId = o.UserId,
                     username = user?.Username ?? "Unknown Customer",
                     email = user?.Email ?? "",
+                    addressText = addressText,
+                    hasRecipe = hasRecipe,
                     orderStatus = o.OrderStatus,
                     statusMessage = o.StatusMessage,
                     grandTotal = o.GrandTotal,
@@ -106,6 +133,96 @@ namespace gkb_service.Controllers.Admin
             {
                 orders = ordersResult,
                 totalCount = totalCount
+            });
+        }
+
+        [HttpGet]
+        [Route("Details/{id}")]
+        public async Task<IActionResult> GetOrderDetails(int id)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id && o.Active == 1);
+            if (order == null) return NotFound(new { error = "Order not found." });
+
+            var items = await _context.OrderItems
+                .Where(oi => oi.OrderId == id && oi.Active == 1)
+                .ToListAsync();
+
+            var address = await _context.UserAddresses.FirstOrDefaultAsync(a => a.AddressId == order.AddressId);
+            var payment = await _context.PaymentMasters.FirstOrDefaultAsync(p => p.PaymentId == order.PaymentId);
+            var timeline = await _context.OrderStatusHistories
+                .Where(h => h.OrderId == id && h.Active == 1)
+                .OrderBy(h => h.CreatedOn)
+                .ToListAsync();
+
+            var products = await _context.Products.ToDictionaryAsync(p => p.ProductId);
+            var stocks = await _context.Stocks.ToDictionaryAsync(s => s.StockId);
+
+            var itemsDetail = items.Select(oi =>
+            {
+                products.TryGetValue(oi.ProductId, out var product);
+
+                var recipeList = new List<object>();
+                if (!string.IsNullOrEmpty(oi.RecipeDetails))
+                {
+                    try
+                    {
+                        var parsed = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(oi.RecipeDetails);
+                        if (parsed != null)
+                        {
+                            foreach (var ing in parsed)
+                            {
+                                string name = ing.TryGetValue("name", out var nEl) ? nEl.GetString() ?? "" : "";
+                                int qty = ing.TryGetValue("quantity", out var qEl) ? qEl.GetInt32() : 0;
+                                int stockId = ing.TryGetValue("stockId", out var sEl) ? sEl.GetInt32() : 0;
+                                string? unit = ing.TryGetValue("unit", out var uEl) ? uEl.GetString() : null;
+
+                                if (string.IsNullOrEmpty(unit) && stockId > 0 && stocks.TryGetValue(stockId, out var stock))
+                                {
+                                    unit = stock.Unit;
+                                }
+
+                                recipeList.Add(new
+                                {
+                                    stockId,
+                                    name,
+                                    quantity = qty,
+                                    unit = unit ?? "units"
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                return new
+                {
+                    orderItemId = oi.OrderItemId,
+                    productId = oi.ProductId,
+                    productName = oi.ProductNameSnapshot ?? product?.Name ?? "Unknown Product",
+                    productPrice = oi.ProductPriceSnapshot,
+                    productImage = product?.ImageLink ?? "",
+                    quantity = oi.Quantity,
+                    recipeDetails = recipeList,
+                    itemTotal = oi.ItemTotal
+                };
+            }).ToList();
+
+            return Ok(new
+            {
+                orderId = order.OrderId,
+                orderNumber = order.OrderNumber,
+                orderStatus = order.OrderStatus,
+                statusMessage = order.StatusMessage,
+                subtotal = order.Subtotal,
+                discountAmount = order.DiscountAmount,
+                deliveryCharge = order.DeliveryCharge,
+                taxAmount = order.TaxAmount,
+                grandTotal = order.GrandTotal,
+                createdOn = order.CreatedOn,
+                address = address,
+                payment = payment,
+                items = itemsDetail,
+                timeline = timeline
             });
         }
 

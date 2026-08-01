@@ -21,6 +21,10 @@ export class Cart implements OnInit {
   paymentMethods: any[] = [];
   deliveryConfigs: any[] = [];
 
+  // Recipe popup state
+  selectedCartItemForRecipe: any = null;
+  isRecipeModalOpen = false;
+
   // Selections
   selectedAddressId = 0;
   selectedPaymentId = 0;
@@ -249,8 +253,13 @@ export class Cart implements OnInit {
     return this.subtotal + this.deliveryFee + this.taxAmount;
   }
 
-  // Step Navigations
   goToCheckout() {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      this.toastr.show('Please login to place orders.', 'warning');
+      this.router.navigate(['/login']);
+      return;
+    }
     if (this.cartItems.length === 0) {
       this.toastr.show('Your cart is empty.', 'warning');
       return;
@@ -347,5 +356,21 @@ export class Cart implements OnInit {
   toggleHandlingCollapse(event: Event) {
     event.preventDefault();
     this.isHandlingCollapsed = !this.isHandlingCollapsed;
+  }
+
+  openRecipeModal(item: any) {
+    this.selectedCartItemForRecipe = item;
+    this.isRecipeModalOpen = true;
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  closeRecipeModal() {
+    this.isRecipeModalOpen = false;
+    this.selectedCartItemForRecipe = null;
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('modal-open');
+    }
   }
 }

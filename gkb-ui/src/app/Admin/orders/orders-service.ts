@@ -47,9 +47,9 @@ export class AdminOrdersService {
     });
   }
 
-  // Reuse user order details endpoint since it returns complete logs, shipping info, and payment items
+  // Query dedicated admin order details endpoint
   getOrderDetails(id: number): Observable<any> {
-    return this.http.get(`api/OrderApi/Details/${id}`, {
+    return this.http.get(`api/AdminOrderApi/Details/${id}`, {
       headers: getHeaders(),
       observe: 'response',
     });

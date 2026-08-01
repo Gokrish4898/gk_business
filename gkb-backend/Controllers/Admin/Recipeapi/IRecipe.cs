@@ -18,10 +18,40 @@ namespace gkb_service.Controllers.Admin
         {
             _db = db;
         }
+        private float CalculateTotalWeightInG(List<gkb_service.Model.RecipeIngredient>? ingredients)
+        {
+            if (ingredients == null) return 0f;
+            float total = 0f;
+            foreach (var ing in ingredients)
+            {
+                float qty = (float)ing.Quantity;
+                string unit = (ing.UnitOfMeasure ?? "").ToLower().Trim();
+
+                if (unit == "kg" || unit == "kilograms" || unit == "kilogram")
+                {
+                    total += qty * 1000f;
+                }
+                else if (unit == "l" || unit == "liters" || unit == "liter")
+                {
+                    total += qty * 1000f;
+                }
+                else
+                {
+                    // g, grams, gram, ml, milliliters, milliliter, pcs, pieces, etc.
+                    total += qty;
+                }
+            }
+            return total;
+        }
+
         public async Task<Models.Recipe> AddRecipe(Models.Recipe recipe)
         {
             try
             {
+                if (recipe.TotalWeightInG == null || recipe.TotalWeightInG <= 0)
+                {
+                    recipe.TotalWeightInG = CalculateTotalWeightInG(recipe.Ingredients);
+                }
                 await _db.Recipes.AddAsync(recipe);
                 await _db.SaveChangesAsync();
                 return recipe;
@@ -41,6 +71,7 @@ namespace gkb_service.Controllers.Admin
             }
             availablerecipe.RecipeName = recipe.RecipeName;
             availablerecipe.Ingredients = recipe.Ingredients;
+            availablerecipe.TotalWeightInG = (recipe.TotalWeightInG != null && recipe.TotalWeightInG > 0) ? recipe.TotalWeightInG : CalculateTotalWeightInG(recipe.Ingredients);
             availablerecipe.Active = recipe.Active;
             availablerecipe.UpdatedBy = recipe.UpdatedBy;
             availablerecipe.UpdatedOn = DateTime.UtcNow;

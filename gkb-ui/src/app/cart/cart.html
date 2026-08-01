@@ -24,25 +24,32 @@
 
               <!-- Collapsible Customized Recipe Details -->
               <div class="recipe-notes-box mt-2" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
-                <details class="recipe-details-toggle">
-                  <summary class="text-secondary small cursor-pointer fw-semibold uppercase" style="outline: none;">
-                    Custom Recipe Details ({{ item.recipeDetails.length }} items)
-                  </summary>
-                  <ul class="recipe-ingredient-list mt-2 p-2 rounded bg-light border small m-0 list-unstyled d-flex flex-column gap-1">
-                    <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between">
+                <button class="btn btn-outline-premium btn-xs py-1 px-2 mt-1 small" (click)="item.showRecipe = !item.showRecipe" style="font-size: 0.65rem;">
+                  <i class="bi" [class.bi-chevron-down]="!item.showRecipe" [class.bi-chevron-up]="item.showRecipe"></i>
+                  {{ item.showRecipe ? 'Hide Recipe Details' : 'Show Recipe Details' }}
+                </button>
+
+                <div *ngIf="item.showRecipe" class="mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
+                  <ul class="recipe-ingredient-list m-0 p-0 list-unstyled d-flex flex-column gap-1">
+                    <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between" style="font-size: 0.65rem;">
                       <span>{{ ing.name }}</span>
-                      <strong class="text-dark">{{ ing.quantity }} units</strong>
+                      <strong class="text-dark">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
                     </li>
                   </ul>
-                </details>
+                </div>
               </div>
             </div>
 
             <!-- Quantity Selectors & Totals -->
             <div class="qty-totals-box d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-              <button class="btn btn-link text-danger p-0 mb-2" (click)="removeItem(item.cartItemId)">
-                <i class="bi bi-trash fs-5"></i>
-              </button>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <button *ngIf="item.recipeDetails && item.recipeDetails.length > 0" class="btn btn-link text-gold p-0" (click)="openRecipeModal(item)" title="View Recipe Details">
+                  <i class="bi bi-journal-text fs-5"></i>
+                </button>
+                <button class="btn btn-link text-danger p-0" (click)="removeItem(item.cartItemId)" title="Remove Item">
+                  <i class="bi bi-trash fs-5"></i>
+                </button>
+              </div>
 
               <div class="d-flex align-items-center gap-2 mt-auto">
                 <div class="qty-controls d-flex align-items-center rounded border bg-light">
@@ -276,6 +283,50 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Details Popup Modal -->
+<div *ngIf="isRecipeModalOpen" class="custom-backdrop" (click)="closeRecipeModal()"></div>
+
+<div *ngIf="isRecipeModalOpen && selectedCartItemForRecipe" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content glass-content shadow-2xl">
+      
+      <div class="modal-header pb-3 border-bottom border-secondary border-opacity-10">
+        <h5 class="modal-title brand-text text-gold"><i class="bi bi-egg-fried me-2"></i>Recipe: {{ selectedCartItemForRecipe.productName }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeRecipeModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3">
+        <p class="text-secondary small mb-3">Customized formulation ingredient specifications:</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle table-borderless m-0">
+            <thead>
+              <tr class="border-bottom" style="font-size: 0.75rem; text-transform: uppercase; color: #888;">
+                <th>Ingredient</th>
+                <th class="text-end">Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ing of selectedCartItemForRecipe.recipeDetails" class="border-bottom border-light">
+                <td class="py-2">
+                  <span class="fw-semibold text-slate">{{ ing.name }}</span>
+                </td>
+                <td class="py-2 text-end">
+                  <strong class="text-dark">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer border-top border-secondary border-opacity-10">
+        <button type="button" class="btn btn-premium px-4" (click)="closeRecipeModal()">Close</button>
+      </div>
+
     </div>
   </div>
 </div>

@@ -22,6 +22,7 @@ import { Additionalcharge } from './Admin/master/additionalcharge/additionalchar
 import { Usermaster } from './Admin/master/usermaster/usermaster';
 import { PaymentMasterComponent } from './Admin/master/payment/payment';
 import { AdminOrdersComponent } from './Admin/orders/orders';
+import { authGuard } from './shared/auth-guard';
 
 export const routes: Routes = [
   {
@@ -39,12 +40,12 @@ export const routes: Routes = [
       { path: '#', component: Landingpage },
       { path: 'landingpage', component: Landingpage },
       { path: 'bdashboard', component: BakingDashboard },
-      { path: 'yourorders', component: Userorders },
-      { path: 'order', component: Ordertacking },
+      { path: 'yourorders', component: Userorders, canActivate: [authGuard] },
+      { path: 'order', component: Ordertacking, canActivate: [authGuard] },
       { path: 'maintenance', component: Maintenance },
-      { path: 'userprofile', component: Userprofile },
+      { path: 'userprofile', component: Userprofile, canActivate: [authGuard] },
       { path: 'productdetails/:id', component: ProductDetails },
-      { path: 'yourcart', component: Cart },
+      { path: 'yourcart', component: Cart, canActivate: [authGuard] },
       { path: 'about', component: AboutPage },
       { path: 'admin/products', component: Products },
       { path: 'admin/recipes', component: Recipe },

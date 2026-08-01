@@ -45,6 +45,7 @@
             <th>Order #</th>
             <th>Customer</th>
             <th>Email</th>
+            <th>Address</th>
             <th>Grand Total</th>
             <th class="text-center">Status</th>
             <th>Date Placed</th>
@@ -56,6 +57,9 @@
             <td><strong>{{ o.orderNumber }}</strong></td>
             <td><span class="fw-bold text-slate">{{ o.username }}</span></td>
             <td><span class="text-secondary small">{{ o.email }}</span></td>
+            <td>
+              <span class="text-secondary small d-block text-wrap" style="max-width: 250px;">{{ o.addressText || 'N/A' }}</span>
+            </td>
             <td><strong>₹{{ o.grandTotal | number:'1.2-2' }}</strong></td>
             <td class="text-center">
               <span class="badge px-3 py-2"
@@ -74,6 +78,12 @@
                 <button class="btn btn-premium btn-sm px-3" (click)="viewOrderDetails(o.orderId)">
                   Details
                 </button>
+                <button class="btn btn-outline-premium btn-sm px-3" (click)="printOrder(o, $event)">
+                  Print
+                </button>
+                <button class="btn btn-outline-premium btn-sm px-3" (click)="openRecipeModal(o, $event)">
+                  Recipe
+                </button>
                 <button class="btn btn-outline-premium btn-sm px-3" (click)="openStatusModal(o, $event)">
                   Status
                 </button>
@@ -81,7 +91,7 @@
             </td>
           </tr>
           <tr *ngIf="orders.length === 0">
-            <td colspan="7" class="text-center py-5 text-muted">
+            <td colspan="8" class="text-center py-5 text-muted">
               <i class="bi bi-receipt fs-1 opacity-20 d-block mb-3"></i>
               No orders found matching search criteria.
             </td>
@@ -161,17 +171,19 @@
 
                 <!-- Recipe specs -->
                 <div class="recipe-notes-box mt-1" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
-                  <details class="recipe-details-toggle">
-                    <summary class="text-secondary small cursor-pointer fw-semibold uppercase" style="outline: none; font-size:0.65rem;">
-                      Recipe details
-                    </summary>
-                    <ul class="recipe-ingredient-list mt-1 p-1 rounded bg-light border small m-0 list-unstyled d-flex flex-column gap-1">
+                  <button class="btn btn-outline-premium btn-xs py-1 px-2 mt-1 small" (click)="item.showRecipe = !item.showRecipe" style="font-size: 0.65rem;">
+                    <i class="bi" [class.bi-chevron-down]="!item.showRecipe" [class.bi-chevron-up]="item.showRecipe"></i>
+                    {{ item.showRecipe ? 'Hide Recipe Details' : 'Show Recipe Details' }}
+                  </button>
+
+                  <div *ngIf="item.showRecipe" class="mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
+                    <ul class="recipe-ingredient-list m-0 p-0 list-unstyled d-flex flex-column gap-1">
                       <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between" style="font-size:0.65rem;">
                         <span>{{ ing.name }}</span>
-                        <strong class="text-dark">{{ ing.quantity }} units</strong>
+                        <strong class="text-dark">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
                       </li>
                     </ul>
-                  </details>
+                  </div>
                 </div>
               </div>
               <span class="fw-bold text-slate small">₹{{ item.itemTotal | number:'1.2-2' }}</span>
@@ -228,6 +240,7 @@
       </div>
 
       <div class="modal-footer d-flex gap-2 border-top border-secondary border-opacity-10">
+        <button class="btn btn-outline-premium px-4" (click)="printOrder(selectedOrder)">Print Invoice</button>
         <button class="btn btn-premium px-4" (click)="openStatusModal(selectedOrder, $event)">Update Status</button>
         <button type="button" class="btn btn-secondary px-4" (click)="closeModal()">Close</button>
       </div>
@@ -274,6 +287,62 @@
             </button>
           </div>
         </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Details Lookup Modal -->
+<div *ngIf="isRecipeModalOpen" class="custom-backdrop" (click)="closeRecipeModal()"></div>
+
+<div *ngIf="isRecipeModalOpen && selectedOrderForRecipe" class="modal fade show custom-glass-modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content glass-content shadow-2xl" style="max-height: 85vh;">
+      
+      <div class="modal-header pb-3 border-bottom border-secondary border-opacity-10">
+        <h5 class="modal-title brand-text text-gold"><i class="bi bi-egg-fried me-2"></i>Order Recipe Lookup: {{ selectedOrderForRecipe.orderNumber }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeRecipeModal()"></button>
+      </div>
+
+      <div class="modal-body mt-3" style="max-height: 60vh; overflow-y: auto;">
+        <ng-container *ngIf="hasCustomizations(selectedOrderForRecipe); else noCustomizations">
+          <div *ngFor="let item of selectedOrderForRecipe.items" class="mb-4">
+            <div *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
+              <h6 class="fw-bold text-slate mb-2 pb-1 border-bottom"><i class="bi bi-cake2 text-gold me-2"></i>{{ item.productName }} (Qty: {{ item.quantity }})</h6>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle table-borderless m-0">
+                  <thead>
+                    <tr class="border-bottom" style="font-size: 0.7rem; text-transform: uppercase; color: #888;">
+                      <th>Ingredient</th>
+                      <th class="text-end">Formulation Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let ing of item.recipeDetails" class="border-bottom border-light">
+                      <td class="py-2">
+                        <span class="fw-semibold text-secondary small">{{ ing.name }}</span>
+                      </td>
+                      <td class="py-2 text-end">
+                        <strong class="text-dark small">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noCustomizations>
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-info-circle fs-3 d-block mb-3 opacity-50 text-gold"></i>
+            This order contains standard products only. No customized recipe specifications found.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer border-top border-secondary border-opacity-10">
+        <button type="button" class="btn btn-premium px-4" (click)="closeRecipeModal()">Close</button>
       </div>
 
     </div>

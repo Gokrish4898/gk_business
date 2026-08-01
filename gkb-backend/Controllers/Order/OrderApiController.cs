@@ -326,10 +326,45 @@ namespace gkb_service.Controllers.Order
                 .ToListAsync();
 
             var products = await _context.Products.ToDictionaryAsync(p => p.ProductId);
+            var stocks = await _context.Stocks.ToDictionaryAsync(s => s.StockId);
 
             var itemsDetail = items.Select(oi =>
             {
                 products.TryGetValue(oi.ProductId, out var product);
+
+                var recipeList = new List<object>();
+                if (!string.IsNullOrEmpty(oi.RecipeDetails))
+                {
+                    try
+                    {
+                        var parsed = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(oi.RecipeDetails);
+                        if (parsed != null)
+                        {
+                            foreach (var ing in parsed)
+                            {
+                                string name = ing.TryGetValue("name", out var nEl) ? nEl.GetString() ?? "" : "";
+                                int qty = ing.TryGetValue("quantity", out var qEl) ? qEl.GetInt32() : 0;
+                                int stockId = ing.TryGetValue("stockId", out var sEl) ? sEl.GetInt32() : 0;
+                                string? unit = ing.TryGetValue("unit", out var uEl) ? uEl.GetString() : null;
+
+                                if (string.IsNullOrEmpty(unit) && stockId > 0 && stocks.TryGetValue(stockId, out var stock))
+                                {
+                                    unit = stock.Unit;
+                                }
+
+                                recipeList.Add(new
+                                {
+                                    stockId,
+                                    name,
+                                    quantity = qty,
+                                    unit = unit ?? "units"
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
                 return new
                 {
                     orderItemId = oi.OrderItemId,
@@ -338,7 +373,7 @@ namespace gkb_service.Controllers.Order
                     productPrice = oi.ProductPriceSnapshot,
                     productImage = product?.ImageLink ?? "",
                     quantity = oi.Quantity,
-                    recipeDetails = string.IsNullOrEmpty(oi.RecipeDetails) ? new List<object>() : JsonSerializer.Deserialize<List<object>>(oi.RecipeDetails),
+                    recipeDetails = recipeList,
                     itemTotal = oi.ItemTotal
                 };
             }).ToList();
@@ -509,5 +544,6 @@ namespace gkb_service.Controllers.Order
         public int StockId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Quantity { get; set; }
+        public string? Unit { get; set; }
     }
 }

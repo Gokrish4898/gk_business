@@ -37,6 +37,9 @@
           <button class="btn btn-premium btn-sm px-3" (click)="viewOrderDetails(order.orderId)">
             View Details
           </button>
+          <button class="btn btn-outline-premium btn-sm px-3" (click)="printOrder(order)">
+            Print
+          </button>
           <button *ngIf="order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed'"
             class="btn btn-outline-danger btn-sm px-3" (click)="cancelOrder(order.orderId)">
             Cancel
@@ -123,17 +126,19 @@
 
                 <!-- Recipe configurations inside modal details -->
                 <div class="recipe-notes-box mt-1" *ngIf="item.recipeDetails && item.recipeDetails.length > 0">
-                  <details class="recipe-details-toggle">
-                    <summary class="text-secondary small cursor-pointer fw-semibold uppercase" style="outline: none; font-size:0.65rem;">
-                      Recipe specs
-                    </summary>
-                    <ul class="recipe-ingredient-list mt-1 p-1 rounded bg-light border small m-0 list-unstyled d-flex flex-column gap-1">
+                  <button class="btn btn-outline-premium btn-xs py-1 px-2 mt-1 small" (click)="item.showRecipe = !item.showRecipe" style="font-size: 0.65rem;">
+                    <i class="bi" [class.bi-chevron-down]="!item.showRecipe" [class.bi-chevron-up]="item.showRecipe"></i>
+                    {{ item.showRecipe ? 'Hide Recipe Details' : 'Show Recipe Details' }}
+                  </button>
+
+                  <div *ngIf="item.showRecipe" class="mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
+                    <ul class="recipe-ingredient-list m-0 p-0 list-unstyled d-flex flex-column gap-1">
                       <li *ngFor="let ing of item.recipeDetails" class="text-secondary d-flex justify-content-between" style="font-size:0.65rem;">
                         <span>{{ ing.name }}</span>
-                        <strong class="text-dark">{{ ing.quantity }} units</strong>
+                        <strong class="text-dark">{{ ing.quantity }} {{ ing.unit || 'units' }}</strong>
                       </li>
                     </ul>
-                  </details>
+                  </div>
                 </div>
 
               </div>
@@ -191,6 +196,9 @@
       </div>
 
       <div class="modal-footer d-flex gap-2 border-top border-secondary border-opacity-10">
+        <button class="btn btn-outline-premium px-4" (click)="printOrder(selectedOrder)">
+          Print Invoice
+        </button>
         <button *ngIf="selectedOrder.orderStatus === 'Pending' || selectedOrder.orderStatus === 'Confirmed'"
           class="btn btn-outline-danger px-4" (click)="cancelOrder(selectedOrder.orderId)">
           Cancel Order

@@ -38,6 +38,7 @@
                         <th scope="col" style="width: 50px;">Select</th>
                         <th scope="col" style="width: 120px;">Recipe ID</th>
                         <th scope="col">Recipe Name</th>
+                        <th scope="col" style="width: 150px;">Total Weight (g)</th>
                         <th scope="col" style="width: 200px;">Total Ingredients</th>
                         <th scope="col" style="width: 120px;">Status</th>
                         <th scope="col" style="width: 100px;" class="text-center">Expand</th>
@@ -62,6 +63,9 @@
                                 <strong class="recipe-name text-dark">{{ r.recipename }}</strong>
                             </td>
                             <td>
+                                <strong class="text-highlight">{{ r.totalWeightInG || 0 }}g</strong>
+                            </td>
+                            <td>
                                 <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
                                     {{ r.ingredients.length }} Ingredients
                                 </span>
@@ -84,7 +88,7 @@
 
                         <!-- Expanded details row -->
                         <tr *ngIf="expandedRecipeId === r.recipeid">
-                            <td colspan="6" class="p-0 border-0">
+                            <td colspan="7" class="p-0 border-0">
                                 <div class="expanded-detail-box p-4 bg-light">
                                     <div
                                         class="ingredients-header mb-3 d-flex justify-content-between align-items-center">
@@ -172,6 +176,14 @@
                         </div>
                     </div>
 
+                    <!-- Total Weight -->
+                    <div class="mb-4">
+                        <label for="recipeWeight" class="form-label text-white">Total Weight (g) <span class="text-white-50 small">(auto-calculates, fully editable)</span></label>
+                        <input type="number" class="form-control text-dark" id="recipeWeight" name="totalWeightInG"
+                            [(ngModel)]="modalTotalWeightInG" required
+                            placeholder="e.g. 500" />
+                    </div>
+
                     <!-- Ingredients Editor Title -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <label class="form-label text-white mb-0">Ingredients List</label>
@@ -200,10 +212,8 @@
                             <!-- Stock Name -->
                             <div class="col-12 col-md-6">
                                 <label class="d-block d-md-none text-muted small mb-1">Stock Name</label>
-                                <!-- <input type="text" class="form-control text-dark" [name]="'stockname_' + i"
-                                    [(ngModel)]="ing.stockname" required placeholder="e.g. Cake Flour" /> -->
                                 <select class="form-select text-dark" [name]="'stockname_' + i"
-                                    [(ngModel)]="ing.StockId" required>
+                                    [(ngModel)]="ing.StockId" (ngModelChange)="onIngredientChange()" required>
 
                                     <!-- Default placeholder option -->
                                     <option value="" disabled selected>Select an ingredient...</option>
@@ -220,14 +230,14 @@
                             <div class="col-6 col-md-3">
                                 <label class="d-block d-md-none text-muted small mb-1">Quantity</label>
                                 <input type="number" class="form-control text-dark" [name]="'quantity_' + i"
-                                    [(ngModel)]="ing.Quantity" required min="0.01" step="any" placeholder="1.00" />
+                                    [(ngModel)]="ing.Quantity" (ngModelChange)="onIngredientChange()" required min="0.01" step="any" placeholder="1.00" />
                             </div>
 
                             <!-- Unit of Measure -->
                             <div class="col-5 col-md-2">
                                 <label class="d-block d-md-none text-muted small mb-1">Unit</label>
                                 <select class="form-select text-dark" [name]="'unit_' + i"
-                                    [(ngModel)]="ing.UnitOfMeasure">
+                                    [(ngModel)]="ing.UnitOfMeasure" (ngModelChange)="onIngredientChange()">
                                     <option *ngFor="let unit of availableUnits" [value]="unit">{{ unit }}</option>
                                 </select>
                             </div>

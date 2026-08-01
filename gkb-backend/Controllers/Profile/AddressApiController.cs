@@ -40,6 +40,35 @@ namespace gkb_service.Controllers.Profile
                 .ThenByDescending(a => a.CreatedOn)
                 .ToListAsync();
 
+            if (!list.Any())
+            {
+                var user = await _context.UserMasters.FirstOrDefaultAsync(u => u.UserId == userId);
+                if (user != null && (!string.IsNullOrEmpty(user.AddressLine1) || !string.IsNullOrEmpty(user.HouseNo)))
+                {
+                    var defaultAddress = new UserAddress
+                    {
+                        UserId = userId,
+                        FullName = user.DisplayName ?? user.Username ?? "Default Name",
+                        MobileNumber = user.Mobile ?? "",
+                        AddressLine1 = string.IsNullOrEmpty(user.HouseNo) ? user.AddressLine1 : $"{user.HouseNo}, {user.AddressLine1}",
+                        AddressLine2 = user.AddressLine2 ?? user.Area ?? "",
+                        City = user.Area ?? "City",
+                        State = user.State ?? "State",
+                        Country = "India",
+                        Pincode = "605001", // fallback/default pincode
+                        AddressType = "Home",
+                        IsDefault = 1,
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedBy = userId,
+                        Active = 1
+                    };
+                    _context.UserAddresses.Add(defaultAddress);
+                    await _context.SaveChangesAsync();
+
+                    list.Add(defaultAddress);
+                }
+            }
+
             return Ok(new { addresses = list });
         }
 

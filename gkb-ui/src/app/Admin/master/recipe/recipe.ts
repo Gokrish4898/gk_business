@@ -20,6 +20,7 @@ export interface RecipeData {
   recipename: string;
   ingredients: Ingredient[];
   active?: number;
+  totalWeightInG?: number;
 }
 
 @Component({
@@ -95,6 +96,7 @@ export class Recipe implements OnInit {
   modalRecipeName = '';
   modalIngredients: Ingredient[] = [];
   modalRecipeActive = 1;
+  modalTotalWeightInG = 0;
   availableStocks: any = [];
 
   // Predefined lists of standard units
@@ -150,6 +152,7 @@ export class Recipe implements OnInit {
       { StockId: 0, Quantity: 1, UnitOfMeasure: 'g' }
     ];
     this.modalRecipeActive = 1;
+    this.modalTotalWeightInG = 0;
     this.isModalOpen = true;
   }
 
@@ -160,6 +163,7 @@ export class Recipe implements OnInit {
         this.modalTitle = 'Edit Recipe';
         this.modalRecipeName = recipe.recipename;
         this.modalRecipeActive = recipe.active ?? 1;
+        this.modalTotalWeightInG = recipe.totalWeightInG ?? 0;
         // Deep copy ingredients
         this.modalIngredients = recipe.ingredients.map(ing => ({ ...ing }));
         this.isModalOpen = true;
@@ -169,6 +173,7 @@ export class Recipe implements OnInit {
 
   addIngredientRow() {
     this.modalIngredients.push({ StockId: 0, Quantity: 1, UnitOfMeasure: 'g' });
+    this.onIngredientChange();
   }
 
   removeIngredientRow(index: number) {
@@ -177,6 +182,25 @@ export class Recipe implements OnInit {
     } else {
       this.modalIngredients[0] = { StockId: 0, Quantity: 1, UnitOfMeasure: 'g' };
     }
+    this.onIngredientChange();
+  }
+
+  onIngredientChange() {
+    let total = 0;
+    this.modalIngredients.forEach(ing => {
+      if (ing.StockId && ing.Quantity) {
+        const qty = Number(ing.Quantity);
+        const u = (ing.UnitOfMeasure || '').toLowerCase().trim();
+        if (u === 'kg' || u === 'kilograms' || u === 'kilogram') {
+          total += qty * 1000;
+        } else if (u === 'l' || u === 'liters' || u === 'liter') {
+          total += qty * 1000;
+        } else {
+          total += qty;
+        }
+      }
+    });
+    this.modalTotalWeightInG = total;
   }
 
   closeModal() {
@@ -210,7 +234,8 @@ export class Recipe implements OnInit {
         recipeid: 0,
         recipename: this.modalRecipeName.trim(),
         ingredients: validIngredients,
-        active: Number(this.modalRecipeActive)
+        active: Number(this.modalRecipeActive),
+        totalWeightInG: Number(this.modalTotalWeightInG)
       };
       this._addrecipe(newRecipe);
     } else if (this.modalTitle === 'Edit Recipe' && this.selectedRecipeId !== null) {
@@ -218,7 +243,8 @@ export class Recipe implements OnInit {
         recipeid: this.selectedRecipeId,
         recipename: this.modalRecipeName.trim(),
         ingredients: validIngredients,
-        active: Number(this.modalRecipeActive)
+        active: Number(this.modalRecipeActive),
+        totalWeightInG: Number(this.modalTotalWeightInG)
       };
       this._editrecipe(editedRecipe);
     }
@@ -298,7 +324,8 @@ export class Recipe implements OnInit {
               recipeid,
               recipename,
               ingredients: normalizedIngredients,
-              active: r.active ?? r.Active ?? 1
+              active: r.active ?? r.Active ?? 1,
+              totalWeightInG: r.totalWeightInG ?? r.TotalWeightInG ?? r.totalweighting ?? r.totalWeighting ?? 0
             };
           });
           console.log("⚡ [recipe.ts] this.allRecipes normalized:", this.allRecipes);

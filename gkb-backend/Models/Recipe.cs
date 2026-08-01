@@ -9,6 +9,7 @@ namespace gkb_service.Models
         public int RecipeId { get; set; }
         //public int ProductId { get; set; }
         public string? RecipeName { get; set; }
+        public float? TotalWeightInG { get; set; }
 
         // This will hold the JSONB data from PostgreSQL
         [Column("ingredients", TypeName = "jsonb")] 

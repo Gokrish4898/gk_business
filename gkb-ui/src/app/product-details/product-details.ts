@@ -26,6 +26,30 @@ export class ProductDetails implements OnInit {
   stockMap: Map<number, any> = new Map();
   customizedIngredients: any[] = [];
   
+  // Custom formulation weight properties
+  baseRecipeWeight: number = 0;
+  currentCustomizedWeight: number = 0;
+
+  get isWeightAllowed(): boolean {
+    return this.currentCustomizedWeight <= this.baseRecipeWeight + 0.05;
+  }
+
+  get isWeightBalanced(): boolean {
+    return Math.abs(this.currentCustomizedWeight - this.baseRecipeWeight) <= 0.05;
+  }
+
+  get isWeightUnder(): boolean {
+    return this.currentCustomizedWeight < this.baseRecipeWeight - 0.05;
+  }
+
+  get isWeightOver(): boolean {
+    return this.currentCustomizedWeight > this.baseRecipeWeight + 0.05;
+  }
+
+  get weightDifference(): number {
+    return Math.round((this.baseRecipeWeight - this.currentCustomizedWeight) * 100) / 100;
+  }
+  
   isCalculated: boolean = false;
   customCost: number = 0;
   finalTotal: number = 0;
@@ -198,12 +222,39 @@ export class ProductDetails implements OnInit {
         image: stockItem.imagelink ?? stockItem.imageLink ?? stockItem.ImageLink ?? 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
       };
     });
+
+    // Compute target base weight from base recipe ingredients
+    this.baseRecipeWeight = list.reduce((total: number, ing: any) => {
+      const qty = Number(ing.quantity ?? ing.Quantity ?? 0);
+      const unit = ing.unitOfMeasure ?? ing.UnitOfMeasure ?? 'g';
+      return total + this.convertToGrams(qty, unit);
+    }, 0);
+
+    this.updateCurrentWeight();
     this.calculateCustomTotal(); // Calculate initial default formulation cost
+  }
+
+  convertToGrams(quantity: number, unit: string): number {
+    const u = (unit || '').toLowerCase().trim();
+    if (u === 'kg' || u === 'kilograms' || u === 'kilogram') {
+      return quantity * 1000;
+    }
+    if (u === 'l' || u === 'liters' || u === 'liter') {
+      return quantity * 1000;
+    }
+    return quantity;
+  }
+
+  updateCurrentWeight() {
+    this.currentCustomizedWeight = this.customizedIngredients.reduce((total, item) => {
+      return total + this.convertToGrams(item.quantity, item.unit);
+    }, 0);
   }
 
   onSliderChange() {
     // Whenever user modifies formulation sliders, calculation state resets to false (forces them to calculate again!)
     this.isCalculated = false;
+    this.updateCurrentWeight();
   }
 
   calculateCustomTotal() {
@@ -220,6 +271,20 @@ export class ProductDetails implements OnInit {
   }
 
   addToCart() {
+    if (!this.isCalculated) return;
+
+    if (!this.isWeightAllowed) {
+      this.toastr.show(`Formulation weight must not exceed the target limit of ${this.baseRecipeWeight}g.`, 'error');
+      return;
+    }
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      this.toastr.show('Please login to place orders.', 'warning');
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.isCalculated) {
       this.toastr.show('Please calculate formulation price first!', 'error');
       return;
@@ -227,11 +292,12 @@ export class ProductDetails implements OnInit {
 
     this.loading.show();
 
-    // Map customized ingredients to the backend schema
+    // Map customized ingredients to the backend schema, including unit
     const details = this.customizedIngredients.map(ing => ({
       stockId: ing.stockId,
       name: ing.name,
-      quantity: ing.quantity
+      quantity: ing.quantity,
+      unit: ing.unit
     }));
 
     const priceDetails = {

@@ -353,3 +353,13 @@
   }
 }
 
+/* Horizontal Scroll styling for the orders table */
+.table-responsive {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.custom-table {
+  min-width: 1100px; /* Force scrollbar on small screens */
+}
+
